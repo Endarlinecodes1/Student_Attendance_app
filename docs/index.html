@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTrack - Student Attendance & Grades Management</title>
+  <meta name="description" content="Manage student attendance, records, reports, and grades in a clean, responsive single-page application.">
+  
+  <!-- Google Fonts for Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --secondary: #0ea5e9;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --dark: #0f172a;
+      --gray-900: #1e293b;
+      --gray-800: #334155;
+      --gray-700: #475569;
+      --gray-600: #64748b;
+      --gray-500: #94a3b8;
+      --gray-400: #cbd5e1;
+      --gray-300: #e2e8f0;
+      --gray-200: #f1f5f9;
+      --gray-100: #f8fafc;
+      --white: #ffffff;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: var(--gray-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    /* Header Styling */
+    .header {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      letter-spacing: -0.025em;
+    }
+
+    .brand-text p {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    .header-status {
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      background: var(--gray-100);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--gray-300);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--gray-400);
+      display: inline-block;
+      transition: var(--transition);
+    }
+
+    .status-dot.online {
+      background-color: var(--success);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-dot.offline {
+      background-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+      display: flex;
+      background: var(--white);
+      padding: 0.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--gray-300);
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.875rem 1.25rem;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    .tab-btn .tab-badge {
+      background: rgba(255, 255, 255, 0.25);
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-full);
+    }
+
+    /* Tab Content Panels */
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out forwards;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card Component */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      margin-top: 0.25rem;
+    }
+
+    /* Form Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--gray-300);
+      font-size: 0.95rem;
+      color: var(--gray-800);
+      background-color: var(--white);
+      font-family: inherit;
+      transition: var(--transition);
+      outline: none;
+      width: 100%;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    .form-control::placeholder {
+      color: var(--gray-400);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-300);
+      color: var(--gray-900);
+    }
+
+    .btn-sm {
+      padding: 0.45rem 0.85rem;
+      font-size: 0.825rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Date Bar */
+    .date-badge-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--primary-light);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(79, 70, 229, 0.15);
+    }
+
+    .date-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .date-input {
+      font-family: inherit;
+      border: 1px solid var(--primary);
+      background: var(--white);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      color: var(--primary);
+      outline: none;
+      font-size: 0.875rem;
+    }
+
+    /* Table Styles */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-300);
+      margin-bottom: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.925rem;
+    }
+
+    thead {
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-300);
+    }
+
+    th {
+      padding: 0.875rem 1.25rem;
+      font-weight: 700;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      font-size: 0.775rem;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--gray-200);
+      color: var(--gray-800);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: var(--gray-100);
+    }
+
+    .roll-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      background: var(--gray-200);
+      color: var(--gray-800);
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    /* Attendance Radio Selector */
+    .radio-pill-group {
+      display: inline-flex;
+      background: var(--gray-200);
+      padding: 0.25rem;
+      border-radius: var(--radius-full);
+      gap: 0.25rem;
+    }
+
+    .radio-pill-option {
+      position: relative;
+    }
+
+    .radio-pill-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .radio-pill-option label {
+      display: inline-block;
+      padding: 0.35rem 0.95rem;
+      font-size: 0.825rem;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--gray-600);
+      user-select: none;
+    }
+
+    .radio-pill-option input[value="Present"]:checked + label {
+      background: var(--success);
+      color: var(--white);
+      box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+    }
+
+    .radio-pill-option input[value="Absent"]:checked + label {
+      background: var(--danger);
+      color: var(--white);
+      box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Report Card & Progress Meter */
+    .report-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .report-card::after {
+      content: '';
+      position: absolute;
+      right: -20px;
+      bottom: -20px;
+      width: 140px;
+      height: 140px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .report-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+    }
+
+    .progress-bar-bg {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-full);
+      height: 10px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #34d399, #10b981);
+      border-radius: var(--radius-full);
+      transition: width 0.6s ease-in-out;
+      width: 0%;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .badge-success {
+      background: var(--success-light);
+      color: #065f46;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .badge-warning {
+      background: var(--warning-light);
+      color: #92400e;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-danger {
+      background: var(--danger-light);
+      color: #991b1b;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    /* Score Badge */
+    .score-badge {
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+    }
+
+    .score-high {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .score-med {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .score-low {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    /* Toast Notification System */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 380px;
+      width: calc(100% - 3rem);
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--white);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-xl);
+      border-left: 4px solid var(--primary);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      animation: slideUp 0.3s ease-out forwards;
+      pointer-events: auto;
+      border-top: 1px solid var(--gray-200);
+      border-right: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .toast.toast-success {
+      border-left-color: var(--success);
+    }
+
+    .toast.toast-error {
+      border-left-color: var(--danger);
+    }
+
+    .toast.toast-warning {
+      border-left-color: var(--warning);
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--gray-900);
+      margin-bottom: 0.15rem;
+    }
+
+    .toast-message {
+      font-size: 0.825rem;
+      color: var(--gray-600);
+      line-height: 1.35;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--gray-400);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .toast-close:hover {
+      color: var(--gray-700);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Empty State & Skeletons */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--gray-500);
+    }
+
+    .empty-state-icon {
+      font-size: 2.75rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.6;
+    }
+
+    .empty-state-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 0.25rem;
+    }
+
+    .empty-state-desc {
+      font-size: 0.875rem;
+      max-width: 380px;
+      margin: 0 auto 1.25rem;
+    }
+
+    /* Alert Banner */
+    .alert-banner {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-md);
+      padding: 0.875rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #991b1b;
+      font-size: 0.9rem;
+    }
+
+    .alert-banner.show {
+      display: flex;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem 2rem;
+      }
+      .header {
+        padding: 1.25rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .card {
+        padding: 1.25rem 1rem;
+      }
+      .tabs-nav {
+        overflow-x: auto;
+      }
+      .tab-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+      th, td {
+        padding: 0.75rem 0.85rem;
+      }
+      .report-stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">🎓</div>
+        <div class="brand-text">
+          <h1>EduTrack System</h1>
+          <p>Student Attendance & Academic Performance Portal</p>
+        </div>
+      </div>
+      <div class="header-status" style="display: none;">
+        <span class="status-dot" id="serverStatusDot"></span>
+        <span id="serverStatusText">Connecting to API...</span>
+      </div>
+    </header>
+
+    <!-- Backend Connection Alert Banner -->
+    <div id="backendAlert" class="alert-banner" role="alert">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span>⚠️</span>
+        <span id="backendAlertMessage">Backend API at <strong>http://127.0.0.1:5000</strong> is currently unreachable. Make sure your server is running.</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="checkBackendHealth()">Retry</button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav" aria-label="Main Navigation">
+      <button class="tab-btn active" id="tabBtn1" onclick="switchTab('tab1')">
+        <span>📅</span> Mark Attendance
+      </button>
+      <button class="tab-btn" id="tabBtn2" onclick="switchTab('tab2')">
+        <span>👤</span> Add Student
+      </button>
+      <button class="tab-btn" id="tabBtn3" onclick="switchTab('tab3')">
+        <span>📊</span> Grades & Report
+      </button>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: MARK ATTENDANCE                     -->
+    <!-- ========================================== -->
+    <section id="tab1" class="tab-pane active" aria-labelledby="tabBtn1">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>📝</span> Mark Daily Attendance</h2>
+            <p class="card-subtitle">Select attendance status for all enrolled students.</p>
+          </div>
+          <div class="date-badge-wrapper">
+            <span class="date-label">Date:</span>
+            <input type="date" id="attendanceDate" class="date-input" aria-label="Attendance Date">
+          </div>
+        </div>
+
+        <!-- Quick actions toolbar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Present')">✓ Mark All Present</button>
+            <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Absent')">✗ Mark All Absent</button>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--gray-600);">
+            Total Students: <strong id="studentCountBadge">0</strong>
+          </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="table-container">
+          <table id="attendanceTable">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Roll No</th>
+                <th style="width: 50%;">Student Name</th>
+                <th style="width: 35%; text-align: center;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State for Tab 1 -->
+        <div id="attendanceEmptyState" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">👥</div>
+          <h3 class="empty-state-title">No Students Found</h3>
+          <p class="empty-state-desc">You haven't added any students yet. Head over to the "Add Student" tab to get started.</p>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('tab2')">+ Add Your First Student</button>
+        </div>
+
+        <!-- Action Footer -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+          <button id="saveAttendanceBtn" class="btn btn-primary" onclick="saveAttendance()">
+            <span>💾</span> Save Attendance
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 2: ADD STUDENT                         -->
+    <!-- ========================================== -->
+    <section id="tab2" class="tab-pane" aria-labelledby="tabBtn2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>➕</span> Enroll New Student</h2>
+            <p class="card-subtitle">Register a student to the system with their full name and unique roll number.</p>
+          </div>
+        </div>
+
+        <!-- Add Student Form -->
+        <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="studentName">Student Full Name *</label>
+              <input type="text" id="studentName" class="form-control" placeholder="e.g. John Doe" required autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentRoll">Roll Number *</label>
+              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or CS-2026-01" required autocomplete="off">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <button type="reset" class="btn btn-secondary">Clear</button>
+            <button type="submit" id="addStudentBtn" class="btn btn-primary">
+              <span>👤</span> Add Student
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Enrolled Students Directory Table -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title"><span>📋</span> Enrolled Students Directory</h3>
+            <p class="card-subtitle">List of all currently registered students.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadStudents(true)">🔄 Refresh</button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 25%;">Roll No</th>
+                <th style="width: 55%;">Student Name</th>
+                <th style="width: 20%; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="directoryTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="directoryEmptyState" class="empty-state" style="display: none;">
+          <div class="empty-state-icon">📂</div>
+          <h3 class="empty-state-title">Directory is Empty</h3>
+          <p class="empty-state-desc">Use the form above to add your first student.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 3: GRADES & REPORT                     -->
+    <!-- ========================================== -->
+    <section id="tab3" class="tab-pane" aria-labelledby="tabBtn3">
+      
+      <!-- Student Selection Card -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><span>📈</span> Student Performance & Report</h2>
+            <p class="card-subtitle">Select a student to view attendance statistics and manage academic subject grades.</p>
+          </div>
+        </div>
+
+        <div class="form-group" style="max-width: 500px; margin-bottom: 0.5rem;">
+          <label class="form-label" for="reportStudentSelect">Select Student *</label>
+          <select id="reportStudentSelect" class="form-control" onchange="onStudentSelectChange()">
+            <option value="">-- Choose a student --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Student Details Container (Shown when a student is selected) -->
+      <div id="studentReportContainer" style="display: none;">
+        
+        <!-- Attendance Report Banner Card -->
+        <div class="report-card">
+          <div class="report-header">
+            <div>
+              <div style="font-size: 0.85rem; opacity: 0.8; font-weight: 600;">ATTENDANCE OVERVIEW</div>
+              <h3 id="reportStudentNameDisplay" style="font-size: 1.35rem; font-weight: 700;">Student Name</h3>
+            </div>
+            <div id="attendanceBadge" class="badge badge-success">Good Standing</div>
+          </div>
+
+          <div class="report-stats-grid">
+            <div class="stat-item">
+              <div class="stat-label">Days Present</div>
+              <div class="stat-value" id="reportPresentCount">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Total Days</div>
+              <div class="stat-value" id="reportTotalCount">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Attendance Rate</div>
+              <div class="stat-value" id="reportPercentage">0%</div>
+            </div>
+          </div>
+
+          <!-- Visual Progress Bar -->
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600;">
+              <span id="reportSummaryText">Attendance: 0/0 = 0.0%</span>
+              <span id="reportProgressBarLabel">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="reportProgressBar" class="progress-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Grade Form Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>📝</span> Record Subject Grade</h3>
+              <p class="card-subtitle">Enter academic scores (0 to 100) for the selected student.</p>
+            </div>
+          </div>
+
+          <form id="addGradeForm" onsubmit="handleAddGrade(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="gradeSubject">Subject Name *</label>
+                <input type="text" id="gradeSubject" class="form-control" placeholder="e.g. Mathematics, Science, History" required autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="gradeScore">Score (out of 100) *</label>
+                <input type="number" id="gradeScore" class="form-control" placeholder="e.g. 85" min="0" max="100" step="any" required>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" id="addGradeBtn" class="btn btn-primary">
+                <span>➕</span> Add Grade
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Grades Records Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>📚</span> Academic Grade History</h3>
+              <p class="card-subtitle">All recorded subject marks and performance.</p>
+            </div>
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700);">
+              Average Score: <span id="gradeAverageDisplay" class="score-badge score-med">N/A</span>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 45%;">Subject</th>
+                  <th style="width: 25%;">Score (/100)</th>
+                  <th style="width: 30%;">Performance Grade</th>
+                </tr>
+              </thead>
+              <tbody id="gradesTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="gradesEmptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📝</div>
+            <h4 class="empty-state-title">No Grades Recorded</h4>
+            <p class="empty-state-desc">Use the form above to add subject scores for this student.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Prompt when no student is selected -->
+      <div id="noStudentSelectedPrompt" class="card" style="text-align: center; padding: 3rem 1.5rem;">
+        <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔍</div>
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.35rem;">Please Select a Student</h3>
+        <p style="color: var(--gray-600); font-size: 0.9rem; max-width: 400px; margin: 0 auto;">
+          Choose a student from the dropdown above to view their attendance metrics and recorded grades.
+        </p>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT APPLICATION LOGIC               -->
+  <!-- ========================================== -->
+  <script>
+    // Configuration
+    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+
+    // Global State
+    let state = {
+      students: [],
+      currentTab: 'tab1',
+      selectedRollNo: null,
+      isOnline: false
+    };
+
+    // ==========================================
+    // INITIALIZATION
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      initDate();
+      loadStudents();
+      checkBackendHealth();
+    });
+
+    /**
+     * Initializes the attendance date to today's date in YYYY-MM-DD format
+     */
+    function initDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+      
+      const dateInput = document.getElementById('attendanceDate');
+      if (dateInput) {
+        dateInput.value = formattedDate;
+      }
+    }
+
+    /**
+     * Checks if the backend server is reachable
+     */
+    async function checkBackendHealth() {
+      const dot = document.getElementById('serverStatusDot');
+      const text = document.getElementById('serverStatusText');
+      const alertBanner = document.getElementById('backendAlert');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/students`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          state.isOnline = true;
+          dot.className = 'status-dot online';
+          text.textContent = 'API Connected (127.0.0.1:5000)';
+          alertBanner.classList.remove('show');
+        } else {
+          throw new Error(`Server returned HTTP ${response.status}`);
+        }
+      } catch (err) {
+        state.isOnline = false;
+        dot.className = 'status-dot offline';
+        text.textContent = 'API Offline';
+        alertBanner.classList.add('show');
+      }
+    }
+
+    // ==========================================
+    // TAB MANAGEMENT
+    // ==========================================
+    function switchTab(tabId) {
+      state.currentTab = tabId;
+
+      // Update Tab Buttons
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      
+      const currentBtn = document.getElementById(`tabBtn${tabId.replace('tab', '')}`);
+      if (currentBtn) currentBtn.classList.add('active');
+
+      // Update Tab Panes
+      const panes = document.querySelectorAll('.tab-pane');
+      panes.forEach(pane => pane.classList.remove('active'));
+
+      const currentPane = document.getElementById(tabId);
+      if (currentPane) currentPane.classList.add('active');
+
+      // Refresh relevant data when entering tab
+      if (tabId === 'tab1' || tabId === 'tab3') {
+        loadStudents();
+      }
+    }
+
+    // ==========================================
+    // API CALLS & DATA SYNC
+    // ==========================================
+
+    /**
+     * Fetches all students from GET /api/students
+     */
+    async function loadStudents(showSuccessToast = false) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/students`);
+        if (!res.ok) {
+          throw new Error(`Failed to load students: ${res.statusText} (${res.status})`);
+        }
+
+        const data = await res.json();
+        state.students = Array.isArray(data) ? data : (data.students || []);
+        
+        // Update Server Status
+        document.getElementById('serverStatusDot').className = 'status-dot online';
+        document.getElementById('serverStatusText').textContent = 'API Connected';
+        document.getElementById('backendAlert').classList.remove('show');
+
+        // Render UI Across Tabs
+        renderAttendanceList();
+        renderDirectoryList();
+        populateReportStudentDropdown();
+
+        if (showSuccessToast) {
+          showToast('Success', 'Student list updated successfully.', 'success');
+        }
+      } catch (err) {
+        console.error('Error fetching students:', err);
+        document.getElementById('serverStatusDot').className = 'status-dot offline';
+        document.getElementById('serverStatusText').textContent = 'API Offline';
+        document.getElementById('backendAlert').classList.add('show');
+        showToast('Connection Error', 'Unable to fetch student list from backend.', 'error');
+      }
+    }
+
+    // ==========================================
+    // TAB 1: MARK ATTENDANCE LOGIC
+    // ==========================================
+
+    /**
+     * Renders students list in Tab 1 Attendance Table
+     */
+    function renderAttendanceList() {
+      const tbody = document.getElementById('attendanceTableBody');
+      const emptyState = document.getElementById('attendanceEmptyState');
+      const table = document.getElementById('attendanceTable');
+      const countBadge = document.getElementById('studentCountBadge');
+
+      countBadge.textContent = state.students.length;
+
+      if (!state.students || state.students.length === 0) {
+        tbody.innerHTML = '';
+        table.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      table.style.display = 'table';
+      emptyState.style.display = 'none';
+
+      tbody.innerHTML = state.students.map((student, index) => {
+        const rollNo = student.roll_no;
+        const studentName = student.student_name || student.name || 'Unnamed Student';
+        const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+
+        return `
+          <tr data-roll-no="${escapeHtml(rollNo)}">
+            <td>
+              <span class="roll-badge">${escapeHtml(rollNo || 'N/A')}</span>
+            </td>
+            <td>
+              <strong style="color: var(--gray-900);">${escapeHtml(studentName)}</strong>
+            </td>
+            <td style="text-align: center;">
+              <div class="radio-pill-group" role="radiogroup" aria-label="Attendance for ${escapeHtml(studentName)}">
+                <div class="radio-pill-option">
+                  <input type="radio" 
+                         id="present_${fieldKey}" 
+                         name="attendance_${fieldKey}" 
+                         value="Present" 
+                         checked>
+                  <label for="present_${fieldKey}">✓ Present</label>
+                </div>
+                <div class="radio-pill-option">
+                  <input type="radio" 
+                         id="absent_${fieldKey}" 
+                         name="attendance_${fieldKey}" 
+                         value="Absent">
+                  <label for="absent_${fieldKey}">✗ Absent</label>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Quick action to set all students to Present or Absent
+     */
+    function bulkSetAttendance(status) {
+      state.students.forEach((student, index) => {
+        const rollNo = student.roll_no;
+        const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+        const radio = document.querySelector(`input[name="attendance_${fieldKey}"][value="${status}"]`);
+        if (radio) radio.checked = true;
+      });
+      showToast('Action Applied', `Marked all students as ${status}.`, 'info');
+    }
+
+    /**
+     * Submits attendance records via POST /api/attendance
+     */
+    async function saveAttendance() {
+      const saveBtn = document.getElementById('saveAttendanceBtn');
+      const dateInput = document.getElementById('attendanceDate');
+      const date = dateInput.value;
+
+      if (!date) {
+        showToast('Validation Error', 'Please select a valid date.', 'warning');
+        return;
+      }
+
+      if (!state.students || state.students.length === 0) {
+        showToast('No Students', 'No students available to mark attendance for.', 'warning');
+        return;
+      }
+
+      // Gather attendance payload: [{"student_name": "...", "roll_no": "...", "date": "...", "status": "..."}]
+      const payload = [];
+      state.students.forEach((student, index) => {
+        const rollNo = student.roll_no;
+        const studentName = student.student_name || student.name || '';
+        const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+        const selectedRadio = document.querySelector(`input[name="attendance_${fieldKey}"]:checked`);
+        const status = selectedRadio ? selectedRadio.value : 'Present';
+
+        payload.push({
+          student_name: studentName,
+          roll_no: rollNo,
+          date: date,
+          status: status
+        });
+      });
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>⏳</span> Saving...';
+
+        const res = await fetch(`${API_BASE_URL}/attendance`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          const errorMsg = result.message || result.error || `HTTP ${res.status}: Failed to save attendance`;
+          throw new Error(errorMsg);
+        }
+
+        showToast('Attendance Saved', result.message || `Successfully recorded attendance for ${payload.length} students on ${date}.`, 'success');
+        
+        // If a student in tab 3 is currently selected, refresh their report
+        if (state.selectedRollNo) {
+          loadStudentReport(state.selectedRollNo);
+        }
+      } catch (err) {
+        console.error('Error saving attendance:', err);
+        showToast('Save Failed', err.message || 'Could not connect to server.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span>💾</span> Save Attendance';
+      }
+    }
+
+    // ==========================================
+    // TAB 2: ADD STUDENT LOGIC
+    // ==========================================
+
+    /**
+     * Handles adding a new student via POST /api/students
+     */
+    async function handleAddStudent(event) {
+      event.preventDefault();
+      
+      const nameInput = document.getElementById('studentName');
+      const rollInput = document.getElementById('studentRoll');
+      const submitBtn = document.getElementById('addStudentBtn');
+
+      const name = nameInput.value.trim();
+      const roll_no = rollInput.value.trim();
+
+      if (!name || !roll_no) {
+        showToast('Missing Fields', 'Please fill in both Student Name and Roll Number.', 'warning');
+        return;
+      }
+
+      // Check client-side duplicate roll number
+      const isDuplicate = state.students.some(s => String(s.roll_no).toLowerCase() === roll_no.toLowerCase());
+      if (isDuplicate) {
+        showToast('Duplicate Roll Number', `Roll Number "${roll_no}" is already registered.`, 'error');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span> Adding...';
+
+        const payload = {
+          student_name: name,
+          roll_no: roll_no
+        };
+
+        const res = await fetch(`${API_BASE_URL}/students`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          // Handle backend duplicate roll_no error or validation errors
+          if (res.status === 409 || (result.error && result.error.toLowerCase().includes('already exists'))) {
+            throw new Error(`Roll Number "${roll_no}" already exists in the database.`);
+          }
+          throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to add student.`);
+        }
+
+        // Success
+        showToast('Student Added!', result.message || `${name} (Roll: ${roll_no}) was successfully enrolled.`, 'success');
+        
+        // Reset form
+        nameInput.value = '';
+        rollInput.value = '';
+        nameInput.focus();
+
+        // Refresh lists across tabs
+        await loadStudents();
+
+      } catch (err) {
+        console.error('Error adding student:', err);
+        showToast('Error', err.message || 'Unable to add student. Please try again.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>👤</span> Add Student';
+      }
+    }
+
+    /**
+     * Renders students list in Tab 2 Directory Table
+     */
+    function renderDirectoryList() {
+      const tbody = document.getElementById('directoryTableBody');
+      const emptyState = document.getElementById('directoryEmptyState');
+
+      if (!state.students || state.students.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      tbody.innerHTML = state.students.map(student => {
+        const rollNo = student.roll_no;
+        const studentName = student.student_name || student.name || '';
+        return `
+          <tr>
+            <td><span class="roll-badge">${escapeHtml(rollNo || 'N/A')}</span></td>
+            <td><strong>${escapeHtml(studentName)}</strong></td>
+            <td style="text-align: right;">
+              <button class="btn btn-secondary btn-sm" onclick="viewStudentReport('${escapeHtml(rollNo)}')">
+                View Report →
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Shortcut to switch to Tab 3 and select a specific student
+     */
+    function viewStudentReport(rollNo) {
+      switchTab('tab3');
+      const select = document.getElementById('reportStudentSelect');
+      select.value = rollNo;
+      onStudentSelectChange();
+    }
+
+    // ==========================================
+    // TAB 3: GRADES & REPORT LOGIC
+    // ==========================================
+
+    /**
+     * Populates the student dropdown in Tab 3
+     */
+    function populateReportStudentDropdown() {
+      const select = document.getElementById('reportStudentSelect');
+      const previousValue = select.value;
+
+      select.innerHTML = '<option value="">-- Choose a student --</option>' + 
+        state.students.map(student => {
+          const rollNo = student.roll_no;
+          const studentName = student.student_name || student.name || '';
+          return `<option value="${escapeHtml(rollNo)}">[${escapeHtml(rollNo)}] ${escapeHtml(studentName)}</option>`;
+        }).join('');
+
+      // Restore previously selected student if still exists
+      if (previousValue && state.students.some(s => String(s.roll_no) === String(previousValue))) {
+        select.value = previousValue;
+      }
+    }
+
+    /**
+     * Triggered when a student is selected from dropdown
+     */
+    async function onStudentSelectChange() {
+      const select = document.getElementById('reportStudentSelect');
+      const rollNo = select.value;
+      state.selectedRollNo = rollNo;
+
+      const reportContainer = document.getElementById('studentReportContainer');
+      const promptCard = document.getElementById('noStudentSelectedPrompt');
+
+      if (!rollNo) {
+        reportContainer.style.display = 'none';
+        promptCard.style.display = 'block';
+        return;
+      }
+
+      promptCard.style.display = 'none';
+      reportContainer.style.display = 'block';
+
+      // Find student name
+      const student = state.students.find(s => String(s.roll_no) === String(rollNo));
+      const studentName = student ? (student.student_name || student.name) : 'Student';
+      document.getElementById('reportStudentNameDisplay').textContent = `${studentName} (${rollNo})`;
+
+      // Load attendance report & grades in parallel
+      await Promise.all([
+        loadStudentReport(rollNo),
+        loadStudentGrades(rollNo)
+      ]);
+    }
+
+    /**
+     * Loads attendance metrics via GET /api/report/<roll_no>
+     */
+    async function loadStudentReport(rollNo) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/report/${encodeURIComponent(rollNo)}`);
+        if (!res.ok) {
+          throw new Error(`Failed to load attendance report (HTTP ${res.status})`);
+        }
+
+        const report = await res.json();
+        // Expected response: { "roll_no": "101", "present": 5, "total": 10, "percentage": 50.00 }
+        const present = report.present ?? 0;
+        const total = report.total ?? 0;
+        const percentage = Number(report.percentage ?? (total > 0 ? (present / total * 100) : 0)).toFixed(1);
+
+        document.getElementById('reportPresentCount').textContent = present;
+        document.getElementById('reportTotalCount').textContent = total;
+        document.getElementById('reportPercentage').textContent = `${percentage}%`;
+        document.getElementById('reportSummaryText').textContent = `Attendance: ${present}/${total} = ${percentage}%`;
+        document.getElementById('reportProgressBarLabel').textContent = `${percentage}%`;
+
+        // Update Progress Bar
+        const bar = document.getElementById('reportProgressBar');
+        bar.style.width = `${Math.min(100, Math.max(0, percentage))}%`;
+
+        // Update Badge Status & Bar Color
+        const badge = document.getElementById('attendanceBadge');
+        if (percentage >= 75) {
+          badge.className = 'badge badge-success';
+          badge.textContent = '✓ High Attendance';
+          bar.style.background = 'linear-gradient(90deg, #34d399, #10b981)';
+        } else if (percentage >= 50) {
+          badge.className = 'badge badge-warning';
+          badge.textContent = '⚠ Average Attendance';
+          bar.style.background = 'linear-gradient(90deg, #fbbf24, #f59e0b)';
+        } else {
+          badge.className = 'badge badge-danger';
+          badge.textContent = '✗ Low Attendance';
+          bar.style.background = 'linear-gradient(90deg, #f87171, #ef4444)';
+        }
+
+      } catch (err) {
+        console.error('Error loading student report:', err);
+        document.getElementById('reportSummaryText').textContent = 'Attendance report data unavailable';
+        showToast('Report Error', 'Could not load student attendance report.', 'error');
+      }
+    }
+
+    /**
+     * Loads student grades via GET /api/grades/<roll_no>
+     */
+    async function loadStudentGrades(rollNo) {
+      const tbody = document.getElementById('gradesTableBody');
+      const emptyState = document.getElementById('gradesEmptyState');
+      const averageDisplay = document.getElementById('gradeAverageDisplay');
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/grades/${encodeURIComponent(rollNo)}`);
+        if (!res.ok) {
+          throw new Error(`Failed to load grades (HTTP ${res.status})`);
+        }
+
+        const grades = await res.json();
+        const gradeList = Array.isArray(grades) ? grades : (grades.grades || []);
+
+        if (!gradeList || gradeList.length === 0) {
+          tbody.innerHTML = '';
+          emptyState.style.display = 'block';
+          averageDisplay.textContent = 'N/A';
+          averageDisplay.className = 'score-badge score-med';
+          return;
+        }
+
+        emptyState.style.display = 'none';
+
+        let totalScore = 0;
+        tbody.innerHTML = gradeList.map(item => {
+          const score = Number(item.score);
+          totalScore += isNaN(score) ? 0 : score;
+
+          let gradeLetter = 'F';
+          let badgeClass = 'score-low';
+
+          if (score >= 90) {
+            gradeLetter = 'A+ (Outstanding)';
+            badgeClass = 'score-high';
+          } else if (score >= 80) {
+            gradeLetter = 'A (Excellent)';
+            badgeClass = 'score-high';
+          } else if (score >= 70) {
+            gradeLetter = 'B (Good)';
+            badgeClass = 'score-med';
+          } else if (score >= 60) {
+            gradeLetter = 'C (Satisfactory)';
+            badgeClass = 'score-med';
+          } else if (score >= 50) {
+            gradeLetter = 'D (Pass)';
+            badgeClass = 'score-low';
+          } else {
+            gradeLetter = 'F (Fail)';
+            badgeClass = 'score-low';
+          }
+
+          return `
+            <tr>
+              <td><strong>${escapeHtml(item.subject || 'N/A')}</strong></td>
+              <td><span class="score-badge ${badgeClass}">${score}/100</span></td>
+              <td><span class="badge ${score >= 70 ? 'badge-success' : score >= 50 ? 'badge-warning' : 'badge-danger'}">${gradeLetter}</span></td>
+            </tr>
+          `;
+        }).join('');
+
+        // Calculate Average
+        const avg = (totalScore / gradeList.length).toFixed(1);
+        averageDisplay.textContent = `${avg}/100`;
+        if (avg >= 75) {
+          averageDisplay.className = 'score-badge score-high';
+        } else if (avg >= 50) {
+          averageDisplay.className = 'score-badge score-med';
+        } else {
+          averageDisplay.className = 'score-badge score-low';
+        }
+
+      } catch (err) {
+        console.error('Error loading grades:', err);
+        tbody.innerHTML = '';
+        emptyState.style.display = 'block';
+        showToast('Grades Error', 'Could not load grade records for this student.', 'error');
+      }
+    }
+
+    /**
+     * Handles adding a grade via POST /api/grades
+     */
+    async function handleAddGrade(event) {
+      event.preventDefault();
+
+      if (!state.selectedRollNo) {
+        showToast('Selection Required', 'Please select a student first.', 'warning');
+        return;
+      }
+
+      const subjectInput = document.getElementById('gradeSubject');
+      const scoreInput = document.getElementById('gradeScore');
+      const submitBtn = document.getElementById('addGradeBtn');
+
+      const subject = subjectInput.value.trim();
+      const score = parseFloat(scoreInput.value);
+
+      if (!subject) {
+        showToast('Missing Subject', 'Please enter a valid subject name.', 'warning');
+        return;
+      }
+
+      if (isNaN(score) || score < 0 || score > 100) {
+        showToast('Invalid Score', 'Score must be a number between 0 and 100.', 'warning');
+        return;
+      }
+
+      const student = state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
+      const studentName = student ? (student.student_name || student.name) : '';
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span> Adding...';
+
+        const payload = {
+          student_name: studentName,
+          roll_no: state.selectedRollNo,
+          subject: subject,
+          score: score
+        };
+
+        const res = await fetch(`${API_BASE_URL}/grades`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to add grade.`);
+        }
+
+        showToast('Grade Added!', result.message || `Added ${subject}: ${score}/100 successfully.`, 'success');
+
+        // Reset form
+        subjectInput.value = '';
+        scoreInput.value = '';
+        subjectInput.focus();
+
+        // Refresh grades table
+        await loadStudentGrades(state.selectedRollNo);
+
+      } catch (err) {
+        console.error('Error adding grade:', err);
+        showToast('Error', err.message || 'Unable to record grade. Please try again.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>➕</span> Add Grade';
+      }
+    }
+
+    // ==========================================
+    // UTILITY: TOAST NOTIFICATIONS
+    // ==========================================
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+
+      const iconMap = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+
+      toast.innerHTML = `
+        <span style="font-size: 1.1rem;">${iconMap[type] || 'ℹ️'}</span>
+        <div class="toast-content">
+          <div class="toast-title">${escapeHtml(title)}</div>
+          <div class="toast-message">${escapeHtml(message)}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()" aria-label="Close notification">&times;</button>
+      `;
+
+      container.appendChild(toast);
+
+      // Auto dismiss after 4.5 seconds
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.style.animation = 'slideUp 0.3s reverse forwards';
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, 4500);
+    }
+
+    // ==========================================
+    // UTILITY: HTML ESCAPING
+    // ==========================================
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
