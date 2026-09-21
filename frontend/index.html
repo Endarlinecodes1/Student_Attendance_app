@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduTrack - Student Attendance & Grades Management</title>
-  <meta name="description" content="Manage student attendance, records, reports, and grades in a clean, responsive single-page application.">
-  
+  <meta name="description"
+    content="Manage student attendance, records, reports, and grades in a clean, responsive single-page application.">
+
   <!-- Google Fonts for Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <style>
     :root {
@@ -34,17 +37,17 @@
       --gray-200: #f1f5f9;
       --gray-100: #f8fafc;
       --white: #ffffff;
-      
+
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
       --radius-full: 9999px;
-      
+
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-      
+
       --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -226,6 +229,7 @@
         opacity: 0;
         transform: translateY(6px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -488,13 +492,13 @@
       user-select: none;
     }
 
-    .radio-pill-option input[value="Present"]:checked + label {
+    .radio-pill-option input[value="Present"]:checked+label {
       background: var(--success);
       color: var(--white);
       box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
     }
 
-    .radio-pill-option input[value="Absent"]:checked + label {
+    .radio-pill-option input[value="Absent"]:checked+label {
       background: var(--danger);
       color: var(--white);
       box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
@@ -706,6 +710,7 @@
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -762,34 +767,42 @@
       body {
         padding: 1rem 0.5rem 2rem;
       }
+
       .header {
         padding: 1.25rem;
         flex-direction: column;
         align-items: flex-start;
       }
+
       .card {
         padding: 1.25rem 1rem;
       }
+
       .tabs-nav {
         overflow-x: auto;
       }
+
       .tab-btn {
         padding: 0.75rem 1rem;
         font-size: 0.875rem;
       }
-      th, td {
+
+      th,
+      td {
         padding: 0.75rem 0.85rem;
       }
+
       .report-stats-grid {
         grid-template-columns: 1fr 1fr;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
-    
+
     <!-- Top Header -->
     <header class="header">
       <div class="brand">
@@ -809,7 +822,8 @@
     <div id="backendAlert" class="alert-banner" role="alert">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <span>⚠️</span>
-        <span id="backendAlertMessage">Backend API at <strong>http://127.0.0.1:5000</strong> is currently unreachable. Make sure your server is running.</span>
+        <span id="backendAlertMessage">Backend API at <strong>https://edutrack-g2ej.onrender.com</strong> is currently
+          unreachable. Make sure your server is running.</span>
       </div>
       <button class="btn btn-secondary btn-sm" onclick="checkBackendHealth()">Retry</button>
     </div>
@@ -844,7 +858,8 @@
         </div>
 
         <!-- Quick actions toolbar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
           <div class="btn-group">
             <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Present')">✓ Mark All Present</button>
             <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Absent')">✗ Mark All Absent</button>
@@ -874,7 +889,8 @@
         <div id="attendanceEmptyState" class="empty-state" style="display: none;">
           <div class="empty-state-icon">👥</div>
           <h3 class="empty-state-title">No Students Found</h3>
-          <p class="empty-state-desc">You haven't added any students yet. Head over to the "Add Student" tab to get started.</p>
+          <p class="empty-state-desc">You haven't added any students yet. Head over to the "Add Student" tab to get
+            started.</p>
           <button class="btn btn-primary btn-sm" onclick="switchTab('tab2')">+ Add Your First Student</button>
         </div>
 
@@ -905,11 +921,13 @@
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label" for="studentName">Student Full Name *</label>
-              <input type="text" id="studentName" class="form-control" placeholder="e.g. John Doe" required autocomplete="off">
+              <input type="text" id="studentName" class="form-control" placeholder="e.g. John Doe" required
+                autocomplete="off">
             </div>
             <div class="form-group">
               <label class="form-label" for="studentRoll">Roll Number *</label>
-              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or CS-2026-01" required autocomplete="off">
+              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or CS-2026-01" required
+                autocomplete="off">
             </div>
           </div>
 
@@ -960,13 +978,14 @@
     <!-- TAB 3: GRADES & REPORT                     -->
     <!-- ========================================== -->
     <section id="tab3" class="tab-pane" aria-labelledby="tabBtn3">
-      
+
       <!-- Student Selection Card -->
       <div class="card">
         <div class="card-header">
           <div>
             <h2 class="card-title"><span>📈</span> Student Performance & Report</h2>
-            <p class="card-subtitle">Select a student to view attendance statistics and manage academic subject grades.</p>
+            <p class="card-subtitle">Select a student to view attendance statistics and manage academic subject grades.
+            </p>
           </div>
         </div>
 
@@ -980,7 +999,7 @@
 
       <!-- Student Details Container (Shown when a student is selected) -->
       <div id="studentReportContainer" style="display: none;">
-        
+
         <!-- Attendance Report Banner Card -->
         <div class="report-card">
           <div class="report-header">
@@ -1031,11 +1050,13 @@
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label" for="gradeSubject">Subject Name *</label>
-                <input type="text" id="gradeSubject" class="form-control" placeholder="e.g. Mathematics, Science, History" required autocomplete="off">
+                <input type="text" id="gradeSubject" class="form-control"
+                  placeholder="e.g. Mathematics, Science, History" required autocomplete="off">
               </div>
               <div class="form-group">
                 <label class="form-label" for="gradeScore">Score (out of 100) *</label>
-                <input type="number" id="gradeScore" class="form-control" placeholder="e.g. 85" min="0" max="100" step="any" required>
+                <input type="number" id="gradeScore" class="form-control" placeholder="e.g. 85" min="0" max="100"
+                  step="any" required>
               </div>
             </div>
 
@@ -1086,7 +1107,8 @@
       <!-- Prompt when no student is selected -->
       <div id="noStudentSelectedPrompt" class="card" style="text-align: center; padding: 3rem 1.5rem;">
         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔍</div>
-        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.35rem;">Please Select a Student</h3>
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.35rem;">Please Select a
+          Student</h3>
         <p style="color: var(--gray-600); font-size: 0.9rem; max-width: 400px; margin: 0 auto;">
           Choose a student from the dropdown above to view their attendance metrics and recorded grades.
         </p>
@@ -1104,7 +1126,7 @@
   <!-- ========================================== -->
   <script>
     // Configuration
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const API_BASE_URL = "https://edutrack-g2ej.onrender.com";
 
     // Global State
     let state = {
@@ -1132,7 +1154,7 @@
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
-      
+
       const dateInput = document.getElementById('attendanceDate');
       if (dateInput) {
         dateInput.value = formattedDate;
@@ -1178,7 +1200,7 @@
       // Update Tab Buttons
       const tabButtons = document.querySelectorAll('.tab-btn');
       tabButtons.forEach(btn => btn.classList.remove('active'));
-      
+
       const currentBtn = document.getElementById(`tabBtn${tabId.replace('tab', '')}`);
       if (currentBtn) currentBtn.classList.add('active');
 
@@ -1211,7 +1233,7 @@
 
         const data = await res.json();
         state.students = Array.isArray(data) ? data : (data.students || []);
-        
+
         // Update Server Status
         document.getElementById('serverStatusDot').className = 'status-dot online';
         document.getElementById('serverStatusText').textContent = 'API Connected';
@@ -1365,7 +1387,7 @@
         }
 
         showToast('Attendance Saved', result.message || `Successfully recorded attendance for ${payload.length} students on ${date}.`, 'success');
-        
+
         // If a student in tab 3 is currently selected, refresh their report
         if (state.selectedRollNo) {
           loadStudentReport(state.selectedRollNo);
@@ -1388,7 +1410,7 @@
      */
     async function handleAddStudent(event) {
       event.preventDefault();
-      
+
       const nameInput = document.getElementById('studentName');
       const rollInput = document.getElementById('studentRoll');
       const submitBtn = document.getElementById('addStudentBtn');
@@ -1438,7 +1460,7 @@
 
         // Success
         showToast('Student Added!', result.message || `${name} (Roll: ${roll_no}) was successfully enrolled.`, 'success');
-        
+
         // Reset form
         nameInput.value = '';
         rollInput.value = '';
@@ -1508,7 +1530,7 @@
       const select = document.getElementById('reportStudentSelect');
       const previousValue = select.value;
 
-      select.innerHTML = '<option value="">-- Choose a student --</option>' + 
+      select.innerHTML = '<option value="">-- Choose a student --</option>' +
         state.students.map(student => {
           const rollNo = student.roll_no;
           const studentName = student.student_name || student.name || '';
@@ -1810,4 +1832,5 @@
     }
   </script>
 </body>
+
 </html>
