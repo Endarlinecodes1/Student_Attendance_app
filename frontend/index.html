@@ -1170,7 +1170,7 @@
       const alertBanner = document.getElementById('backendAlert');
 
       try {
-        const response = await fetch(`${API_BASE_URL}/students`, {
+        const response = await fetch(`${API_BASE_URL}/api/students`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
         });
@@ -1226,7 +1226,7 @@
      */
     async function loadStudents(showSuccessToast = false) {
       try {
-        const res = await fetch(`${API_BASE_URL}/students`);
+        const res = await fetch(`${API_BASE_URL}/api/students`);
         if (!res.ok) {
           throw new Error(`Failed to load students: ${res.statusText} (${res.status})`);
         }
@@ -1370,7 +1370,7 @@
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<span>⏳</span> Saving...';
 
-        const res = await fetch(`${API_BASE_URL}/attendance`, {
+        const res = await fetch(`${API_BASE_URL}/api/attendance`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1439,7 +1439,7 @@
           roll_no: roll_no
         };
 
-        const res = await fetch(`${API_BASE_URL}/students`, {
+        const res = await fetch(`${API_BASE_URL}/api/students`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1633,7 +1633,7 @@
       const averageDisplay = document.getElementById('gradeAverageDisplay');
 
       try {
-        const res = await fetch(`${API_BASE_URL}/grades/${encodeURIComponent(rollNo)}`);
+        const res = await fetch(`${API_BASE_URL}/api/grades/${encodeURIComponent(rollNo)}`);
         if (!res.ok) {
           throw new Error(`Failed to load grades (HTTP ${res.status})`);
         }
@@ -1749,7 +1749,7 @@
           score: score
         };
 
-        const res = await fetch(`${API_BASE_URL}/grades`, {
+        const res = await fetch(`${API_BASE_URL}/api/grades`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
