@@ -22,6 +22,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
+  <!-- HTML2PDF CDN for Direct Client-side PDF Report Downloads -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     :root {
       --primary: #4f46e5;
@@ -673,6 +676,49 @@
     .btn-danger:hover {
       background: var(--danger);
       color: var(--white);
+    }
+
+    /* WhatsApp Button & Share Notice */
+    .btn-whatsapp {
+      background: #25D366;
+      color: #ffffff;
+      border: 1px solid #1ebd5b;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(37, 211, 102, 0.35);
+      cursor: pointer;
+    }
+
+    .btn-whatsapp:hover {
+      background: #128C7E;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(18, 140, 126, 0.4);
+    }
+
+    .btn-whatsapp:active {
+      transform: translateY(0);
+    }
+
+    .share-contact-notice {
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.775rem;
+      font-weight: 700;
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid #fde68a;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.2s ease;
+    }
+
+    .share-contact-notice:hover {
+      background: #fde68a;
     }
 
     .btn-sm {
@@ -1934,6 +1980,12 @@
               <button class="btn btn-secondary btn-sm" onclick="openPrintModal()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
                 <span>🖨️</span> Print Report Card
               </button>
+              <!-- Download PDF Button -->
+              <button class="btn btn-secondary btn-sm" onclick="downloadReportPDF()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                <span>📥</span> Download PDF
+              </button>
+              <!-- WhatsApp Share Slot (Green button if contact exists, notice if empty) -->
+              <span id="whatsappShareHeaderSlot"></span>
             </div>
           </div>
 
@@ -2292,11 +2344,17 @@
         </div>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
         <button class="btn btn-secondary" onclick="closePrintModal()">Close</button>
-        <button class="btn btn-primary" onclick="triggerPrintReport()">
-          <span>🖨️</span> Print / Save as PDF
-        </button>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <span id="modalWhatsappSlot"></span>
+          <button class="btn btn-secondary" onclick="downloadReportPDF()" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>📥</span> Download PDF
+          </button>
+          <button class="btn btn-primary" onclick="triggerPrintReport()" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>🖨️</span> Print
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -3278,6 +3336,7 @@
 
       document.getElementById('reportStudentNameDisplay').textContent = `${studentName} (Roll: ${rollNo})`;
       document.getElementById('reportStudentDetailsLine').textContent = `Class: ${studentClass} | Gender: ${gender} | Contact: ${contact}`;
+      updateWhatsAppShareUI();
 
       // Reset comment fields for this student
       const teacherBox = document.getElementById('tab3TeacherComment');
@@ -3339,6 +3398,8 @@
           badge.textContent = '✗ Low Attendance';
           bar.style.background = 'linear-gradient(90deg, #f87171, #ef4444)';
         }
+
+        updateWhatsAppShareUI();
 
       } catch (err) {
         console.error('Error loading attendance report:', err);
@@ -3512,20 +3573,66 @@
     }
 
     // ==========================================
-    // REQUIREMENT 2: PRINT REPORT CARD MODAL
+    // REQUIREMENT 2 & WHATSAPP / PDF SHARING
     // ==========================================
-    function openPrintModal() {
-      const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
-      if (!student) {
-        showToast('Select Student', 'Please select a student first.', 'warning');
-        return;
+
+    function formatWhatsAppPhone(phone) {
+      if (!phone) return '';
+      let cleaned = String(phone).replace(/[\s\+\-\(\)]/g, '').trim();
+      if (cleaned.startsWith('0')) {
+        cleaned = '234' + cleaned.slice(1);
       }
+      return cleaned;
+    }
+
+    function hasValidParentContact(contact) {
+      if (!contact) return false;
+      const str = String(contact).trim();
+      if (str === '' || str.toLowerCase() === 'n/a' || str.toLowerCase() === 'null' || str.toLowerCase() === 'unspecified') {
+        return false;
+      }
+      const cleaned = formatWhatsAppPhone(str);
+      return cleaned.length >= 7;
+    }
+
+    function updateWhatsAppShareUI() {
+      const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
+      const report = state.selectedStudentReport || {};
+      const contact = (report.parent_contact && report.parent_contact !== 'N/A') 
+        ? report.parent_contact 
+        : (student ? student.parent_contact : '');
+
+      const headerSlot = document.getElementById('whatsappShareHeaderSlot');
+      const modalSlot = document.getElementById('modalWhatsappSlot');
+
+      const valid = hasValidParentContact(contact);
+
+      const btnHtml = `
+        <button type="button" class="btn btn-whatsapp btn-sm" onclick="shareReportWhatsApp()" title="Share Report Card directly to Parent WhatsApp">
+          <span>💬</span> Share on WhatsApp
+        </button>
+      `;
+
+      const noticeHtml = `
+        <span class="share-contact-notice" title="Parent contact required for WhatsApp sharing. Click to edit student." onclick="openEditStudentModal(state.selectedStudentObj?.id, state.selectedRollNo)" style="cursor: pointer;">
+          ⚠️ Add Parent Contact to share
+        </span>
+      `;
+
+      const content = valid ? btnHtml : noticeHtml;
+      if (headerSlot) headerSlot.innerHTML = content;
+      if (modalSlot) modalSlot.innerHTML = content;
+    }
+
+    function populatePrintModalData() {
+      const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
+      if (!student) return null;
 
       const report = state.selectedStudentReport || {};
       const grades = state.selectedStudentGrades || [];
 
       // Student Meta (Shows real Gender and Contact after edit)
-      document.getElementById('printStudentName').textContent = report.student_name || student.student_name || student.name || 'N/A';
+      document.getElementById('printStudentName').textContent = report.student_name || student.student_name || student.full_name || student.name || 'N/A';
       document.getElementById('printRollNo').textContent = report.roll_no || student.roll_no || 'N/A';
       document.getElementById('printClass').textContent = report.student_class || student.student_class || student.class || 'Primary 1';
       
@@ -3592,6 +3699,16 @@
       document.getElementById('printTeacherCommentDisplay').textContent = teacherText;
       document.getElementById('printPrincipalCommentDisplay').textContent = principalText;
 
+      updateWhatsAppShareUI();
+      return student;
+    }
+
+    function openPrintModal() {
+      const student = populatePrintModalData();
+      if (!student) {
+        showToast('Select Student', 'Please select a student first.', 'warning');
+        return;
+      }
       document.getElementById('reportModal').classList.add('active');
     }
 
@@ -3601,6 +3718,115 @@
 
     function triggerPrintReport() {
       window.print();
+    }
+
+    async function downloadReportPDF() {
+      const student = populatePrintModalData();
+      if (!student) {
+        showToast('Select Student', 'Please select a student first.', 'warning');
+        return;
+      }
+
+      // Safety check: teacher cannot download other class reports
+      const user = state.user || {};
+      const isTeacher = user.role === 'teacher';
+      const studentClass = student.student_class || student.class || '';
+      if (isTeacher && user.assigned_class && studentClass.toLowerCase() !== user.assigned_class.toLowerCase()) {
+        showToast('Access Denied', 'You can only download reports for students in your assigned class.', 'error');
+        return;
+      }
+
+      const rawName = student.student_name || student.full_name || student.name || 'Student';
+      const cleanName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const cleanClass = studentClass.replace(/[^a-zA-Z0-9_-]/g, '_');
+      const cleanSession = (state.selectedSession || 'Term').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `Report_Card_${cleanName}_${cleanClass}_${cleanSession}.pdf`;
+
+      const sheet = document.getElementById('printableReportSheet');
+
+      if (window.html2pdf && sheet) {
+        try {
+          showToast('Generating PDF...', `Preparing download for ${rawName}'s report card.`, 'info');
+          const opt = {
+            margin: [8, 8, 8, 8],
+            filename: filename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+          await html2pdf().set(opt).from(sheet).save();
+          showToast('PDF Downloaded!', `${filename} downloaded. You can now attach it in WhatsApp chat with the parent.`, 'success');
+          return;
+        } catch (err) {
+          console.warn('html2pdf generation error, using print fallback:', err);
+        }
+      }
+
+      // Fallback
+      openPrintModal();
+      showToast('Save as PDF', 'Choose "Save as PDF" in your print dialog destinations.', 'info');
+      setTimeout(() => window.print(), 350);
+    }
+
+    function shareReportWhatsApp() {
+      const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
+      if (!student) {
+        showToast('Select Student', 'Please select a student first.', 'warning');
+        return;
+      }
+
+      // Safety check: Only logged-in teacher for that class or admin can share
+      const user = state.user || {};
+      const isTeacher = user.role === 'teacher';
+      const studentClass = student.student_class || student.class || 'Primary 1';
+      if (isTeacher && user.assigned_class && studentClass.toLowerCase() !== user.assigned_class.toLowerCase()) {
+        showToast('Access Denied', 'You can only share reports for students in your assigned class.', 'error');
+        return;
+      }
+
+      const report = state.selectedStudentReport || {};
+      const contact = (report.parent_contact && report.parent_contact !== 'N/A') 
+        ? report.parent_contact 
+        : (student.parent_contact || '');
+
+      if (!hasValidParentContact(contact)) {
+        showToast('Add Parent Contact to share', 'Parent contact number is missing or invalid. Please edit student to add one.', 'warning');
+        return;
+      }
+
+      const parentNumber = formatWhatsAppPhone(contact);
+      const studentName = report.student_name || student.student_name || student.full_name || student.name || 'Student';
+      const sessionTerm = state.selectedSession || 'First Term 2026/2027';
+
+      // Attendance Summary
+      const total = report.total ?? 0;
+      const present = report.present ?? 0;
+      const attRate = report.percentage ?? (total > 0 ? ((present / total) * 100).toFixed(1) : '0.0');
+
+      // Grades Cumulative Average and Grade
+      const grades = state.selectedStudentGrades || [];
+      let totalScore = 0;
+      grades.forEach(g => {
+        const s = Number(g.score);
+        totalScore += isNaN(s) ? 0 : s;
+      });
+      const avg = grades.length > 0 ? (totalScore / grades.length).toFixed(1) : '0.0';
+      const overall = computeGradeLetter(avg);
+
+      // Teacher comment
+      const teacherComment = document.getElementById('tab3TeacherComment')?.value?.trim() 
+        || 'Good academic conduct and steady progress.';
+
+      const schoolName = 'EduTrack Academy';
+
+      // Required exact WhatsApp message format:
+      // "Hello, this is [School Name]. Here is [Student Full Name] - [Class] Report Card for [Session/Term]. Attendance: [Attendance Rate]%, Average: [Cumulative Average]%, Grade: [Overall Grade] - [Remark]. Teacher Comment: [Teacher Comment]. To view full report, please contact school or check printed copy. Thank you - EduTrack Academy"
+      const message = `Hello, this is ${schoolName}. Here is ${studentName} - ${studentClass} Report Card for ${sessionTerm}. Attendance: ${attRate}%, Average: ${avg}%, Grade: ${overall.letter} - ${overall.remark}. Teacher Comment: ${teacherComment}. To view full report, please contact school or check printed copy. Thank you - EduTrack Academy`;
+
+      const waUrl = `https://wa.me/${parentNumber}?text=${encodeURIComponent(message)}`;
+
+      showToast('Opening WhatsApp...', `Connecting to parent WhatsApp chat for ${studentName}.`, 'success');
+      window.open(waUrl, '_blank');
     }
 
     // ==========================================
