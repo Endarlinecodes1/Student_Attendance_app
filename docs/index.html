@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduTrack - Student Attendance & Grades Management</title>
-  <meta name="description" content="Manage student attendance, records, reports, and grades in a clean, responsive single-page application.">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EduTrack - Student Attendance & Academic Portal</title>
+  <meta name="description"
+    content="Comprehensive student attendance management, academic grade tracking, and report card generator.">
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EduTrack">
+  <link rel="manifest" href="manifest.json">
+
   <!-- Google Fonts for Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <style>
     :root {
@@ -17,6 +28,7 @@
       --primary-hover: #4338ca;
       --primary-light: #eef2ff;
       --secondary: #0ea5e9;
+      --secondary-light: #e0f2fe;
       --success: #10b981;
       --success-light: #ecfdf5;
       --warning: #f59e0b;
@@ -34,17 +46,17 @@
       --gray-200: #f1f5f9;
       --gray-100: #f8fafc;
       --white: #ffffff;
-      
+
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
       --radius-full: 9999px;
-      
+
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
       --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-      
+
       --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -62,28 +74,28 @@
       display: flex;
       flex-direction: column;
       line-height: 1.5;
-      padding: 1.5rem 1rem 3rem;
+      padding: 1.25rem 1rem 3rem;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Container */
     .container {
       width: 100%;
       max-width: 1080px;
       margin: 0 auto;
     }
 
-    /* Header Styling */
+    /* Top Header */
     .header {
       background: var(--white);
       border-radius: var(--radius-lg);
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 1.25rem;
       box-shadow: var(--shadow-md);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1rem;
       border: 1px solid rgba(226, 232, 240, 0.8);
       position: relative;
       overflow: hidden;
@@ -106,45 +118,69 @@
     }
 
     .brand-icon {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       border-radius: var(--radius-md);
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--white);
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+      flex-shrink: 0;
     }
 
     .brand-text h1 {
-      font-size: 1.45rem;
+      font-size: 1.35rem;
       font-weight: 800;
       color: var(--gray-900);
       letter-spacing: -0.025em;
+      line-height: 1.2;
     }
 
     .brand-text p {
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       color: var(--gray-600);
       font-weight: 500;
     }
 
+    /* User Profile & Auth Header Bar */
+    .header-user-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .user-welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--primary-light);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-full);
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      border: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    /* API Status Dot (Hidden by default per request) */
     .header-status {
       display: none;
       align-items: center;
-      gap: 0.75rem;
-      font-size: 0.85rem;
+      gap: 0.6rem;
+      font-size: 0.8rem;
       background: var(--gray-100);
-      padding: 0.5rem 1rem;
+      padding: 0.45rem 0.85rem;
       border-radius: var(--radius-full);
       border: 1px solid var(--gray-300);
     }
 
     .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background-color: var(--gray-400);
       display: inline-block;
@@ -161,17 +197,260 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
 
+    .status-dot.loading {
+      background-color: var(--warning);
+      animation: pulseDot 1s infinite alternate;
+    }
+
+    @keyframes pulseDot {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    /* ==========================================
+       LOGIN & REGISTER AUTH SCREEN
+       ========================================== */
+    .auth-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      padding: 1rem;
+    }
+
+    .auth-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--gray-300);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .auth-header .brand-icon {
+      margin: 0 auto 0.75rem;
+      width: 52px;
+      height: 52px;
+      font-size: 1.75rem;
+    }
+
+    .auth-header h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--gray-900);
+    }
+
+    .auth-header p {
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      margin-top: 0.25rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: var(--gray-100);
+      padding: 0.3rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      gap: 0.25rem;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.55rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      color: var(--gray-600);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .auth-tab-btn.active {
+      background: var(--white);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .demo-accounts-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--gray-100);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-300);
+      font-size: 0.8rem;
+    }
+
+    .demo-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+
+    .demo-pill {
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      padding: 0.35rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--gray-700);
+    }
+
+    .demo-pill:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* TOP DASHBOARD METRICS */
+    .dashboard-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .dashboard-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding: 0 0.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .dashboard-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gray-700);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .metric-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 1.15rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-300);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .metric-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    .metric-card.metric-total::before { background: var(--primary); }
+    .metric-card.metric-present::before { background: var(--success); }
+    .metric-card.metric-absent::before { background: var(--danger); }
+    .metric-card.metric-rate::before { background: var(--secondary); }
+
+    .metric-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-500);
+    }
+
+    .metric-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .metric-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1.1;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+    }
+
+    /* Backend Alert Banner */
+    .alert-banner {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-md);
+      padding: 0.875rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #991b1b;
+      font-size: 0.875rem;
+    }
+
+    .alert-banner.show {
+      display: flex;
+    }
+
     /* Tabs Navigation */
     .tabs-nav {
       display: flex;
       background: var(--white);
-      padding: 0.5rem;
+      padding: 0.4rem;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
       border: 1px solid var(--gray-300);
-      gap: 0.5rem;
+      gap: 0.4rem;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .tab-btn {
@@ -179,12 +458,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.6rem;
-      padding: 0.875rem 1.25rem;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
       background: transparent;
       border: none;
       border-radius: var(--radius-md);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: var(--gray-600);
       cursor: pointer;
@@ -201,20 +480,13 @@
     .tab-btn.active {
       background: var(--primary);
       color: var(--white);
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-    }
-
-    .tab-btn .tab-badge {
-      background: rgba(255, 255, 255, 0.25);
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: var(--radius-full);
+      box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
     }
 
     /* Tab Content Panels */
     .tab-pane {
       display: none;
-      animation: fadeIn 0.3s ease-in-out forwards;
+      animation: fadeIn 0.25s ease-in-out forwards;
     }
 
     .tab-pane.active {
@@ -222,22 +494,16 @@
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Card Component */
     .card {
       background: var(--white);
       border-radius: var(--radius-lg);
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.25rem;
       box-shadow: var(--shadow-md);
       border: 1px solid rgba(226, 232, 240, 0.9);
     }
@@ -248,13 +514,13 @@
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.25rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
       border-bottom: 1px solid var(--gray-200);
     }
 
     .card-title {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--gray-900);
       display: flex;
@@ -263,36 +529,79 @@
     }
 
     .card-subtitle {
-      font-size: 0.875rem;
+      font-size: 0.825rem;
       color: var(--gray-600);
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
+    }
+
+    /* Filter & Search Bar */
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--gray-100);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-300);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .search-input-wrapper input {
+      padding-left: 2.2rem;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+      font-size: 0.9rem;
+      pointer-events: none;
     }
 
     /* Form Controls */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.15rem;
+      margin-bottom: 1.25rem;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.4rem;
     }
 
     .form-label {
-      font-size: 0.875rem;
+      font-size: 0.825rem;
       font-weight: 600;
       color: var(--gray-700);
     }
 
     .form-control {
-      padding: 0.75rem 1rem;
+      padding: 0.65rem 0.875rem;
       border-radius: var(--radius-sm);
       border: 1.5px solid var(--gray-300);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--gray-800);
       background-color: var(--white);
       font-family: inherit;
@@ -315,16 +624,18 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
+      gap: 0.45rem;
+      padding: 0.65rem 1.25rem;
       border-radius: var(--radius-sm);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       transition: var(--transition);
       border: none;
       font-family: inherit;
       text-decoration: none;
+      white-space: nowrap;
+      user-select: none;
     }
 
     .btn-primary {
@@ -353,9 +664,20 @@
       color: var(--gray-900);
     }
 
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: var(--white);
+    }
+
     .btn-sm {
-      padding: 0.45rem 0.85rem;
-      font-size: 0.825rem;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
       border-radius: var(--radius-sm);
     }
 
@@ -376,16 +698,16 @@
     .date-badge-wrapper {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.6rem;
       background: var(--primary-light);
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.85rem;
       border-radius: var(--radius-md);
       border: 1px solid rgba(79, 70, 229, 0.15);
     }
 
     .date-label {
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.8rem;
+      font-weight: 700;
       color: var(--primary);
     }
 
@@ -393,28 +715,30 @@
       font-family: inherit;
       border: 1px solid var(--primary);
       background: var(--white);
-      padding: 0.35rem 0.75rem;
+      padding: 0.3rem 0.6rem;
       border-radius: var(--radius-sm);
       font-weight: 600;
       color: var(--primary);
       outline: none;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
     }
 
     /* Table Styles */
     .table-container {
       width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       border-radius: var(--radius-md);
       border: 1px solid var(--gray-300);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
+      background: var(--white);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.925rem;
+      font-size: 0.9rem;
     }
 
     thead {
@@ -423,16 +747,16 @@
     }
 
     th {
-      padding: 0.875rem 1.25rem;
+      padding: 0.8rem 1rem;
       font-weight: 700;
       color: var(--gray-700);
       text-transform: uppercase;
-      font-size: 0.775rem;
+      font-size: 0.75rem;
       letter-spacing: 0.05em;
     }
 
     td {
-      padding: 1rem 1.25rem;
+      padding: 0.85rem 1rem;
       border-bottom: 1px solid var(--gray-200);
       color: var(--gray-800);
       vertical-align: middle;
@@ -448,12 +772,24 @@
 
     .roll-badge {
       display: inline-block;
-      padding: 0.25rem 0.65rem;
+      padding: 0.2rem 0.6rem;
       background: var(--gray-200);
       color: var(--gray-800);
       border-radius: var(--radius-full);
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.775rem;
+      letter-spacing: 0.02em;
+    }
+
+    .class-badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.75rem;
+      border: 1px solid rgba(79, 70, 229, 0.2);
     }
 
     /* Attendance Radio Selector */
@@ -463,10 +799,14 @@
       padding: 0.25rem;
       border-radius: var(--radius-full);
       gap: 0.25rem;
+      white-space: nowrap;
+      min-width: 190px;
+      justify-content: center;
     }
 
     .radio-pill-option {
       position: relative;
+      flex: 1;
     }
 
     .radio-pill-option input[type="radio"] {
@@ -477,51 +817,44 @@
     }
 
     .radio-pill-option label {
-      display: inline-block;
-      padding: 0.35rem 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.85rem;
       font-size: 0.825rem;
-      font-weight: 600;
+      font-weight: 700;
       border-radius: var(--radius-full);
       cursor: pointer;
       transition: var(--transition);
       color: var(--gray-600);
       user-select: none;
+      min-height: 38px;
+      white-space: nowrap;
     }
 
-    .radio-pill-option input[value="Present"]:checked + label {
+    .radio-pill-option input[value="Present"]:checked+label {
       background: var(--success);
       color: var(--white);
-      box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
     }
 
-    .radio-pill-option input[value="Absent"]:checked + label {
+    .radio-pill-option input[value="Absent"]:checked+label {
       background: var(--danger);
       color: var(--white);
-      box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
     }
 
-    /* Report Card & Progress Meter */
+    /* Report Card & Progress */
     .report-card {
       background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
       color: var(--white);
       border-radius: var(--radius-lg);
-      padding: 1.75rem;
-      margin-bottom: 1.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
       position: relative;
       overflow: hidden;
       box-shadow: var(--shadow-lg);
-    }
-
-    .report-card::after {
-      content: '';
-      position: absolute;
-      right: -20px;
-      bottom: -20px;
-      width: 140px;
-      height: 140px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      pointer-events: none;
     }
 
     .report-header {
@@ -529,33 +862,35 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
 
     .report-stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
       margin-bottom: 1.25rem;
     }
 
     .stat-item {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(8px);
-      padding: 1rem;
+      padding: 0.85rem 1rem;
       border-radius: var(--radius-md);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       opacity: 0.8;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
 
     .stat-value {
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       font-weight: 800;
     }
 
@@ -583,8 +918,9 @@
       gap: 0.35rem;
       padding: 0.25rem 0.65rem;
       border-radius: var(--radius-full);
-      font-size: 0.8rem;
+      font-size: 0.775rem;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .badge-success {
@@ -605,6 +941,24 @@
       border: 1px solid rgba(239, 68, 68, 0.2);
     }
 
+    /* Grade Badges */
+    .grade-badge {
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+    }
+
+    .grade-A { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .grade-B { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+    .grade-C { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .grade-D { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+    .grade-F { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
     /* Score Badge */
     .score-badge {
       font-weight: 700;
@@ -613,80 +967,48 @@
       font-size: 0.85rem;
     }
 
-    .score-high {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .score-med {
-      background: #fef9c3;
-      color: #854d0e;
-    }
-
-    .score-low {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
+    .score-high { background: #dcfce7; color: #15803d; }
+    .score-med { background: #fef9c3; color: #854d0e; }
+    .score-low { background: #fee2e2; color: #b91c1c; }
 
     /* Toast Notification System */
     .toast-container {
       position: fixed;
       bottom: 1.5rem;
       right: 1.5rem;
-      z-index: 9999;
+      z-index: 99999;
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.65rem;
       max-width: 380px;
-      width: calc(100% - 3rem);
+      width: calc(100% - 2.5rem);
       pointer-events: none;
     }
 
     .toast {
       background: var(--white);
-      padding: 1rem 1.25rem;
+      padding: 0.875rem 1.15rem;
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-xl);
       border-left: 4px solid var(--primary);
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
-      animation: slideUp 0.3s ease-out forwards;
+      animation: slideUp 0.25s ease-out forwards;
       pointer-events: auto;
       border-top: 1px solid var(--gray-200);
       border-right: 1px solid var(--gray-200);
       border-bottom: 1px solid var(--gray-200);
     }
 
-    .toast.toast-success {
-      border-left-color: var(--success);
-    }
+    .toast.toast-success { border-left-color: var(--success); }
+    .toast.toast-error { border-left-color: var(--danger); }
+    .toast.toast-warning { border-left-color: var(--warning); }
+    .toast.toast-info { border-left-color: var(--secondary); }
 
-    .toast.toast-error {
-      border-left-color: var(--danger);
-    }
-
-    .toast.toast-warning {
-      border-left-color: var(--warning);
-    }
-
-    .toast-content {
-      flex: 1;
-    }
-
-    .toast-title {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--gray-900);
-      margin-bottom: 0.15rem;
-    }
-
-    .toast-message {
-      font-size: 0.825rem;
-      color: var(--gray-600);
-      line-height: 1.35;
-    }
-
+    .toast-content { flex: 1; }
+    .toast-title { font-weight: 700; font-size: 0.875rem; color: var(--gray-900); }
+    .toast-message { font-size: 0.8rem; color: var(--gray-600); margin-top: 0.15rem; }
     .toast-close {
       background: none;
       border: none;
@@ -696,101 +1018,556 @@
       line-height: 1;
       padding: 0;
     }
-
-    .toast-close:hover {
-      color: var(--gray-700);
-    }
+    .toast-close:hover { color: var(--gray-700); }
 
     @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Empty State & Skeletons */
+    /* Empty State */
     .empty-state {
       text-align: center;
-      padding: 3rem 1.5rem;
+      padding: 2.5rem 1.5rem;
       color: var(--gray-500);
     }
 
     .empty-state-icon {
-      font-size: 2.75rem;
-      margin-bottom: 0.75rem;
-      opacity: 0.6;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.7;
     }
 
     .empty-state-title {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--gray-700);
       margin-bottom: 0.25rem;
     }
 
     .empty-state-desc {
-      font-size: 0.875rem;
+      font-size: 0.825rem;
       max-width: 380px;
-      margin: 0 auto 1.25rem;
+      margin: 0 auto 1rem;
     }
 
-    /* Alert Banner */
-    .alert-banner {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: var(--radius-md);
-      padding: 0.875rem 1.25rem;
-      margin-bottom: 1.5rem;
+    /* Loading Spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* MODAL BASE */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
       display: none;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      color: #991b1b;
-      font-size: 0.9rem;
+      justify-content: center;
+      padding: 1rem;
+      overflow-y: auto;
     }
 
-    .alert-banner.show {
+    .modal-backdrop.active {
       display: flex;
     }
 
-    /* Responsive Design */
+    .modal-dialog {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      max-width: 780px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      animation: modalZoom 0.25s ease-out;
+    }
+
+    @keyframes modalZoom {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--gray-100);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: var(--gray-100);
+    }
+
+    /* Print Document Styles */
+    .printable-sheet {
+      background: #ffffff;
+      color: #1e293b;
+      padding: 1.5rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .report-school-header {
+      text-align: center;
+      border-bottom: 2px solid #4f46e5;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .report-school-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #1e1b4b;
+      letter-spacing: 0.02em;
+    }
+
+    .report-sub-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4f46e5;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .report-student-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem 1.25rem;
+      margin-bottom: 1.15rem;
+      background: #f8fafc;
+      padding: 0.85rem 1.15rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .report-meta-item {
+      display: flex;
+      font-size: 0.875rem;
+    }
+
+    .report-meta-label {
+      font-weight: 700;
+      color: #475569;
+      width: 130px;
+    }
+
+    .report-meta-val {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .report-print-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.15rem;
+    }
+
+    .report-print-table th, 
+    .report-print-table td {
+      border: 1px solid #cbd5e1;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .report-print-table th {
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+    }
+
+    .report-comments-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.85rem;
+      background: #ffffff;
+    }
+
+    .report-comments-box label {
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #475569;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .report-comments-display {
+      font-size: 0.875rem;
+      color: #1e293b;
+      white-space: pre-wrap;
+      line-height: 1.45;
+      min-height: 38px;
+    }
+
+    .report-signatures {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1.75rem;
+      padding-top: 0.75rem;
+      text-align: center;
+    }
+
+    .signature-line {
+      border-top: 1px solid #94a3b8;
+      padding-top: 0.4rem;
+      font-size: 0.775rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    /* PRINT MEDIA QUERY - ONLY PRINT REPORT CARD */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      .modal-backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: transparent !important;
+        display: block !important;
+        padding: 0 !important;
+      }
+
+      .modal-dialog {
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: none !important;
+      }
+
+      .modal-header,
+      .modal-footer {
+        display: none !important;
+      }
+
+      .printable-sheet,
+      .printable-sheet * {
+        visibility: visible !important;
+      }
+
+      .printable-sheet {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: none !important;
+        padding: 10mm;
+      }
+    }
+
+    /* RESPONSIVE DESIGN - MOBILE FIX FOR ATTENDANCE BUTTONS */
     @media (max-width: 768px) {
       body {
-        padding: 1rem 0.5rem 2rem;
+        padding: 0.75rem 0.5rem 2.5rem;
       }
+
       .header {
-        padding: 1.25rem;
+        padding: 1.15rem 1rem;
         flex-direction: column;
         align-items: flex-start;
       }
+
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+
       .card {
         padding: 1.25rem 1rem;
       }
+
+      .filter-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
       .tabs-nav {
-        overflow-x: auto;
+        gap: 0.25rem;
+        padding: 0.25rem;
       }
+
       .tab-btn {
-        padding: 0.75rem 1rem;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.825rem;
+      }
+
+      .report-student-meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .report-signatures {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      /* Attendance Table mobile layout: Zero Cut-off */
+      #attendanceTable thead {
+        display: none;
+      }
+
+      #attendanceTable,
+      #attendanceTable tbody,
+      #attendanceTable tr {
+        display: block;
+        width: 100%;
+      }
+
+      #attendanceTable tr {
+        background: var(--white);
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      #attendanceTable td {
+        display: block;
+        width: 100% !important;
+        padding: 0.25rem 0;
+        border-bottom: none;
+      }
+
+      #attendanceTable td.cell-student-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.65rem;
+        gap: 0.5rem;
+      }
+
+      #attendanceTable td.cell-status {
+        padding-top: 0.65rem;
+        border-top: 1px solid var(--gray-200);
+      }
+
+      #attendanceTable td.cell-status .radio-pill-group {
+        display: flex;
+        width: 100%;
+        min-width: 100%;
+        box-sizing: border-box;
+      }
+
+      #attendanceTable td.cell-status .radio-pill-option {
+        flex: 1;
+      }
+
+      #attendanceTable td.cell-status .radio-pill-option label {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        padding: 0.6rem 0.5rem;
         font-size: 0.875rem;
+        min-height: 42px;
       }
-      th, td {
-        padding: 0.75rem 0.85rem;
+
+      /* Directory Table Mobile Optimization */
+      #directoryTable thead {
+        display: none;
       }
-      .report-stats-grid {
-        grid-template-columns: 1fr 1fr;
+
+      #directoryTable,
+      #directoryTable tbody,
+      #directoryTable tr {
+        display: block;
+        width: 100%;
+      }
+
+      #directoryTable tr {
+        background: var(--white);
+        border: 1px solid var(--gray-300);
+        border-radius: var(--radius-md);
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      #directoryTable td {
+        display: block;
+        width: 100% !important;
+        padding: 0.25rem 0;
+        border-bottom: none;
+      }
+
+      #directoryTable td.dir-actions-cell {
+        padding-top: 0.65rem;
+        border-top: 1px solid var(--gray-200);
+        margin-top: 0.35rem;
+      }
+
+      #directoryTable td.dir-actions-cell .dir-btn-group {
+        display: flex !important;
+        width: 100%;
+        gap: 0.4rem;
+      }
+
+      #directoryTable td.dir-actions-cell .dir-btn-group button {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        padding: 0.5rem 0.35rem;
+        font-size: 0.785rem;
+      }
+
+      .metric-value {
+        font-size: 1.45rem;
       }
     }
   </style>
 </head>
+
 <body>
 
-  <div class="container">
-    
-    <!-- Top Header -->
+  <!-- ========================================== -->
+  <!-- 1. LOGIN & REGISTER AUTH SCREEN            -->
+  <!-- ========================================== -->
+  <div id="authScreen" class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-icon" aria-hidden="true">🎓</div>
+        <h2>EduTrack Portal</h2>
+        <p>Sign in to access your class attendance & grades</p>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Teacher / Admin Login</button>
+        <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register Teacher</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label" for="loginEmail">Email Address *</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="e.g. teacher@edutrack.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label" for="loginPassword">Password *</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+          <span>🔑</span> Sign In
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label" for="regName">Teacher Full Name *</label>
+          <input type="text" id="regName" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label" for="regEmail">Email Address *</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="e.g. teacher@school.com" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label" for="regPassword">Password (min 6 chars) *</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required minlength="6">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label" for="regClass">Assigned Class *</label>
+          <select id="regClass" class="form-control" required onchange="handleRegClassChange(this)">
+            <optgroup label="Primary Classes">
+              <option value="Primary 1" selected>Primary 1</option>
+              <option value="Primary 2">Primary 2</option>
+              <option value="Primary 3">Primary 3</option>
+              <option value="Primary 4">Primary 4</option>
+              <option value="Primary 5">Primary 5</option>
+              <option value="Primary 6">Primary 6</option>
+            </optgroup>
+            <optgroup label="Secondary Classes">
+              <option value="JSS 1">JSS 1</option>
+              <option value="JSS 2">JSS 2</option>
+              <option value="JSS 3">JSS 3</option>
+              <option value="SSS 1">SSS 1</option>
+              <option value="SSS 2">SSS 2</option>
+              <option value="SSS 3">SSS 3</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="custom">Custom Class...</option>
+            </optgroup>
+          </select>
+          <input type="text" id="regCustomClassInput" class="form-control" placeholder="Type custom class name (e.g. Nursery 1, Basic 7)" style="display: none; margin-top: 0.4rem;">
+        </div>
+
+        <button type="submit" id="regSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+          <span>👤</span> Create Account & Sign In
+        </button>
+      </form>
+
+      <!-- Quick Demo Login Helpers for Fast Testing -->
+      <div class="demo-accounts-box">
+        <strong style="color: var(--gray-700);">Quick Demo Login (One-Click):</strong>
+        <div class="demo-pill-group">
+          <button type="button" class="demo-pill" onclick="quickFillLogin('admin@edutrack.com', 'admin123')">
+            👑 Admin (All Classes)
+          </button>
+          <button type="button" class="demo-pill" onclick="quickFillLogin('teacher@edutrack.com', 'teacher123')">
+            👩‍🏫 Teacher (Primary 1)
+          </button>
+          <button type="button" class="demo-pill" onclick="quickFillLogin('teacher2@edutrack.com', 'teacher123')">
+            👨‍🏫 Teacher (Primary 2)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 2. MAIN APPLICATION (HIDDEN UNTIL LOGIN)   -->
+  <!-- ========================================== -->
+  <div id="appMainContent" class="container" style="display: none;">
+
+    <!-- Top Header with Welcome & Logout -->
     <header class="header">
       <div class="brand">
         <div class="brand-icon" aria-hidden="true">🎓</div>
@@ -799,9 +1576,21 @@
           <p>Student Attendance & Academic Performance Portal</p>
         </div>
       </div>
-      <div class="header-status" style="display: none;">
+
+      <div class="header-user-bar">
+        <div class="user-welcome-badge">
+          <span>👋</span>
+          <span>Welcome, <strong id="userDisplayName">Teacher</strong></span>
+          <span class="class-badge" id="userDisplayClass">Primary 1</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="handleLogout()" title="Log out of EduTrack">
+          <span>🚪</span> Logout
+        </button>
+      </div>
+
+      <div class="header-status">
         <span class="status-dot" id="serverStatusDot"></span>
-        <span id="serverStatusText">Connecting to API...</span>
+        <span id="serverStatusText">Connecting...</span>
       </div>
     </header>
 
@@ -809,10 +1598,64 @@
     <div id="backendAlert" class="alert-banner" role="alert">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <span>⚠️</span>
-        <span id="backendAlertMessage">Backend API at <strong>http://127.0.0.1:5000</strong> is currently unreachable. Make sure your server is running.</span>
+        <span id="backendAlertMessage">Backend API at <strong>https://edutrack-g2ej.onrender.com</strong> is unreachable.</span>
       </div>
-      <button class="btn btn-secondary btn-sm" onclick="checkBackendHealth()">Retry</button>
+      <button class="btn btn-secondary btn-sm" onclick="retryBackendConnection()">Retry</button>
     </div>
+
+    <!-- ========================================== -->
+    <!-- DASHBOARD: TOP METRICS (Flask API)         -->
+    <!-- ========================================== -->
+    <section class="dashboard-section" aria-label="Dashboard Overview">
+      <div class="dashboard-header-bar">
+        <div class="dashboard-title">
+          <span>📊</span>
+          <span id="dashboardTitleText">Today's Overview</span>
+          <span style="font-weight: 500; font-size: 0.8rem; color: var(--gray-500);" id="dashboardDateLabel"></span>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadDashboardStats()" title="Refresh Dashboard Stats">
+          <span id="dashRefreshIcon">🔄</span> Refresh
+        </button>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="metric-card metric-total">
+          <div class="metric-top">
+            <span class="metric-label">Total Students</span>
+            <span class="metric-icon">👥</span>
+          </div>
+          <div class="metric-value" id="dashTotalStudents">-</div>
+          <div class="metric-sub" id="dashTotalStudentsSub">In your class</div>
+        </div>
+
+        <div class="metric-card metric-present">
+          <div class="metric-top">
+            <span class="metric-label">Present Today</span>
+            <span class="metric-icon">✅</span>
+          </div>
+          <div class="metric-value" id="dashPresentToday" style="color: var(--success);">-</div>
+          <div class="metric-sub">Attended today</div>
+        </div>
+
+        <div class="metric-card metric-absent">
+          <div class="metric-top">
+            <span class="metric-label">Absent Today</span>
+            <span class="metric-icon">❌</span>
+          </div>
+          <div class="metric-value" id="dashAbsentToday" style="color: var(--danger);">-</div>
+          <div class="metric-sub">Marked absent</div>
+        </div>
+
+        <div class="metric-card metric-rate">
+          <div class="metric-top">
+            <span class="metric-label">Attendance Rate</span>
+            <span class="metric-icon">📈</span>
+          </div>
+          <div class="metric-value" id="dashAttendanceRate" style="color: var(--secondary);">-</div>
+          <div class="metric-sub">Today's percentage</div>
+        </div>
+      </div>
+    </section>
 
     <!-- Navigation Tabs -->
     <nav class="tabs-nav" aria-label="Main Navigation">
@@ -820,7 +1663,7 @@
         <span>📅</span> Mark Attendance
       </button>
       <button class="tab-btn" id="tabBtn2" onclick="switchTab('tab2')">
-        <span>👤</span> Add Student
+        <span>👤</span> Enroll Student
       </button>
       <button class="tab-btn" id="tabBtn3" onclick="switchTab('tab3')">
         <span>📊</span> Grades & Report
@@ -835,11 +1678,33 @@
         <div class="card-header">
           <div>
             <h2 class="card-title"><span>📝</span> Mark Daily Attendance</h2>
-            <p class="card-subtitle">Select attendance status for all enrolled students.</p>
+            <p class="card-subtitle">Mark each student as Present or Absent and save to Neon Postgres.</p>
           </div>
           <div class="date-badge-wrapper">
             <span class="date-label">Date:</span>
-            <input type="date" id="attendanceDate" class="date-input" aria-label="Attendance Date">
+            <input type="date" id="attendanceDate" class="date-input" aria-label="Attendance Date" onchange="onAttendanceDateChange()">
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="filter-toolbar">
+          <div class="filter-group">
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="attendanceSearch" class="form-control" placeholder="Search by name or roll..." oninput="handleAttendanceFilter()">
+            </div>
+            <div style="min-width: 140px;" id="attendanceClassFilterWrapper">
+              <select id="attendanceClassFilter" class="form-control" onchange="handleAttendanceFilter()">
+                <option value="">All Classes</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="clearAttendanceFilterBtn" onclick="clearAttendanceFilters()" style="display: none;">
+              ✕ Reset
+            </button>
+          </div>
+
+          <div style="font-size: 0.825rem; color: var(--gray-600); font-weight: 600;">
+            Showing: <strong id="studentFilterCountBadge">0</strong> students
           </div>
         </div>
 
@@ -849,19 +1714,20 @@
             <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Present')">✓ Mark All Present</button>
             <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Absent')">✗ Mark All Absent</button>
           </div>
-          <div style="font-size: 0.85rem; color: var(--gray-600);">
-            Total Students: <strong id="studentCountBadge">0</strong>
+          <div style="font-size: 0.8rem; color: var(--gray-500);">
+            💡 Saved directly to Neon Postgres
           </div>
         </div>
 
-        <!-- Students Table -->
-        <div class="table-container">
+        <!-- Attendance Table -->
+        <div class="table-container" id="attendanceTableContainer">
           <table id="attendanceTable">
             <thead>
               <tr>
                 <th style="width: 15%;">Roll No</th>
-                <th style="width: 50%;">Student Name</th>
-                <th style="width: 35%; text-align: center;">Status</th>
+                <th style="width: 40%;">Student Name</th>
+                <th style="width: 20%;">Class</th>
+                <th style="width: 25%; text-align: center;">Attendance Status</th>
               </tr>
             </thead>
             <tbody id="attendanceTableBody">
@@ -874,8 +1740,8 @@
         <div id="attendanceEmptyState" class="empty-state" style="display: none;">
           <div class="empty-state-icon">👥</div>
           <h3 class="empty-state-title">No Students Found</h3>
-          <p class="empty-state-desc">You haven't added any students yet. Head over to the "Add Student" tab to get started.</p>
-          <button class="btn btn-primary btn-sm" onclick="switchTab('tab2')">+ Add Your First Student</button>
+          <p class="empty-state-desc" id="attendanceEmptyMsg">You haven't enrolled any students yet. Head to "Enroll Student" to register your first student.</p>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('tab2')">+ Enroll Student</button>
         </div>
 
         <!-- Action Footer -->
@@ -887,16 +1753,15 @@
       </div>
     </section>
 
-
     <!-- ========================================== -->
-    <!-- TAB 2: ADD STUDENT                         -->
+    <!-- TAB 2: ENROLL STUDENT & DIRECTORY          -->
     <!-- ========================================== -->
     <section id="tab2" class="tab-pane" aria-labelledby="tabBtn2">
       <div class="card">
         <div class="card-header">
           <div>
             <h2 class="card-title"><span>➕</span> Enroll New Student</h2>
-            <p class="card-subtitle">Register a student to the system with their full name and unique roll number.</p>
+            <p class="card-subtitle">Register a student with class level, gender, and parent contact details.</p>
           </div>
         </div>
 
@@ -905,18 +1770,62 @@
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label" for="studentName">Student Full Name *</label>
-              <input type="text" id="studentName" class="form-control" placeholder="e.g. John Doe" required autocomplete="off">
+              <input type="text" id="studentName" class="form-control" placeholder="e.g. Alice Johnson" required autocomplete="off">
             </div>
+
             <div class="form-group">
               <label class="form-label" for="studentRoll">Roll Number *</label>
-              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or CS-2026-01" required autocomplete="off">
+              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or PRI-01" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="studentClass">Class / Grade *</label>
+              <select id="studentClass" class="form-control" required onchange="handleClassSelectChange(this)">
+                <option value="">-- Select Class --</option>
+                <optgroup label="Primary Classes">
+                  <option value="Primary 1" selected>Primary 1</option>
+                  <option value="Primary 2">Primary 2</option>
+                  <option value="Primary 3">Primary 3</option>
+                  <option value="Primary 4">Primary 4</option>
+                  <option value="Primary 5">Primary 5</option>
+                  <option value="Primary 6">Primary 6</option>
+                </optgroup>
+                <optgroup label="Junior Secondary School">
+                  <option value="JSS 1">JSS 1</option>
+                  <option value="JSS 2">JSS 2</option>
+                  <option value="JSS 3">JSS 3</option>
+                </optgroup>
+                <optgroup label="Senior Secondary School">
+                  <option value="SSS 1">SSS 1</option>
+                  <option value="SSS 2">SSS 2</option>
+                  <option value="SSS 3">SSS 3</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option value="custom">Enter Custom Class...</option>
+                </optgroup>
+              </select>
+              <input type="text" id="customClassInput" class="form-control" placeholder="Type custom class name" style="display: none; margin-top: 0.4rem;">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="studentGender">Gender *</label>
+              <select id="studentGender" class="form-control" required>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label" for="parentContact">Parent / Guardian Contact Number *</label>
+              <input type="tel" id="parentContact" class="form-control" placeholder="e.g. +234 801 234 5678" required autocomplete="off">
             </div>
           </div>
 
           <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
             <button type="reset" class="btn btn-secondary">Clear</button>
             <button type="submit" id="addStudentBtn" class="btn btn-primary">
-              <span>👤</span> Add Student
+              <span>👤</span> Enroll Student
             </button>
           </div>
         </form>
@@ -927,18 +1836,36 @@
         <div class="card-header">
           <div>
             <h3 class="card-title"><span>📋</span> Enrolled Students Directory</h3>
-            <p class="card-subtitle">List of all currently registered students.</p>
+            <p class="card-subtitle">List of registered students with Edit, Report, and Remove actions.</p>
           </div>
           <button class="btn btn-secondary btn-sm" onclick="loadStudents(true)">🔄 Refresh</button>
         </div>
 
+        <!-- Directory Search & Class Filter -->
+        <div class="filter-toolbar">
+          <div class="filter-group">
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="dirSearch" class="form-control" placeholder="Filter directory by name or roll..." oninput="handleDirectoryFilter()">
+            </div>
+            <div style="min-width: 140px;" id="dirClassFilterWrapper">
+              <select id="dirClassFilter" class="form-control" onchange="handleDirectoryFilter()">
+                <option value="">All Classes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div class="table-container">
-          <table>
+          <table id="directoryTable">
             <thead>
               <tr>
-                <th style="width: 25%;">Roll No</th>
-                <th style="width: 55%;">Student Name</th>
-                <th style="width: 20%; text-align: right;">Action</th>
+                <th style="width: 12%;">Roll No</th>
+                <th style="width: 26%;">Student Name</th>
+                <th style="width: 15%;">Class</th>
+                <th style="width: 12%;">Gender</th>
+                <th style="width: 17%;">Parent Contact</th>
+                <th style="width: 18%; text-align: right;">Actions</th>
               </tr>
             </thead>
             <tbody id="directoryTableBody">
@@ -950,51 +1877,74 @@
         <div id="directoryEmptyState" class="empty-state" style="display: none;">
           <div class="empty-state-icon">📂</div>
           <h3 class="empty-state-title">Directory is Empty</h3>
-          <p class="empty-state-desc">Use the form above to add your first student.</p>
+          <p class="empty-state-desc">Use the enrollment form above to add your first student.</p>
         </div>
       </div>
     </section>
-
 
     <!-- ========================================== -->
     <!-- TAB 3: GRADES & REPORT                     -->
     <!-- ========================================== -->
     <section id="tab3" class="tab-pane" aria-labelledby="tabBtn3">
-      
-      <!-- Student Selection Card -->
+
+      <!-- Student Selection Card with Session/Term Selector -->
       <div class="card">
         <div class="card-header">
           <div>
-            <h2 class="card-title"><span>📈</span> Student Performance & Report</h2>
-            <p class="card-subtitle">Select a student to view attendance statistics and manage academic subject grades.</p>
+            <h2 class="card-title"><span>📈</span> Student Performance & Report Card</h2>
+            <p class="card-subtitle">Select a student and academic session to view metrics, record grades, and print reports.</p>
           </div>
         </div>
 
-        <div class="form-group" style="max-width: 500px; margin-bottom: 0.5rem;">
-          <label class="form-label" for="reportStudentSelect">Select Student *</label>
-          <select id="reportStudentSelect" class="form-control" onchange="onStudentSelectChange()">
-            <option value="">-- Choose a student --</option>
-          </select>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="reportStudentSelect">Select Student *</label>
+            <select id="reportStudentSelect" class="form-control" onchange="onStudentSelectChange()">
+              <option value="">-- Choose a student --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="reportSessionSelect">Academic Session / Term *</label>
+            <select id="reportSessionSelect" class="form-control" onchange="handleSessionChange(this.value)">
+              <option value="First Term 2026/2027" selected>First Term 2026/2027</option>
+              <option value="Second Term 2026/2027">Second Term 2026/2027</option>
+              <option value="Third Term 2026/2027">Third Term 2026/2027</option>
+              <option value="custom">Custom Session...</option>
+            </select>
+            <input type="text" id="customSessionInput" class="form-control" style="display: none; margin-top: 0.35rem;" placeholder="e.g. 2026/2027 Annual Session" oninput="syncCustomSession(this.value)">
+          </div>
         </div>
       </div>
 
       <!-- Student Details Container (Shown when a student is selected) -->
       <div id="studentReportContainer" style="display: none;">
-        
+
         <!-- Attendance Report Banner Card -->
         <div class="report-card">
           <div class="report-header">
             <div>
-              <div style="font-size: 0.85rem; opacity: 0.8; font-weight: 600;">ATTENDANCE OVERVIEW</div>
-              <h3 id="reportStudentNameDisplay" style="font-size: 1.35rem; font-weight: 700;">Student Name</h3>
+              <div style="font-size: 0.775rem; opacity: 0.8; font-weight: 700; letter-spacing: 0.05em;">STUDENT PROFILE & ATTENDANCE</div>
+              <h3 id="reportStudentNameDisplay" style="font-size: 1.35rem; font-weight: 800; margin-top: 0.2rem;">Student Name</h3>
+              <div style="font-size: 0.825rem; opacity: 0.9; margin-top: 0.15rem;" id="reportStudentDetailsLine">Class: Primary 1 | Roll: 101</div>
             </div>
-            <div id="attendanceBadge" class="badge badge-success">Good Standing</div>
+            <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+              <div id="attendanceBadge" class="badge badge-success">Good Standing</div>
+              <!-- Print Report Card Button -->
+              <button class="btn btn-secondary btn-sm" onclick="openPrintModal()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                <span>🖨️</span> Print Report Card
+              </button>
+            </div>
           </div>
 
           <div class="report-stats-grid">
             <div class="stat-item">
               <div class="stat-label">Days Present</div>
               <div class="stat-value" id="reportPresentCount">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Days Absent</div>
+              <div class="stat-value" id="reportAbsentCount" style="color: #fca5a5;">0</div>
             </div>
             <div class="stat-item">
               <div class="stat-label">Total Days</div>
@@ -1018,12 +1968,42 @@
           </div>
         </div>
 
+        <!-- EDITABLE COMMENTS CARD (WHAT TEACHER TYPES APPEARS ON PRINTED REPORT) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title"><span>✍️</span> Report Card Remarks & Observations</h3>
+              <p class="card-subtitle">Type your comments below — what you write appears directly on the printed Report Card.</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.15rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label class="form-label" for="tab3TeacherComment">Class Teacher's Remarks & Observations *</label>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="autoSuggestTeacherComment()" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">
+                ✨ Auto-Suggest
+              </button>
+            </div>
+            <textarea id="tab3TeacherComment" class="form-control" rows="3" placeholder="Enter teacher's assessment and remarks for this student..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <label class="form-label" for="tab3PrincipalComment">Principal's Remarks & Stamp Notes</label>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="autoSuggestPrincipalComment()" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">
+                ✨ Auto-Suggest
+              </button>
+            </div>
+            <textarea id="tab3PrincipalComment" class="form-control" rows="2" placeholder="Enter principal's observation (e.g. Promoted to next class with honours)..."></textarea>
+          </div>
+        </div>
+
         <!-- Add Grade Form Card -->
         <div class="card">
           <div class="card-header">
             <div>
               <h3 class="card-title"><span>📝</span> Record Subject Grade</h3>
-              <p class="card-subtitle">Enter academic scores (0 to 100) for the selected student.</p>
+              <p class="card-subtitle">Enter score (0-100) to auto-calculate Grade (A=70+, B=60-69, C=50-59, D=40-49, F=&lt;40).</p>
             </div>
           </div>
 
@@ -1031,17 +2011,22 @@
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label" for="gradeSubject">Subject Name *</label>
-                <input type="text" id="gradeSubject" class="form-control" placeholder="e.g. Mathematics, Science, History" required autocomplete="off">
+                <input type="text" id="gradeSubject" class="form-control"
+                  placeholder="e.g. Mathematics, English, Basic Science" required autocomplete="off">
               </div>
               <div class="form-group">
-                <label class="form-label" for="gradeScore">Score (out of 100) *</label>
-                <input type="number" id="gradeScore" class="form-control" placeholder="e.g. 85" min="0" max="100" step="any" required>
+                <label class="form-label" for="gradeScore">Score (0 to 100) *</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <input type="number" id="gradeScore" class="form-control" placeholder="e.g. 75" min="0" max="100"
+                    step="0.1" required oninput="previewGradeCalculation(this.value)">
+                  <span id="gradeLivePreviewBadge" class="grade-badge" style="display: none; height: 38px;">-</span>
+                </div>
               </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
               <button type="submit" id="addGradeBtn" class="btn btn-primary">
-                <span>➕</span> Add Grade
+                <span>➕</span> Save Grade
               </button>
             </div>
           </form>
@@ -1052,10 +2037,12 @@
           <div class="card-header">
             <div>
               <h3 class="card-title"><span>📚</span> Academic Grade History</h3>
-              <p class="card-subtitle">All recorded subject marks and performance.</p>
+              <p class="card-subtitle">All recorded subject marks, auto-calculated letter grades, and cumulative average.</p>
             </div>
-            <div style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700);">
-              Average Score: <span id="gradeAverageDisplay" class="score-badge score-med">N/A</span>
+            <div style="font-size: 0.9rem; font-weight: 700; color: var(--gray-700); display: flex; align-items: center; gap: 0.5rem;">
+              <span>Average:</span>
+              <span id="gradeAverageDisplay" class="score-badge score-med">N/A</span>
+              <span id="gradeAverageLetterDisplay" class="grade-badge" style="display: none;">-</span>
             </div>
           </div>
 
@@ -1063,9 +2050,10 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width: 45%;">Subject</th>
-                  <th style="width: 25%;">Score (/100)</th>
-                  <th style="width: 30%;">Performance Grade</th>
+                  <th style="width: 40%; min-width: 140px;">Subject</th>
+                  <th style="width: 25%; min-width: 90px;">Score (/100)</th>
+                  <th style="width: 25%; min-width: 90px;">Grade</th>
+                  <th style="width: 10%; min-width: 60px; text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody id="gradesTableBody">
@@ -1087,13 +2075,230 @@
       <div id="noStudentSelectedPrompt" class="card" style="text-align: center; padding: 3rem 1.5rem;">
         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔍</div>
         <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.35rem;">Please Select a Student</h3>
-        <p style="color: var(--gray-600); font-size: 0.9rem; max-width: 400px; margin: 0 auto;">
-          Choose a student from the dropdown above to view their attendance metrics and recorded grades.
+        <p style="color: var(--gray-600); font-size: 0.9rem; max-width: 420px; margin: 0 auto;">
+          Choose a student from the dropdown above to view their attendance metrics, record subject grades, or print their official report card.
         </p>
       </div>
 
     </section>
 
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EDIT STUDENT (REQUIREMENT 1)        -->
+  <!-- ========================================== -->
+  <div class="modal-backdrop" id="editStudentModal" role="dialog" aria-modal="true" aria-labelledby="editStudentModalTitle">
+    <div class="modal-dialog" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3 id="editStudentModalTitle" style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem;">
+          <span>✏️</span> Edit Student Profile
+        </h3>
+        <button class="toast-close" onclick="closeEditModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="editStudentForm" onsubmit="handleSaveEditedStudent(event)">
+        <div class="modal-body">
+          <input type="hidden" id="editStudentId">
+          <input type="hidden" id="editOriginalRollNo">
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="editStudentName">Student Full Name *</label>
+            <input type="text" id="editStudentName" class="form-control" required autocomplete="off">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="editStudentRoll">Roll Number *</label>
+            <input type="text" id="editStudentRoll" class="form-control" required autocomplete="off">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="editStudentClass">Class / Grade *</label>
+            <select id="editStudentClass" class="form-control" required onchange="handleEditClassChange(this)">
+              <optgroup label="Primary Classes">
+                <option value="Primary 1">Primary 1</option>
+                <option value="Primary 2">Primary 2</option>
+                <option value="Primary 3">Primary 3</option>
+                <option value="Primary 4">Primary 4</option>
+                <option value="Primary 5">Primary 5</option>
+                <option value="Primary 6">Primary 6</option>
+              </optgroup>
+              <optgroup label="Secondary Classes">
+                <option value="JSS 1">JSS 1</option>
+                <option value="JSS 2">JSS 2</option>
+                <option value="JSS 3">JSS 3</option>
+                <option value="SSS 1">SSS 1</option>
+                <option value="SSS 2">SSS 2</option>
+                <option value="SSS 3">SSS 3</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="custom">Custom Class...</option>
+              </optgroup>
+            </select>
+            <input type="text" id="editCustomClassInput" class="form-control" placeholder="Type custom class name" style="display: none; margin-top: 0.4rem;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="editStudentGender">Gender *</label>
+            <select id="editStudentGender" class="form-control" required>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="editParentContact">Parent Contact Number *</label>
+            <input type="tel" id="editParentContact" class="form-control" placeholder="e.g. +234 801 234 5678" required autocomplete="off">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" id="saveEditStudentBtn" class="btn btn-primary">
+            <span>💾</span> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PRINTABLE REPORT CARD               -->
+  <!-- ========================================== -->
+  <div class="modal-backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="modalReportTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalReportTitle" style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem;">
+          <span>🖨️</span> Report Card Preview
+        </h3>
+        <button class="toast-close" onclick="closePrintModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Printable Report Sheet -->
+        <div class="printable-sheet" id="printableReportSheet">
+          <!-- School Branding -->
+          <div class="report-school-header">
+            <div style="font-size: 1.8rem; margin-bottom: 0.2rem;">🎓</div>
+            <h2 class="report-school-title">EDUTRACK ACADEMY</h2>
+            <div class="report-sub-title">STUDENT ACADEMIC PERFORMANCE & ATTENDANCE REPORT CARD</div>
+            <div style="font-size: 0.85rem; color: #4338ca; font-weight: 700; margin-top: 0.25rem;">
+              Session / Term: <span id="printSessionTermDisplay">First Term 2026/2027</span>
+            </div>
+          </div>
+
+          <!-- Student Profile Info (Shows real Gender and Contact after edit) -->
+          <div class="report-student-meta-grid">
+            <div class="report-meta-item">
+              <span class="report-meta-label">Student Name:</span>
+              <span class="report-meta-val" id="printStudentName">-</span>
+            </div>
+            <div class="report-meta-item">
+              <span class="report-meta-label">Roll Number:</span>
+              <span class="report-meta-val" id="printRollNo">-</span>
+            </div>
+            <div class="report-meta-item">
+              <span class="report-meta-label">Class / Grade:</span>
+              <span class="report-meta-val" id="printClass">-</span>
+            </div>
+            <div class="report-meta-item">
+              <span class="report-meta-label">Gender:</span>
+              <span class="report-meta-val" id="printGender">-</span>
+            </div>
+            <div class="report-meta-item">
+              <span class="report-meta-label">Parent Contact:</span>
+              <span class="report-meta-val" id="printContact">-</span>
+            </div>
+            <div class="report-meta-item">
+              <span class="report-meta-label">Report Date:</span>
+              <span class="report-meta-val" id="printDate">-</span>
+            </div>
+          </div>
+
+          <!-- Attendance Performance -->
+          <div style="margin-bottom: 1.15rem; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 6px; padding: 0.75rem 1rem;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: #3730a3; text-transform: uppercase; margin-bottom: 0.4rem;">
+              📅 Attendance Summary
+            </div>
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
+              <div>Total Days: <strong id="printTotalDays">0</strong></div>
+              <div>Days Present: <strong id="printDaysPresent" style="color: #15803d;">0</strong></div>
+              <div>Days Absent: <strong id="printDaysAbsent" style="color: #b91c1c;">0</strong></div>
+              <div>Attendance Rate: <strong id="printAttRate" style="color: #4338ca;">0%</strong></div>
+            </div>
+          </div>
+
+          <!-- Subjects and Grades Table -->
+          <table class="report-print-table">
+            <thead>
+              <tr>
+                <th style="width: 10%;">#</th>
+                <th style="width: 45%;">Subject</th>
+                <th style="width: 15%; text-align: center;">Score (/100)</th>
+                <th style="width: 15%; text-align: center;">Grade</th>
+                <th style="width: 15%; text-align: center;">Remark</th>
+              </tr>
+            </thead>
+            <tbody id="printGradesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+            <tfoot>
+              <tr style="background: #f8fafc; font-weight: 700;">
+                <td colspan="2" style="text-align: right;">Cumulative Average:</td>
+                <td style="text-align: center;" id="printAverageScore">0.0</td>
+                <td style="text-align: center;" id="printAverageGrade">-</td>
+                <td style="text-align: center;" id="printOverallRemark">-</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <!-- Grading Key Legend -->
+          <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 1.15rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <span><strong>Grading Scale:</strong></span>
+            <span>A = 70%+ (Distinction)</span>
+            <span>B = 60-69% (Credit)</span>
+            <span>C = 50-59% (Credit)</span>
+            <span>D = 40-49% (Pass)</span>
+            <span>F = Below 40% (Fail)</span>
+          </div>
+
+          <!-- Class Teacher's Remarks (Typed by teacher) -->
+          <div class="report-comments-box">
+            <label>Class Teacher's Remarks & Observations:</label>
+            <div id="printTeacherCommentDisplay" class="report-comments-display">Good academic progress.</div>
+          </div>
+
+          <!-- Principal's Remarks -->
+          <div class="report-comments-box">
+            <label>Principal's Remarks & Stamp Notes:</label>
+            <div id="printPrincipalCommentDisplay" class="report-comments-display">Approved. Keep striving for excellence.</div>
+          </div>
+
+          <!-- Signature Block -->
+          <div class="report-signatures">
+            <div>
+              <div style="height: 35px;"></div>
+              <div class="signature-line">Class Teacher's Signature</div>
+            </div>
+            <div>
+              <div style="height: 35px;"></div>
+              <div class="signature-line">Principal / Head Teacher Stamp</div>
+            </div>
+            <div>
+              <div style="height: 35px;"></div>
+              <div class="signature-line">Parent / Guardian Signature</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closePrintModal()">Close</button>
+        <button class="btn btn-primary" onclick="triggerPrintReport()">
+          <span>🖨️</span> Print / Save as PDF
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Notification Container -->
@@ -1104,14 +2309,26 @@
   <!-- ========================================== -->
   <script>
     // Configuration
-    const API_BASE_URL = 'http://127.0.0.1:5000/api';
+    const RENDER_API_URL = "https://edutrack-g2ej.onrender.com";
+    const LOCAL_API_URL = "http://127.0.0.1:5000";
+    let API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '')
+      ? LOCAL_API_URL
+      : RENDER_API_URL;
 
     // Global State
     let state = {
+      user: null, // { id, name, email, role, assigned_class }
+      token: localStorage.getItem('edutrack_token') || null,
       students: [],
+      filteredAttendanceStudents: [],
       currentTab: 'tab1',
       selectedRollNo: null,
-      isOnline: false
+      selectedStudentObj: null,
+      selectedStudentGrades: [],
+      selectedStudentReport: null,
+      selectedSession: 'First Term 2026/2027',
+      isOnline: false,
+      todayDate: ''
     };
 
     // ==========================================
@@ -1119,54 +2336,265 @@
     // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
       initDate();
-      loadStudents();
-      checkBackendHealth();
+      registerServiceWorker();
+
+      // Check saved authentication session
+      if (state.token) {
+        verifySession();
+      } else {
+        showAuthScreen();
+      }
     });
 
-    /**
-     * Initializes the attendance date to today's date in YYYY-MM-DD format
-     */
     function initDate() {
       const today = new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
       const day = String(today.getDate()).padStart(2, '0');
-      const formattedDate = `${year}-${month}-${day}`;
-      
+      state.todayDate = `${year}-${month}-${day}`;
+
       const dateInput = document.getElementById('attendanceDate');
-      if (dateInput) {
-        dateInput.value = formattedDate;
+      if (dateInput) dateInput.value = state.todayDate;
+
+      const dashDateLabel = document.getElementById('dashboardDateLabel');
+      if (dashDateLabel) {
+        dashDateLabel.textContent = `(${today.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })})`;
       }
     }
 
-    /**
-     * Checks if the backend server is reachable
-     */
-    async function checkBackendHealth() {
-      const dot = document.getElementById('serverStatusDot');
-      const text = document.getElementById('serverStatusText');
-      const alertBanner = document.getElementById('backendAlert');
+    function registerServiceWorker() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
+    }
+
+    // ==========================================
+    // AUTHENTICATED FETCH HELPER
+    // ==========================================
+    async function authFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      if (state.token) {
+        options.headers['Authorization'] = `Bearer ${state.token}`;
+      }
+      try {
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+          handleLogout();
+          showToast('Session Expired', 'Please sign in to continue.', 'warning');
+          throw new Error('Unauthorized');
+        }
+        return res;
+      } catch (err) {
+        // Fallback to Render URL if local server is unreachable
+        if (API_BASE_URL === LOCAL_API_URL && url.startsWith(LOCAL_API_URL)) {
+          const fallbackUrl = url.replace(LOCAL_API_URL, RENDER_API_URL);
+          API_BASE_URL = RENDER_API_URL;
+          return authFetch(fallbackUrl, options);
+        }
+        throw err;
+      }
+    }
+
+    // ==========================================
+    // AUTHENTICATION LOGIC (REQUIREMENT 3)
+    // ==========================================
+
+    function showAuthScreen() {
+      document.getElementById('authScreen').style.display = 'flex';
+      document.getElementById('appMainContent').style.display = 'none';
+    }
+
+    function showMainApp() {
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('appMainContent').style.display = 'block';
+
+      // Update user display badge
+      const user = state.user || {};
+      const isAdmin = user.role === 'admin';
+      document.getElementById('userDisplayName').textContent = user.name || 'User';
+      document.getElementById('userDisplayClass').textContent = isAdmin ? 'Admin (All Classes)' : (user.assigned_class || 'Primary 1');
+
+      // Adjust UI for Teacher vs Admin
+      applyRoleConstraints(isAdmin);
+
+      // Fetch dashboard and student roster
+      loadDashboardStats();
+      loadStudents();
+    }
+
+    function applyRoleConstraints(isAdmin) {
+      const attClassWrapper = document.getElementById('attendanceClassFilterWrapper');
+      const dirClassWrapper = document.getElementById('dirClassFilterWrapper');
+      const studentClassSelect = document.getElementById('studentClass');
+      const dashSub = document.getElementById('dashTotalStudentsSub');
+
+      if (isAdmin) {
+        if (attClassWrapper) attClassWrapper.style.display = 'block';
+        if (dirClassWrapper) dirClassWrapper.style.display = 'block';
+        if (dashSub) dashSub.textContent = 'Across all classes';
+        if (studentClassSelect) studentClassSelect.disabled = false;
+      } else {
+        // Lock teacher to assigned class
+        if (attClassWrapper) attClassWrapper.style.display = 'none';
+        if (dirClassWrapper) dirClassWrapper.style.display = 'none';
+        if (dashSub) dashSub.textContent = `In ${state.user.assigned_class}`;
+        if (studentClassSelect) {
+          const userClass = state.user.assigned_class;
+          let matchFound = false;
+          for (let i = 0; i < studentClassSelect.options.length; i++) {
+            if (studentClassSelect.options[i].value.toLowerCase() === (userClass || '').toLowerCase()) {
+              studentClassSelect.selectedIndex = i;
+              matchFound = true;
+              break;
+            }
+          }
+          if (!matchFound && userClass) {
+            const opt = document.createElement('option');
+            opt.value = userClass;
+            opt.textContent = userClass;
+            studentClassSelect.appendChild(opt);
+            studentClassSelect.value = userClass;
+          }
+          studentClassSelect.disabled = true;
+        }
+      }
+    }
+
+    async function verifySession() {
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/auth/me`);
+        if (!res.ok) throw new Error('Session invalid');
+        const data = await res.json();
+        state.user = data.user;
+        showMainApp();
+      } catch (err) {
+        handleLogout();
+      }
+    }
+
+    function switchAuthTab(mode) {
+      const loginTab = document.getElementById('tabLoginBtn');
+      const regTab = document.getElementById('tabRegisterBtn');
+      const loginForm = document.getElementById('loginForm');
+      const regForm = document.getElementById('registerForm');
+
+      if (mode === 'login') {
+        loginTab.classList.add('active');
+        regTab.classList.remove('active');
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+      } else {
+        regTab.classList.add('active');
+        loginTab.classList.remove('active');
+        regForm.style.display = 'block';
+        loginForm.style.display = 'none';
+      }
+    }
+
+    function quickFillLogin(email, password) {
+      switchAuthTab('login');
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = password;
+      document.getElementById('loginSubmitBtn').click();
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const submitBtn = document.getElementById('loginSubmitBtn');
 
       try {
-        const response = await fetch(`${API_BASE_URL}/students`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+
+        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
         });
 
-        if (response.ok) {
-          state.isOnline = true;
-          dot.className = 'status-dot online';
-          text.textContent = 'API Connected (127.0.0.1:5000)';
-          alertBanner.classList.remove('show');
-        } else {
-          throw new Error(`Server returned HTTP ${response.status}`);
-        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+
+        state.token = data.token;
+        state.user = data.user;
+        localStorage.setItem('edutrack_token', data.token);
+
+        showToast('Welcome!', `Logged in as ${data.user.name} (${data.user.role === 'admin' ? 'Admin' : data.user.assigned_class}).`, 'success');
+        showMainApp();
+
       } catch (err) {
-        state.isOnline = false;
-        dot.className = 'status-dot offline';
-        text.textContent = 'API Offline';
-        alertBanner.classList.add('show');
+        showToast('Login Failed', err.message || 'Invalid email or password.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔑</span> Sign In';
       }
+    }
+
+    function handleRegClassChange(select) {
+      const customInput = document.getElementById('regCustomClassInput');
+      if (select.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.required = true;
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.required = false;
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value.trim();
+      const classSelect = document.getElementById('regClass');
+      const customClassInput = document.getElementById('regCustomClassInput');
+      const assigned_class = (classSelect.value === 'custom' ? customClassInput.value : classSelect.value).trim();
+      const submitBtn = document.getElementById('regSubmitBtn');
+
+      if (!assigned_class) {
+        showToast('Missing Class', 'Please enter or select an assigned class.', 'warning');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
+
+        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, assigned_class, role: 'teacher' })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        state.token = data.token;
+        state.user = data.user;
+        localStorage.setItem('edutrack_token', data.token);
+
+        showToast('Account Created!', `Welcome, Teacher ${name} (${assigned_class})!`, 'success');
+        showMainApp();
+
+      } catch (err) {
+        showToast('Registration Error', err.message || 'Could not register teacher account.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>👤</span> Create Account & Sign In';
+      }
+    }
+
+    function handleLogout() {
+      state.token = null;
+      state.user = null;
+      localStorage.removeItem('edutrack_token');
+      document.getElementById('loginForm').reset();
+      document.getElementById('registerForm').reset();
+      showAuthScreen();
+      showToast('Logged Out', 'You have been signed out successfully.', 'info');
     }
 
     // ==========================================
@@ -1175,104 +2603,169 @@
     function switchTab(tabId) {
       state.currentTab = tabId;
 
-      // Update Tab Buttons
-      const tabButtons = document.querySelectorAll('.tab-btn');
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      
-      const currentBtn = document.getElementById(`tabBtn${tabId.replace('tab', '')}`);
-      if (currentBtn) currentBtn.classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`tabBtn${tabId.replace('tab', '')}`);
+      if (activeBtn) activeBtn.classList.add('active');
 
-      // Update Tab Panes
-      const panes = document.querySelectorAll('.tab-pane');
-      panes.forEach(pane => pane.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+      const activePane = document.getElementById(tabId);
+      if (activePane) activePane.classList.add('active');
 
-      const currentPane = document.getElementById(tabId);
-      if (currentPane) currentPane.classList.add('active');
-
-      // Refresh relevant data when entering tab
-      if (tabId === 'tab1' || tabId === 'tab3') {
-        loadStudents();
-      }
+      if (tabId === 'tab1') renderAttendanceList();
+      else if (tabId === 'tab2') renderDirectoryList();
+      else if (tabId === 'tab3') populateReportStudentDropdown();
     }
 
     // ==========================================
-    // API CALLS & DATA SYNC
+    // DASHBOARD: LOAD STATS (ROLE-AWARE)
     // ==========================================
+    async function loadDashboardStats() {
+      if (!state.token) return;
+      const refreshIcon = document.getElementById('dashRefreshIcon');
+      if (refreshIcon) refreshIcon.style.animation = 'spin 0.6s linear infinite';
 
-    /**
-     * Fetches all students from GET /api/students
-     */
-    async function loadStudents(showSuccessToast = false) {
       try {
-        const res = await fetch(`${API_BASE_URL}/students`);
-        if (!res.ok) {
-          throw new Error(`Failed to load students: ${res.statusText} (${res.status})`);
-        }
+        const dateInput = document.getElementById('attendanceDate');
+        const targetDate = dateInput ? dateInput.value : state.todayDate;
+
+        const res = await authFetch(`${API_BASE_URL}/api/dashboard?date=${encodeURIComponent(targetDate)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        document.getElementById('dashTotalStudents').textContent = data.total_students ?? state.students.length;
+        document.getElementById('dashPresentToday').textContent = data.present_today ?? 0;
+        document.getElementById('dashAbsentToday').textContent = data.absent_today ?? 0;
+
+        const rate = (data.attendance_percentage !== undefined) ? `${data.attendance_percentage}%` : '0%';
+        document.getElementById('dashAttendanceRate').textContent = rate;
+
+      } catch (err) {
+        console.warn('Dashboard stats error:', err);
+      } finally {
+        if (refreshIcon) refreshIcon.style.animation = '';
+      }
+    }
+
+    function onAttendanceDateChange() {
+      loadDashboardStats();
+    }
+
+    // ==========================================
+    // STUDENTS: LOAD & SYNC
+    // ==========================================
+    async function loadStudents(showSuccessToast = false) {
+      if (!state.token) return;
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/students`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
         state.students = Array.isArray(data) ? data : (data.students || []);
-        
-        // Update Server Status
-        document.getElementById('serverStatusDot').className = 'status-dot online';
-        document.getElementById('serverStatusText').textContent = 'API Connected';
-        document.getElementById('backendAlert').classList.remove('show');
 
-        // Render UI Across Tabs
+        updateClassFilterOptions();
         renderAttendanceList();
         renderDirectoryList();
         populateReportStudentDropdown();
+        loadDashboardStats();
 
         if (showSuccessToast) {
-          showToast('Success', 'Student list updated successfully.', 'success');
+          showToast('Updated', 'Student records synced.', 'success');
         }
       } catch (err) {
         console.error('Error fetching students:', err);
-        document.getElementById('serverStatusDot').className = 'status-dot offline';
-        document.getElementById('serverStatusText').textContent = 'API Offline';
-        document.getElementById('backendAlert').classList.add('show');
-        showToast('Connection Error', 'Unable to fetch student list from backend.', 'error');
       }
     }
 
+    function updateClassFilterOptions() {
+      const classes = new Set(['Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'JSS 1', 'JSS 2', 'JSS 3', 'SSS 1', 'SSS 2', 'SSS 3']);
+      state.students.forEach(s => {
+        const cls = s.student_class || s.class;
+        if (cls) classes.add(cls);
+      });
+
+      const sortedClasses = Array.from(classes);
+      const attSelect = document.getElementById('attendanceClassFilter');
+      const dirSelect = document.getElementById('dirClassFilter');
+
+      const buildOptions = (currentVal) => {
+        return '<option value="">All Classes</option>' +
+          sortedClasses.map(c => `<option value="${escapeHtml(c)}" ${c === currentVal ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+      };
+
+      if (attSelect) attSelect.innerHTML = buildOptions(attSelect.value);
+      if (dirSelect) dirSelect.innerHTML = buildOptions(dirSelect.value);
+    }
+
     // ==========================================
-    // TAB 1: MARK ATTENDANCE LOGIC
+    // TAB 1: MARK ATTENDANCE
     // ==========================================
 
-    /**
-     * Renders students list in Tab 1 Attendance Table
-     */
+    function handleAttendanceFilter() {
+      renderAttendanceList();
+    }
+
+    function clearAttendanceFilters() {
+      document.getElementById('attendanceSearch').value = '';
+      document.getElementById('attendanceClassFilter').value = '';
+      renderAttendanceList();
+    }
+
     function renderAttendanceList() {
       const tbody = document.getElementById('attendanceTableBody');
       const emptyState = document.getElementById('attendanceEmptyState');
-      const table = document.getElementById('attendanceTable');
-      const countBadge = document.getElementById('studentCountBadge');
+      const countBadge = document.getElementById('studentFilterCountBadge');
+      const resetBtn = document.getElementById('clearAttendanceFilterBtn');
 
-      countBadge.textContent = state.students.length;
+      const searchTerm = (document.getElementById('attendanceSearch')?.value || '').trim().toLowerCase();
+      const selectedClass = (document.getElementById('attendanceClassFilter')?.value || '').trim().toLowerCase();
 
-      if (!state.students || state.students.length === 0) {
+      if (resetBtn) {
+        resetBtn.style.display = (searchTerm || selectedClass) ? 'inline-flex' : 'none';
+      }
+
+      const filtered = state.students.filter(s => {
+        const name = (s.student_name || s.name || '').toLowerCase();
+        const roll = String(s.roll_no || '').toLowerCase();
+        const cls = (s.student_class || s.class || '').toLowerCase();
+
+        const matchesSearch = !searchTerm || name.includes(searchTerm) || roll.includes(searchTerm);
+        const matchesClass = !selectedClass || cls === selectedClass;
+
+        return matchesSearch && matchesClass;
+      });
+
+      state.filteredAttendanceStudents = filtered;
+      countBadge.textContent = `${filtered.length} of ${state.students.length}`;
+
+      if (filtered.length === 0) {
         tbody.innerHTML = '';
-        table.style.display = 'none';
         emptyState.style.display = 'block';
+        if (state.students.length > 0) {
+          document.getElementById('attendanceEmptyMsg').textContent = 'No students match your filter criteria.';
+        } else {
+          document.getElementById('attendanceEmptyMsg').textContent = "No students found in your assigned class roster.";
+        }
         return;
       }
 
-      table.style.display = 'table';
       emptyState.style.display = 'none';
 
-      tbody.innerHTML = state.students.map((student, index) => {
+      tbody.innerHTML = filtered.map((student, index) => {
         const rollNo = student.roll_no;
-        const studentName = student.student_name || student.name || 'Unnamed Student';
+        const studentName = student.student_name || student.name || 'Student';
+        const studentClass = student.student_class || student.class || 'Primary 1';
         const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
 
         return `
           <tr data-roll-no="${escapeHtml(rollNo)}">
-            <td>
-              <span class="roll-badge">${escapeHtml(rollNo || 'N/A')}</span>
+            <td class="cell-student-info">
+              <div>
+                <span class="roll-badge">${escapeHtml(rollNo)}</span>
+                <strong style="color: var(--gray-900); margin-left: 0.5rem;">${escapeHtml(studentName)}</strong>
+              </div>
+              <span class="class-badge">${escapeHtml(studentClass)}</span>
             </td>
-            <td>
-              <strong style="color: var(--gray-900);">${escapeHtml(studentName)}</strong>
-            </td>
-            <td style="text-align: center;">
+            <td class="cell-status" style="text-align: center;">
               <div class="radio-pill-group" role="radiogroup" aria-label="Attendance for ${escapeHtml(studentName)}">
                 <div class="radio-pill-option">
                   <input type="radio" 
@@ -1296,42 +2789,38 @@
       }).join('');
     }
 
-    /**
-     * Quick action to set all students to Present or Absent
-     */
     function bulkSetAttendance(status) {
-      state.students.forEach((student, index) => {
+      const targetList = state.filteredAttendanceStudents.length > 0 ? state.filteredAttendanceStudents : state.students;
+      targetList.forEach((student, index) => {
         const rollNo = student.roll_no;
         const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
         const radio = document.querySelector(`input[name="attendance_${fieldKey}"][value="${status}"]`);
         if (radio) radio.checked = true;
       });
-      showToast('Action Applied', `Marked all students as ${status}.`, 'info');
+      showToast('Bulk Action', `Marked ${targetList.length} visible student(s) as ${status}.`, 'info');
     }
 
-    /**
-     * Submits attendance records via POST /api/attendance
-     */
     async function saveAttendance() {
       const saveBtn = document.getElementById('saveAttendanceBtn');
-      const dateInput = document.getElementById('attendanceDate');
-      const date = dateInput.value;
+      const date = document.getElementById('attendanceDate').value;
 
       if (!date) {
-        showToast('Validation Error', 'Please select a valid date.', 'warning');
+        showToast('Validation Error', 'Please select a valid attendance date.', 'warning');
         return;
       }
 
-      if (!state.students || state.students.length === 0) {
-        showToast('No Students', 'No students available to mark attendance for.', 'warning');
+      const targetList = state.filteredAttendanceStudents.length > 0 ? state.filteredAttendanceStudents : state.students;
+      if (!targetList || targetList.length === 0) {
+        showToast('No Students', 'No students to mark attendance for.', 'warning');
         return;
       }
 
-      // Gather attendance payload: [{"student_name": "...", "roll_no": "...", "date": "...", "status": "..."}]
       const payload = [];
-      state.students.forEach((student, index) => {
+      targetList.forEach((student, index) => {
         const rollNo = student.roll_no;
         const studentName = student.student_name || student.name || '';
+        const studentClass = student.student_class || student.class || '';
+
         const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
         const selectedRadio = document.querySelector(`input[name="attendance_${fieldKey}"]:checked`);
         const status = selectedRadio ? selectedRadio.value : 'Present';
@@ -1339,6 +2828,7 @@
         payload.push({
           student_name: studentName,
           roll_no: rollNo,
+          student_class: studentClass,
           date: date,
           status: status
         });
@@ -1346,33 +2836,27 @@
 
       try {
         saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span>⏳</span> Saving...';
+        saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
 
-        const res = await fetch(`${API_BASE_URL}/attendance`, {
+        const res = await authFetch(`${API_BASE_URL}/api/attendance`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
         const result = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
 
-        if (!res.ok) {
-          const errorMsg = result.message || result.error || `HTTP ${res.status}: Failed to save attendance`;
-          throw new Error(errorMsg);
-        }
+        showToast('Saved!', `Successfully recorded attendance for ${payload.length} student(s) on ${date}.`, 'success');
+        loadDashboardStats();
 
-        showToast('Attendance Saved', result.message || `Successfully recorded attendance for ${payload.length} students on ${date}.`, 'success');
-        
-        // If a student in tab 3 is currently selected, refresh their report
         if (state.selectedRollNo) {
           loadStudentReport(state.selectedRollNo);
         }
+
       } catch (err) {
         console.error('Error saving attendance:', err);
-        showToast('Save Failed', err.message || 'Could not connect to server.', 'error');
+        showToast('Save Failed', err.message || 'Could not save attendance.', 'error');
       } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<span>💾</span> Save Attendance';
@@ -1380,116 +2864,317 @@
     }
 
     // ==========================================
-    // TAB 2: ADD STUDENT LOGIC
+    // TAB 2: ENROLL STUDENT & EDIT (REQUIREMENT 1)
     // ==========================================
 
-    /**
-     * Handles adding a new student via POST /api/students
-     */
+    function handleClassSelectChange(select) {
+      const customInput = document.getElementById('customClassInput');
+      if (select.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.required = true;
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.required = false;
+      }
+    }
+
     async function handleAddStudent(event) {
       event.preventDefault();
-      
-      const nameInput = document.getElementById('studentName');
-      const rollInput = document.getElementById('studentRoll');
+
+      const name = document.getElementById('studentName').value.trim();
+      const roll_no = document.getElementById('studentRoll').value.trim();
+      const classSelect = document.getElementById('studentClass');
+      const customClassInput = document.getElementById('customClassInput');
+      const student_class = (classSelect.value === 'custom' ? customClassInput.value : classSelect.value).trim();
+      const gender = document.getElementById('studentGender').value;
+      const parent_contact = document.getElementById('parentContact').value.trim();
       const submitBtn = document.getElementById('addStudentBtn');
 
-      const name = nameInput.value.trim();
-      const roll_no = rollInput.value.trim();
-
-      if (!name || !roll_no) {
-        showToast('Missing Fields', 'Please fill in both Student Name and Roll Number.', 'warning');
+      if (!name || !roll_no || !student_class) {
+        showToast('Missing Fields', 'Please fill in Name, Roll Number, and Class.', 'warning');
         return;
       }
 
-      // Check client-side duplicate roll number
-      const isDuplicate = state.students.some(s => String(s.roll_no).toLowerCase() === roll_no.toLowerCase());
-      if (isDuplicate) {
+      const duplicate = state.students.some(s => String(s.roll_no).toLowerCase() === roll_no.toLowerCase());
+      if (duplicate) {
         showToast('Duplicate Roll Number', `Roll Number "${roll_no}" is already registered.`, 'error');
         return;
       }
 
       try {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳</span> Adding...';
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Enrolling...';
 
         const payload = {
           student_name: name,
-          roll_no: roll_no
+          roll_no: roll_no,
+          student_class: student_class,
+          gender: gender,
+          parent_contact: parent_contact
         };
 
-        const res = await fetch(`${API_BASE_URL}/students`, {
+        const res = await authFetch(`${API_BASE_URL}/api/students`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
         const result = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
 
-        if (!res.ok) {
-          // Handle backend duplicate roll_no error or validation errors
-          if (res.status === 409 || (result.error && result.error.toLowerCase().includes('already exists'))) {
-            throw new Error(`Roll Number "${roll_no}" already exists in the database.`);
-          }
-          throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to add student.`);
-        }
-
-        // Success
-        showToast('Student Added!', result.message || `${name} (Roll: ${roll_no}) was successfully enrolled.`, 'success');
-        
-        // Reset form
-        nameInput.value = '';
-        rollInput.value = '';
-        nameInput.focus();
-
-        // Refresh lists across tabs
+        showToast('Student Enrolled!', `${name} (${student_class}, Roll: ${roll_no}) was successfully enrolled.`, 'success');
+        document.getElementById('addStudentForm').reset();
+        customClassInput.style.display = 'none';
         await loadStudents();
 
       } catch (err) {
         console.error('Error adding student:', err);
-        showToast('Error', err.message || 'Unable to add student. Please try again.', 'error');
+        showToast('Enrollment Failed', err.message || 'Unable to save student.', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>👤</span> Add Student';
+        submitBtn.innerHTML = '<span>👤</span> Enroll Student';
       }
     }
 
-    /**
-     * Renders students list in Tab 2 Directory Table
-     */
+    function handleDirectoryFilter() {
+      renderDirectoryList();
+    }
+
     function renderDirectoryList() {
       const tbody = document.getElementById('directoryTableBody');
       const emptyState = document.getElementById('directoryEmptyState');
 
-      if (!state.students || state.students.length === 0) {
+      const searchTerm = (document.getElementById('dirSearch')?.value || '').trim().toLowerCase();
+      const selectedClass = (document.getElementById('dirClassFilter')?.value || '').trim().toLowerCase();
+
+      const filtered = state.students.filter(s => {
+        const name = (s.student_name || s.name || '').toLowerCase();
+        const roll = String(s.roll_no || '').toLowerCase();
+        const cls = (s.student_class || s.class || '').toLowerCase();
+
+        const matchesSearch = !searchTerm || name.includes(searchTerm) || roll.includes(searchTerm);
+        const matchesClass = !selectedClass || cls === selectedClass;
+
+        return matchesSearch && matchesClass;
+      });
+
+      if (filtered.length === 0) {
         tbody.innerHTML = '';
         emptyState.style.display = 'block';
         return;
       }
 
       emptyState.style.display = 'none';
-      tbody.innerHTML = state.students.map(student => {
+      tbody.innerHTML = filtered.map(student => {
+        const id = student.id;
         const rollNo = student.roll_no;
-        const studentName = student.student_name || student.name || '';
+        const studentName = student.student_name || student.name || 'Unnamed';
+        const studentClass = student.student_class || student.class || 'Primary 1';
+        const gender = student.gender || 'Unspecified';
+        const parentContact = student.parent_contact || 'N/A';
+
         return `
           <tr>
-            <td><span class="roll-badge">${escapeHtml(rollNo || 'N/A')}</span></td>
-            <td><strong>${escapeHtml(studentName)}</strong></td>
-            <td style="text-align: right;">
-              <button class="btn btn-secondary btn-sm" onclick="viewStudentReport('${escapeHtml(rollNo)}')">
-                View Report →
-              </button>
+            <td>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span class="roll-badge">${escapeHtml(rollNo)}</span>
+                  <strong style="color: var(--gray-900); margin-left: 0.5rem;">${escapeHtml(studentName)}</strong>
+                </div>
+                <span class="class-badge">${escapeHtml(studentClass)}</span>
+              </div>
+            </td>
+            <td>
+              <div style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.2rem;">
+                <span>Gender: <strong style="color: ${gender === 'Unspecified' ? 'var(--danger)' : 'var(--gray-800)'}">${escapeHtml(gender)}</strong></span> | 
+                <span>Parent: <strong style="color: ${parentContact === 'N/A' || !parentContact ? 'var(--danger)' : 'var(--gray-800)'}">${escapeHtml(parentContact)}</strong></span>
+              </div>
+            </td>
+            <td class="dir-actions-cell" style="text-align: right;">
+              <div class="dir-btn-group" style="display: inline-flex; gap: 0.35rem; justify-content: flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="viewStudentReport('${escapeHtml(rollNo)}')">
+                  Report →
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="openEditStudentModal('${escapeHtml(id)}', '${escapeHtml(rollNo)}')" title="Edit student info">
+                  ✏️ Edit
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="handleRemoveStudent('${escapeHtml(id)}', '${escapeHtml(rollNo)}', '${escapeHtml(studentName)}')" title="Remove student">
+                  🗑️ Remove
+                </button>
+              </div>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    /**
-     * Shortcut to switch to Tab 3 and select a specific student
-     */
+    // ==========================================
+    // REQUIREMENT 1: EDIT STUDENT DETAILS MODAL
+    // ==========================================
+    function openEditStudentModal(id, rollNo) {
+      const student = state.students.find(s => String(s.roll_no) === String(rollNo) || String(s.id) === String(id));
+      if (!student) {
+        showToast('Error', 'Student record not found.', 'error');
+        return;
+      }
+
+      document.getElementById('editStudentId').value = student.id || id;
+      document.getElementById('editOriginalRollNo').value = student.roll_no;
+      document.getElementById('editStudentName').value = student.student_name || student.name || '';
+      document.getElementById('editStudentRoll').value = student.roll_no;
+      
+      const classSelect = document.getElementById('editStudentClass');
+      const editCustomClassInput = document.getElementById('editCustomClassInput');
+      if (editCustomClassInput) {
+        editCustomClassInput.style.display = 'none';
+        editCustomClassInput.value = '';
+        editCustomClassInput.required = false;
+      }
+
+      const currentClass = student.student_class || student.class || 'Primary 1';
+      let matchIndex = -1;
+      for (let i = 0; i < classSelect.options.length; i++) {
+        if (classSelect.options[i].value.toLowerCase() === currentClass.toLowerCase()) {
+          matchIndex = i;
+          break;
+        }
+      }
+
+      if (matchIndex >= 0) {
+        classSelect.selectedIndex = matchIndex;
+      } else {
+        const opt = document.createElement('option');
+        opt.value = currentClass;
+        opt.textContent = currentClass;
+        classSelect.appendChild(opt);
+        classSelect.value = currentClass;
+      }
+
+      if (state.user && state.user.role === 'teacher') {
+        classSelect.disabled = true; // Teacher cannot transfer student
+      } else {
+        classSelect.disabled = false;
+      }
+
+      const gender = student.gender && student.gender !== 'Unspecified' ? student.gender : 'Female';
+      document.getElementById('editStudentGender').value = gender;
+      
+      const contact = student.parent_contact && student.parent_contact !== 'N/A' ? student.parent_contact : '';
+      document.getElementById('editParentContact').value = contact;
+
+      document.getElementById('editStudentModal').classList.add('active');
+    }
+
+    function handleEditClassChange(select) {
+      const customInput = document.getElementById('editCustomClassInput');
+      if (!customInput) return;
+      if (select.value === 'custom') {
+        customInput.style.display = 'block';
+        customInput.required = true;
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.required = false;
+      }
+    }
+
+    function closeEditModal() {
+      document.getElementById('editStudentModal').classList.remove('active');
+    }
+
+    async function handleSaveEditedStudent(event) {
+      event.preventDefault();
+
+      const originalRollNo = document.getElementById('editOriginalRollNo').value;
+      const studentId = document.getElementById('editStudentId').value || originalRollNo;
+      const newName = document.getElementById('editStudentName').value.trim();
+      const newRoll = document.getElementById('editStudentRoll').value.trim();
+      const classSelect = document.getElementById('editStudentClass');
+      const customClassInput = document.getElementById('editCustomClassInput');
+      const newClass = (classSelect.value === 'custom' ? (customClassInput ? customClassInput.value : '') : classSelect.value).trim();
+      const newGender = document.getElementById('editStudentGender').value;
+      const newContact = document.getElementById('editParentContact').value.trim();
+      const submitBtn = document.getElementById('saveEditStudentBtn');
+
+      if (!newName || !newRoll || !newClass) {
+        showToast('Validation Error', 'Student name, roll number, and class are required.', 'warning');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+
+        const payload = {
+          student_name: newName,
+          roll_no: newRoll,
+          student_class: newClass,
+          gender: newGender,
+          parent_contact: newContact
+        };
+
+        const res = await authFetch(`${API_BASE_URL}/api/students/${encodeURIComponent(studentId)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to update student');
+
+        showToast('Student Updated!', `${newName}'s profile has been updated.`, 'success');
+        closeEditModal();
+
+        // Refresh rosters
+        await loadStudents();
+
+        // If currently viewing this student in Tab 3, refresh their report
+        if (state.selectedRollNo === originalRollNo || state.selectedRollNo === newRoll) {
+          state.selectedRollNo = newRoll;
+          document.getElementById('reportStudentSelect').value = newRoll;
+          await loadStudentReport(newRoll);
+        }
+
+      } catch (err) {
+        console.error('Error updating student:', err);
+        showToast('Update Failed', err.message || 'Could not save student changes.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>💾</span> Save Changes';
+      }
+    }
+
+    async function handleRemoveStudent(id, rollNo, studentName) {
+      const confirmDelete = window.confirm("Are you sure you want to remove this student?");
+      if (!confirmDelete) return;
+
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/students/${encodeURIComponent(id || rollNo)}`, {
+          method: 'DELETE'
+        });
+
+        const result = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
+
+        showToast('Student Removed', result.message || `Student '${studentName}' and all records were deleted.`, 'success');
+
+        if (state.selectedRollNo === rollNo) {
+          state.selectedRollNo = null;
+          state.selectedStudentObj = null;
+          document.getElementById('reportStudentSelect').value = '';
+          document.getElementById('studentReportContainer').style.display = 'none';
+          document.getElementById('noStudentSelectedPrompt').style.display = 'block';
+        }
+
+        await loadStudents();
+
+      } catch (err) {
+        console.error('Error removing student:', err);
+        showToast('Removal Failed', err.message || 'Could not delete student.', 'error');
+      }
+    }
+
     function viewStudentReport(rollNo) {
       switchTab('tab3');
       const select = document.getElementById('reportStudentSelect');
@@ -1498,32 +3183,73 @@
     }
 
     // ==========================================
-    // TAB 3: GRADES & REPORT LOGIC
+    // TAB 3: GRADES & REPORT CARD (REQUIREMENT 2)
     // ==========================================
 
-    /**
-     * Populates the student dropdown in Tab 3
-     */
+    function handleSessionChange(val) {
+      const customInput = document.getElementById('customSessionInput');
+      if (val === 'custom') {
+        customInput.style.display = 'block';
+        customInput.focus();
+        state.selectedSession = customInput.value || 'Custom Session';
+      } else {
+        customInput.style.display = 'none';
+        state.selectedSession = val;
+      }
+      document.getElementById('printSessionTermDisplay').textContent = state.selectedSession;
+    }
+
+    function syncCustomSession(val) {
+      state.selectedSession = val.trim() || 'Custom Session';
+      document.getElementById('printSessionTermDisplay').textContent = state.selectedSession;
+    }
+
+    function autoSuggestTeacherComment() {
+      const avg = parseFloat(document.getElementById('gradeAverageDisplay').textContent) || 0;
+      const attRate = parseFloat(document.getElementById('reportPercentage').textContent) || 0;
+      const box = document.getElementById('tab3TeacherComment');
+
+      if (avg >= 70 && attRate >= 75) {
+        box.value = "An exemplary student with outstanding academic performance and excellent class attendance! Consistently shows curiosity and discipline.";
+      } else if (avg >= 55) {
+        box.value = "Good academic progress and commendable participation. With more focused study in key subjects, will attain greater heights.";
+      } else {
+        box.value = "Needs dedicated academic intervention and regular guidance. Encouraged to participate more actively in classroom discussions.";
+      }
+      showToast('Suggested', 'Teacher comments template applied.', 'info');
+    }
+
+    function autoSuggestPrincipalComment() {
+      const avg = parseFloat(document.getElementById('gradeAverageDisplay').textContent) || 0;
+      const box = document.getElementById('tab3PrincipalComment');
+
+      if (avg >= 70) {
+        box.value = "Commendable achievement. Promoted with honours to the next grade.";
+      } else if (avg >= 45) {
+        box.value = "Satisfactory result. Encouraged to maintain consistent effort in the coming term.";
+      } else {
+        box.value = "Notice to parents: Special remedial support recommended for next session.";
+      }
+      showToast('Suggested', 'Principal comments template applied.', 'info');
+    }
+
     function populateReportStudentDropdown() {
       const select = document.getElementById('reportStudentSelect');
       const previousValue = select.value;
 
-      select.innerHTML = '<option value="">-- Choose a student --</option>' + 
+      select.innerHTML = '<option value="">-- Choose a student --</option>' +
         state.students.map(student => {
           const rollNo = student.roll_no;
           const studentName = student.student_name || student.name || '';
-          return `<option value="${escapeHtml(rollNo)}">[${escapeHtml(rollNo)}] ${escapeHtml(studentName)}</option>`;
+          const studentClass = student.student_class || student.class || '';
+          return `<option value="${escapeHtml(rollNo)}">[${escapeHtml(rollNo)}] ${escapeHtml(studentName)} (${escapeHtml(studentClass)})</option>`;
         }).join('');
 
-      // Restore previously selected student if still exists
       if (previousValue && state.students.some(s => String(s.roll_no) === String(previousValue))) {
         select.value = previousValue;
       }
     }
 
-    /**
-     * Triggered when a student is selected from dropdown
-     */
     async function onStudentSelectChange() {
       const select = document.getElementById('reportStudentSelect');
       const rollNo = select.value;
@@ -1535,51 +3261,70 @@
       if (!rollNo) {
         reportContainer.style.display = 'none';
         promptCard.style.display = 'block';
+        state.selectedStudentObj = null;
         return;
       }
 
       promptCard.style.display = 'none';
       reportContainer.style.display = 'block';
 
-      // Find student name
       const student = state.students.find(s => String(s.roll_no) === String(rollNo));
-      const studentName = student ? (student.student_name || student.name) : 'Student';
-      document.getElementById('reportStudentNameDisplay').textContent = `${studentName} (${rollNo})`;
+      state.selectedStudentObj = student;
 
-      // Load attendance report & grades in parallel
+      const studentName = student ? (student.student_name || student.name) : 'Student';
+      const studentClass = student ? (student.student_class || student.class) : 'Primary 1';
+      const gender = student?.gender || 'Unspecified';
+      const contact = student?.parent_contact || 'N/A';
+
+      document.getElementById('reportStudentNameDisplay').textContent = `${studentName} (Roll: ${rollNo})`;
+      document.getElementById('reportStudentDetailsLine').textContent = `Class: ${studentClass} | Gender: ${gender} | Contact: ${contact}`;
+
+      // Reset comment fields for this student
+      const teacherBox = document.getElementById('tab3TeacherComment');
+      const principalBox = document.getElementById('tab3PrincipalComment');
+      if (!teacherBox.value) teacherBox.value = "Good academic progress and commendable participation in class.";
+      if (!principalBox.value) principalBox.value = "Approved. Keep striving for academic excellence.";
+
       await Promise.all([
         loadStudentReport(rollNo),
         loadStudentGrades(rollNo)
       ]);
     }
 
-    /**
-     * Loads attendance metrics via GET /api/report/<roll_no>
-     */
     async function loadStudentReport(rollNo) {
       try {
-        const res = await fetch(`${API_BASE_URL}/report/${encodeURIComponent(rollNo)}`);
-        if (!res.ok) {
-          throw new Error(`Failed to load attendance report (HTTP ${res.status})`);
-        }
+        const res = await authFetch(`${API_BASE_URL}/api/report/${encodeURIComponent(rollNo)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const report = await res.json();
-        // Expected response: { "roll_no": "101", "present": 5, "total": 10, "percentage": 50.00 }
+        state.selectedStudentReport = report;
+
+        // Keep local student object updated with backend data
+        if (state.selectedStudentObj) {
+          state.selectedStudentObj.gender = report.gender;
+          state.selectedStudentObj.parent_contact = report.parent_contact;
+          state.selectedStudentObj.student_class = report.student_class;
+          state.selectedStudentObj.student_name = report.student_name;
+        }
+
+        document.getElementById('reportStudentDetailsLine').textContent = 
+          `Class: ${report.student_class || 'Primary 1'} | Gender: ${report.gender || 'Unspecified'} | Contact: ${report.parent_contact || 'N/A'}`;
+
         const present = report.present ?? 0;
+        const absent = report.absent ?? 0;
         const total = report.total ?? 0;
         const percentage = Number(report.percentage ?? (total > 0 ? (present / total * 100) : 0)).toFixed(1);
 
         document.getElementById('reportPresentCount').textContent = present;
+        document.getElementById('reportAbsentCount').textContent = absent;
         document.getElementById('reportTotalCount').textContent = total;
         document.getElementById('reportPercentage').textContent = `${percentage}%`;
-        document.getElementById('reportSummaryText').textContent = `Attendance: ${present}/${total} = ${percentage}%`;
+        document.getElementById('reportSummaryText').textContent = `Attendance: ${present}/${total} days = ${percentage}%`;
         document.getElementById('reportProgressBarLabel').textContent = `${percentage}%`;
 
-        // Update Progress Bar
         const bar = document.getElementById('reportProgressBar');
         bar.style.width = `${Math.min(100, Math.max(0, percentage))}%`;
 
-        // Update Badge Status & Bar Color
         const badge = document.getElementById('attendanceBadge');
         if (percentage >= 75) {
           badge.className = 'badge badge-success';
@@ -1596,98 +3341,97 @@
         }
 
       } catch (err) {
-        console.error('Error loading student report:', err);
-        document.getElementById('reportSummaryText').textContent = 'Attendance report data unavailable';
-        showToast('Report Error', 'Could not load student attendance report.', 'error');
+        console.error('Error loading attendance report:', err);
       }
     }
 
-    /**
-     * Loads student grades via GET /api/grades/<roll_no>
-     */
+    function computeGradeLetter(score) {
+      const s = parseFloat(score);
+      if (isNaN(s)) return { letter: 'N/A', cls: '' };
+      if (s >= 70) return { letter: 'A', remark: 'Distinction', cls: 'grade-A' };
+      if (s >= 60) return { letter: 'B', remark: 'Credit', cls: 'grade-B' };
+      if (s >= 50) return { letter: 'C', remark: 'Credit', cls: 'grade-C' };
+      if (s >= 40) return { letter: 'D', remark: 'Pass', cls: 'grade-D' };
+      return { letter: 'F', remark: 'Fail', cls: 'grade-F' };
+    }
+
+    function previewGradeCalculation(scoreVal) {
+      const badge = document.getElementById('gradeLivePreviewBadge');
+      if (!scoreVal || isNaN(scoreVal)) {
+        badge.style.display = 'none';
+        return;
+      }
+      const grade = computeGradeLetter(scoreVal);
+      badge.textContent = `Grade ${grade.letter} (${grade.remark})`;
+      badge.className = `grade-badge ${grade.cls}`;
+      badge.style.display = 'inline-flex';
+    }
+
     async function loadStudentGrades(rollNo) {
       const tbody = document.getElementById('gradesTableBody');
       const emptyState = document.getElementById('gradesEmptyState');
       const averageDisplay = document.getElementById('gradeAverageDisplay');
+      const averageLetterDisplay = document.getElementById('gradeAverageLetterDisplay');
 
       try {
-        const res = await fetch(`${API_BASE_URL}/grades/${encodeURIComponent(rollNo)}`);
-        if (!res.ok) {
-          throw new Error(`Failed to load grades (HTTP ${res.status})`);
-        }
+        const res = await authFetch(`${API_BASE_URL}/api/grades/${encodeURIComponent(rollNo)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const grades = await res.json();
-        const gradeList = Array.isArray(grades) ? grades : (grades.grades || []);
+        const gradeList = await res.json();
+        state.selectedStudentGrades = Array.isArray(gradeList) ? gradeList : (gradeList.grades || []);
 
-        if (!gradeList || gradeList.length === 0) {
+        if (!state.selectedStudentGrades || state.selectedStudentGrades.length === 0) {
           tbody.innerHTML = '';
           emptyState.style.display = 'block';
           averageDisplay.textContent = 'N/A';
           averageDisplay.className = 'score-badge score-med';
+          averageLetterDisplay.style.display = 'none';
           return;
         }
 
         emptyState.style.display = 'none';
 
         let totalScore = 0;
-        tbody.innerHTML = gradeList.map(item => {
+        tbody.innerHTML = state.selectedStudentGrades.map(item => {
           const score = Number(item.score);
           totalScore += isNaN(score) ? 0 : score;
-
-          let gradeLetter = 'F';
-          let badgeClass = 'score-low';
-
-          if (score >= 90) {
-            gradeLetter = 'A+ (Outstanding)';
-            badgeClass = 'score-high';
-          } else if (score >= 80) {
-            gradeLetter = 'A (Excellent)';
-            badgeClass = 'score-high';
-          } else if (score >= 70) {
-            gradeLetter = 'B (Good)';
-            badgeClass = 'score-med';
-          } else if (score >= 60) {
-            gradeLetter = 'C (Satisfactory)';
-            badgeClass = 'score-med';
-          } else if (score >= 50) {
-            gradeLetter = 'D (Pass)';
-            badgeClass = 'score-low';
-          } else {
-            gradeLetter = 'F (Fail)';
-            badgeClass = 'score-low';
-          }
+          const gradeInfo = computeGradeLetter(score);
 
           return `
             <tr>
               <td><strong>${escapeHtml(item.subject || 'N/A')}</strong></td>
-              <td><span class="score-badge ${badgeClass}">${score}/100</span></td>
-              <td><span class="badge ${score >= 70 ? 'badge-success' : score >= 50 ? 'badge-warning' : 'badge-danger'}">${gradeLetter}</span></td>
+              <td><span class="score-badge ${score >= 70 ? 'score-high' : score >= 50 ? 'score-med' : 'score-low'}">${score}/100</span></td>
+              <td>
+                <span class="grade-badge ${gradeInfo.cls}">
+                  Grade ${gradeInfo.letter}
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn btn-secondary btn-sm" onclick="deleteGrade(${item.id})" title="Delete grade" style="color: var(--danger); padding: 0.25rem 0.5rem;">
+                  ✕
+                </button>
+              </td>
             </tr>
           `;
         }).join('');
 
-        // Calculate Average
-        const avg = (totalScore / gradeList.length).toFixed(1);
+        const avg = (totalScore / state.selectedStudentGrades.length).toFixed(1);
+        const avgGrade = computeGradeLetter(avg);
+
         averageDisplay.textContent = `${avg}/100`;
-        if (avg >= 75) {
-          averageDisplay.className = 'score-badge score-high';
-        } else if (avg >= 50) {
-          averageDisplay.className = 'score-badge score-med';
-        } else {
-          averageDisplay.className = 'score-badge score-low';
-        }
+        if (avg >= 70) averageDisplay.className = 'score-badge score-high';
+        else if (avg >= 50) averageDisplay.className = 'score-badge score-med';
+        else averageDisplay.className = 'score-badge score-low';
+
+        averageLetterDisplay.textContent = `Grade ${avgGrade.letter}`;
+        averageLetterDisplay.className = `grade-badge ${avgGrade.cls}`;
+        averageLetterDisplay.style.display = 'inline-flex';
 
       } catch (err) {
         console.error('Error loading grades:', err);
-        tbody.innerHTML = '';
-        emptyState.style.display = 'block';
-        showToast('Grades Error', 'Could not load grade records for this student.', 'error');
       }
     }
 
-    /**
-     * Handles adding a grade via POST /api/grades
-     */
     async function handleAddGrade(event) {
       event.preventDefault();
 
@@ -1696,12 +3440,9 @@
         return;
       }
 
-      const subjectInput = document.getElementById('gradeSubject');
-      const scoreInput = document.getElementById('gradeScore');
+      const subject = document.getElementById('gradeSubject').value.trim();
+      const score = parseFloat(document.getElementById('gradeScore').value);
       const submitBtn = document.getElementById('addGradeBtn');
-
-      const subject = subjectInput.value.trim();
-      const score = parseFloat(scoreInput.value);
 
       if (!subject) {
         showToast('Missing Subject', 'Please enter a valid subject name.', 'warning');
@@ -1713,52 +3454,153 @@
         return;
       }
 
-      const student = state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
+      const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
       const studentName = student ? (student.student_name || student.name) : '';
+      const studentClass = student ? (student.student_class || student.class) : '';
 
       try {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳</span> Adding...';
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
 
         const payload = {
           student_name: studentName,
+          student_class: studentClass,
           roll_no: state.selectedRollNo,
           subject: subject,
           score: score
         };
 
-        const res = await fetch(`${API_BASE_URL}/grades`, {
+        const res = await authFetch(`${API_BASE_URL}/api/grades`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
         const result = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
 
-        if (!res.ok) {
-          throw new Error(result.message || result.error || `HTTP ${res.status}: Failed to add grade.`);
-        }
+        const gradeLetter = computeGradeLetter(score).letter;
+        showToast('Grade Recorded', `Saved ${subject}: ${score}/100 (Grade ${gradeLetter}).`, 'success');
 
-        showToast('Grade Added!', result.message || `Added ${subject}: ${score}/100 successfully.`, 'success');
+        document.getElementById('gradeSubject').value = '';
+        document.getElementById('gradeScore').value = '';
+        document.getElementById('gradeLivePreviewBadge').style.display = 'none';
+        document.getElementById('gradeSubject').focus();
 
-        // Reset form
-        subjectInput.value = '';
-        scoreInput.value = '';
-        subjectInput.focus();
-
-        // Refresh grades table
         await loadStudentGrades(state.selectedRollNo);
 
       } catch (err) {
         console.error('Error adding grade:', err);
-        showToast('Error', err.message || 'Unable to record grade. Please try again.', 'error');
+        showToast('Save Failed', err.message || 'Unable to record grade.', 'error');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>➕</span> Add Grade';
+        submitBtn.innerHTML = '<span>➕</span> Save Grade';
       }
+    }
+
+    async function deleteGrade(gradeId) {
+      if (!gradeId) return;
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/grades/${gradeId}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Grade Removed', 'Subject grade entry deleted.', 'info');
+          await loadStudentGrades(state.selectedRollNo);
+        }
+      } catch (e) {
+        showToast('Error', 'Could not delete grade entry.', 'error');
+      }
+    }
+
+    // ==========================================
+    // REQUIREMENT 2: PRINT REPORT CARD MODAL
+    // ==========================================
+    function openPrintModal() {
+      const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
+      if (!student) {
+        showToast('Select Student', 'Please select a student first.', 'warning');
+        return;
+      }
+
+      const report = state.selectedStudentReport || {};
+      const grades = state.selectedStudentGrades || [];
+
+      // Student Meta (Shows real Gender and Contact after edit)
+      document.getElementById('printStudentName').textContent = report.student_name || student.student_name || student.name || 'N/A';
+      document.getElementById('printRollNo').textContent = report.roll_no || student.roll_no || 'N/A';
+      document.getElementById('printClass').textContent = report.student_class || student.student_class || student.class || 'Primary 1';
+      
+      const gender = (report.gender && report.gender !== 'Unspecified') ? report.gender : (student.gender || 'Female');
+      document.getElementById('printGender').textContent = gender;
+      
+      const contact = (report.parent_contact && report.parent_contact !== 'N/A') ? report.parent_contact : (student.parent_contact || 'N/A');
+      document.getElementById('printContact').textContent = contact;
+
+      document.getElementById('printDate').textContent = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+      // Session & Term (From selector)
+      document.getElementById('printSessionTermDisplay').textContent = state.selectedSession;
+
+      // Attendance Summary
+      const total = report.total ?? 0;
+      const present = report.present ?? 0;
+      const absent = report.absent ?? 0;
+      const attRate = report.percentage ?? (total > 0 ? ((present / total) * 100).toFixed(1) : '0.0');
+
+      document.getElementById('printTotalDays').textContent = total;
+      document.getElementById('printDaysPresent').textContent = present;
+      document.getElementById('printDaysAbsent').textContent = absent;
+      document.getElementById('printAttRate').textContent = `${attRate}%`;
+
+      // Subjects Table
+      const printTbody = document.getElementById('printGradesTableBody');
+      let totalScore = 0;
+
+      if (grades.length === 0) {
+        printTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 1.5rem;">No academic subject marks recorded yet.</td></tr>`;
+        document.getElementById('printAverageScore').textContent = '0.0%';
+        document.getElementById('printAverageGrade').textContent = 'N/A';
+        document.getElementById('printOverallRemark').textContent = 'N/A';
+      } else {
+        printTbody.innerHTML = grades.map((g, idx) => {
+          const score = Number(g.score);
+          totalScore += isNaN(score) ? 0 : score;
+          const gradeInfo = computeGradeLetter(score);
+
+          return `
+            <tr>
+              <td style="text-align: center;">${idx + 1}</td>
+              <td><strong>${escapeHtml(g.subject)}</strong></td>
+              <td style="text-align: center; font-weight: 700;">${score.toFixed(1)}</td>
+              <td style="text-align: center; font-weight: 800;">${gradeInfo.letter}</td>
+              <td style="text-align: center;">${gradeInfo.remark}</td>
+            </tr>
+          `;
+        }).join('');
+
+        const avg = (totalScore / grades.length).toFixed(1);
+        const overall = computeGradeLetter(avg);
+
+        document.getElementById('printAverageScore').textContent = `${avg}%`;
+        document.getElementById('printAverageGrade').textContent = `Grade ${overall.letter}`;
+        document.getElementById('printOverallRemark').textContent = overall.remark;
+      }
+
+      // Exact comments typed by teacher on Tab 3 appear on Report Card!
+      const teacherText = document.getElementById('tab3TeacherComment').value.trim() || 'Good academic conduct and steady progress.';
+      const principalText = document.getElementById('tab3PrincipalComment').value.trim() || 'Approved. Maintain this standard.';
+
+      document.getElementById('printTeacherCommentDisplay').textContent = teacherText;
+      document.getElementById('printPrincipalCommentDisplay').textContent = principalText;
+
+      document.getElementById('reportModal').classList.add('active');
+    }
+
+    function closePrintModal() {
+      document.getElementById('reportModal').classList.remove('active');
+    }
+
+    function triggerPrintReport() {
+      window.print();
     }
 
     // ==========================================
@@ -1787,18 +3629,14 @@
 
       container.appendChild(toast);
 
-      // Auto dismiss after 4.5 seconds
       setTimeout(() => {
         if (toast.parentElement) {
-          toast.style.animation = 'slideUp 0.3s reverse forwards';
-          setTimeout(() => toast.remove(), 300);
+          toast.style.animation = 'slideUp 0.25s reverse forwards';
+          setTimeout(() => toast.remove(), 250);
         }
       }, 4500);
     }
 
-    // ==========================================
-    // UTILITY: HTML ESCAPING
-    // ==========================================
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
       return String(str)
@@ -1810,4 +3648,5 @@
     }
   </script>
 </body>
+
 </html>

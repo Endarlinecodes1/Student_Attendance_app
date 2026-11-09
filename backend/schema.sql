@@ -1,55 +1,78 @@
 -- ============================================================
--- Database Creation
--- Note: Run in postgres database to create attendance_db
+-- EduTrack Database Schema (PostgreSQL / Neon Database)
 -- ============================================================
--- CREATE DATABASE attendance_db;
 
--- ============================================================
--- Table Creation in attendance_db
--- ============================================================
+-- Teachers Table for Authentication & Role-Based Access Control
+CREATE TABLE IF NOT EXISTS teachers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) DEFAULT 'teacher', -- 'teacher' or 'admin'
+    assigned_class VARCHAR(100) DEFAULT 'Primary 1',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers(email);
+
+-- Student Records Table
 CREATE TABLE IF NOT EXISTS student_records (
     id SERIAL PRIMARY KEY,
     student_name VARCHAR(100) NOT NULL,
-    roll_no VARCHAR(20) NOT NULL,
-    att_date DATE, -- NULL when row is for grades only
-    status VARCHAR(10) CHECK (status IN ('Present', 'Absent')), -- NULL when row is for grades only
-    subject VARCHAR(100), -- NULL when row is for attendance only
-    score NUMERIC(5, 2) CHECK (score >= 0 AND score <= 100), -- NULL when row is for attendance only
+    roll_no VARCHAR(50) NOT NULL,
+    student_class VARCHAR(100),       -- e.g. Primary 1, Primary 2, JSS 1, SSS 1
+    gender VARCHAR(20),               -- Male, Female, Other
+    parent_contact VARCHAR(50),       -- e.g. Phone number
+    att_date DATE,                    -- NULL when row is for base enrollment or grades
+    status VARCHAR(10) CHECK (status IN ('Present', 'Absent')), -- NULL when row is not attendance
+    subject VARCHAR(100),             -- NULL when row is for attendance or enrollment
+    score NUMERIC(5, 2) CHECK (score >= 0 AND score <= 100), -- NULL when row is for attendance or enrollment
+    grade VARCHAR(10),                -- Auto-calculated grade: A (70+), B (60-69), C (50-59), D (40-49), F (<40)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================
--- Index
+-- Indexes for High Performance
 -- ============================================================
-CREATE INDEX IF NOT EXISTS idx_roll_date ON student_records(roll_no, att_date);
+CREATE INDEX IF NOT EXISTS idx_student_records_roll_no ON student_records(roll_no);
+CREATE INDEX IF NOT EXISTS idx_student_records_att_date ON student_records(att_date);
+CREATE INDEX IF NOT EXISTS idx_student_records_roll_date ON student_records(roll_no, att_date);
+CREATE INDEX IF NOT EXISTS idx_student_records_class ON student_records(student_class);
+CREATE INDEX IF NOT EXISTS idx_student_records_subject ON student_records(subject);
 
 -- ============================================================
--- Dummy Data: 3 students, each with 2 attendance rows and 1 grade row
+-- Sample Seed Data
 -- ============================================================
 
--- Student 1: Alice Johnson (Roll: 101)
--- Base record
-INSERT INTO student_records (student_name, roll_no) VALUES ('Alice Johnson', '101');
--- Attendance rows
-INSERT INTO student_records (student_name, roll_no, att_date, status) VALUES ('Alice Johnson', '101', '2026-09-11', 'Present');
-INSERT INTO student_records (student_name, roll_no, att_date, status) VALUES ('Alice Johnson', '101', '2026-09-12', 'Present');
--- Grade row
-INSERT INTO student_records (student_name, roll_no, subject, score) VALUES ('Alice Johnson', '101', 'Mathematics', 95.00);
+-- Primary 1 Students
+INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact) 
+VALUES ('Alice Johnson', '101', 'Primary 1', 'Female', '+2348011223344');
 
--- Student 2: Bob Smith (Roll: 102)
--- Base record
-INSERT INTO student_records (student_name, roll_no) VALUES ('Bob Smith', '102');
--- Attendance rows
-INSERT INTO student_records (student_name, roll_no, att_date, status) VALUES ('Bob Smith', '102', '2026-09-11', 'Present');
-INSERT INTO student_records (student_name, roll_no, att_date, status) VALUES ('Bob Smith', '102', '2026-09-12', 'Absent');
--- Grade row
-INSERT INTO student_records (student_name, roll_no, subject, score) VALUES ('Bob Smith', '102', 'Physics', 82.50);
+INSERT INTO student_records (student_name, roll_no, student_class, att_date, status) 
+VALUES ('Alice Johnson', '101', 'Primary 1', CURRENT_DATE, 'Present');
 
--- Student 3: Charlie Davis (Roll: 103)
--- Base record
-INSERT INTO student_records (student_name, roll_no) VALUES ('Charlie Davis', '103');
--- Attendance rows
-INSERT INTO student_records (student_name, roll_no, att_date, status) VALUES ('Charlie Davis', '103', '2026-09-11', 'Absent');
-INSERT INTO student_records (student_name, roll_no, att_date, status) VALUES ('Charlie Davis', '103', '2026-09-12', 'Present');
--- Grade row
-INSERT INTO student_records (student_name, roll_no, subject, score) VALUES ('Charlie Davis', '103', 'Chemistry', 78.00);
+INSERT INTO student_records (student_name, roll_no, student_class, subject, score, grade) 
+VALUES ('Alice Johnson', '101', 'Primary 1', 'Mathematics', 88.00, 'A');
+
+INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact) 
+VALUES ('Bob Smith', '102', 'Primary 1', 'Male', '+2348022334455');
+
+INSERT INTO student_records (student_name, roll_no, student_class, att_date, status) 
+VALUES ('Bob Smith', '102', 'Primary 1', CURRENT_DATE, 'Absent');
+
+-- Primary 2 Students (including Chidera Okafor for edit testing)
+INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact) 
+VALUES ('Chidera Okafor', '201', 'Primary 2', 'Unspecified', 'N/A');
+
+INSERT INTO student_records (student_name, roll_no, student_class, att_date, status) 
+VALUES ('Chidera Okafor', '201', 'Primary 2', CURRENT_DATE, 'Present');
+
+INSERT INTO student_records (student_name, roll_no, student_class, subject, score, grade) 
+VALUES ('Chidera Okafor', '201', 'Primary 2', 'Mathematics', 78.00, 'A');
+
+INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact) 
+VALUES ('Emeka Nnamdi', '202', 'Primary 2', 'Male', '+2348044556677');
+
+-- JSS 1 Students
+INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact) 
+VALUES ('Charlie Davis', '103', 'JSS 1', 'Male', '+2348033445566');
