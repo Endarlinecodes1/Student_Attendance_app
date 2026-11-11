@@ -1388,116 +1388,16 @@
       }
     }
 
+    /* Responsive Table Minimum Widths ensuring proper alignment and no squishing */
+    #attendanceTable {
+      min-width: 580px;
+    }
+
+    #directoryTable {
+      min-width: 680px;
+    }
+
     @media (max-width: 640px) {
-      /* Attendance Table mobile layout: Zero Cut-off */
-      #attendanceTable thead {
-        display: none;
-      }
-
-      #attendanceTable,
-      #attendanceTable tbody,
-      #attendanceTable tr {
-        display: block;
-        width: 100%;
-      }
-
-      #attendanceTable tr {
-        background: var(--white);
-        border: 1px solid var(--gray-300);
-        border-radius: var(--radius-md);
-        padding: 0.85rem 1rem;
-        margin-bottom: 0.75rem;
-        box-shadow: var(--shadow-sm);
-      }
-
-      #attendanceTable td {
-        display: block;
-        width: 100% !important;
-        padding: 0.25rem 0;
-        border-bottom: none;
-      }
-
-      #attendanceTable td.cell-student-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.65rem;
-        gap: 0.5rem;
-      }
-
-      #attendanceTable td.cell-status {
-        padding-top: 0.65rem;
-        border-top: 1px solid var(--gray-200);
-      }
-
-      #attendanceTable td.cell-status .radio-pill-group {
-        display: flex;
-        width: 100%;
-        min-width: 100%;
-        box-sizing: border-box;
-      }
-
-      #attendanceTable td.cell-status .radio-pill-option {
-        flex: 1;
-      }
-
-      #attendanceTable td.cell-status .radio-pill-option label {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-        padding: 0.6rem 0.5rem;
-        font-size: 0.875rem;
-        min-height: 42px;
-      }
-
-      /* Directory Table Mobile Optimization */
-      #directoryTable thead {
-        display: none;
-      }
-
-      #directoryTable,
-      #directoryTable tbody,
-      #directoryTable tr {
-        display: block;
-        width: 100%;
-      }
-
-      #directoryTable tr {
-        background: var(--white);
-        border: 1px solid var(--gray-300);
-        border-radius: var(--radius-md);
-        padding: 0.85rem 1rem;
-        margin-bottom: 0.75rem;
-        box-shadow: var(--shadow-sm);
-      }
-
-      #directoryTable td {
-        display: block;
-        width: 100% !important;
-        padding: 0.25rem 0;
-        border-bottom: none;
-      }
-
-      #directoryTable td.dir-actions-cell {
-        padding-top: 0.65rem;
-        border-top: 1px solid var(--gray-200);
-        margin-top: 0.35rem;
-      }
-
-      #directoryTable td.dir-actions-cell .dir-btn-group {
-        display: flex !important;
-        width: 100%;
-        gap: 0.4rem;
-      }
-
-      #directoryTable td.dir-actions-cell .dir-btn-group button {
-        flex: 1;
-        text-align: center;
-        justify-content: center;
-        padding: 0.5rem 0.35rem;
-        font-size: 0.785rem;
-      }
-
       .metric-value {
         font-size: 1.45rem;
       }
@@ -2816,11 +2716,13 @@
 
         return `
           <tr data-roll-no="${escapeHtml(rollNo)}">
-            <td class="cell-student-info">
-              <div>
-                <span class="roll-badge">${escapeHtml(rollNo)}</span>
-                <strong style="color: var(--gray-900); margin-left: 0.5rem;">${escapeHtml(studentName)}</strong>
-              </div>
+            <td>
+              <span class="roll-badge">${escapeHtml(rollNo)}</span>
+            </td>
+            <td>
+              <strong style="color: var(--gray-900); font-weight: 600;">${escapeHtml(studentName)}</strong>
+            </td>
+            <td>
               <span class="class-badge">${escapeHtml(studentClass)}</span>
             </td>
             <td class="cell-status" style="text-align: center;">
@@ -3035,19 +2937,19 @@
         return `
           <tr>
             <td>
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <span class="roll-badge">${escapeHtml(rollNo)}</span>
-                  <strong style="color: var(--gray-900); margin-left: 0.5rem;">${escapeHtml(studentName)}</strong>
-                </div>
-                <span class="class-badge">${escapeHtml(studentClass)}</span>
-              </div>
+              <span class="roll-badge">${escapeHtml(rollNo)}</span>
             </td>
             <td>
-              <div style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.2rem;">
-                <span>Gender: <strong style="color: ${gender === 'Unspecified' ? 'var(--danger)' : 'var(--gray-800)'}">${escapeHtml(gender)}</strong></span> | 
-                <span>Parent: <strong style="color: ${parentContact === 'N/A' || !parentContact ? 'var(--danger)' : 'var(--gray-800)'}">${escapeHtml(parentContact)}</strong></span>
-              </div>
+              <strong style="color: var(--gray-900); font-weight: 600;">${escapeHtml(studentName)}</strong>
+            </td>
+            <td>
+              <span class="class-badge">${escapeHtml(studentClass)}</span>
+            </td>
+            <td>
+              <span style="font-weight: 500; color: ${gender === 'Unspecified' ? 'var(--danger)' : 'var(--gray-800)'};">${escapeHtml(gender)}</span>
+            </td>
+            <td>
+              <span style="color: ${parentContact === 'N/A' || !parentContact ? 'var(--gray-500)' : 'var(--gray-800)'}; font-weight: 500;">${escapeHtml(parentContact)}</span>
             </td>
             <td class="dir-actions-cell" style="text-align: right;">
               <div class="dir-btn-group" style="display: inline-flex; gap: 0.35rem; justify-content: flex-end;">
@@ -3523,12 +3425,17 @@
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
 
+        const sessionVal = state.currentSession || document.getElementById('reportSessionSelect')?.value || 'First Term 2026/2027';
+        const termVal = sessionVal.includes('Second') ? 'Second Term' : (sessionVal.includes('Third') ? 'Third Term' : 'First Term');
+
         const payload = {
           student_name: studentName,
           student_class: studentClass,
           roll_no: state.selectedRollNo,
           subject: subject,
-          score: score
+          score: score,
+          term: termVal,
+          session: sessionVal
         };
 
         const res = await authFetch(`${API_BASE_URL}/api/grades`, {

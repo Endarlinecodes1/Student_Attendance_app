@@ -112,15 +112,26 @@ def setup_database():
         -- Grades Table
         CREATE TABLE IF NOT EXISTS grades (
             id SERIAL PRIMARY KEY,
-            student_id INT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+            student_id INT,
             school_id INT DEFAULT 1,
-            subject VARCHAR(255) NOT NULL,
-            score NUMERIC(5, 2) NOT NULL CHECK (score >= 0 AND score <= 100),
-            grade VARCHAR(10),
+            roll_no VARCHAR(100),
+            student_name VARCHAR(255),
+            subject VARCHAR(255),
+            subject_name VARCHAR(255),
+            score NUMERIC(5, 2),
+            grade VARCHAR(20),
+            remarks VARCHAR(255),
             term VARCHAR(100) DEFAULT 'First Term 2026/2027',
             session VARCHAR(100) DEFAULT '2026/2027',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+        ALTER TABLE grades ADD COLUMN IF NOT EXISTS remarks VARCHAR(255);
+        ALTER TABLE grades ADD COLUMN IF NOT EXISTS subject_name VARCHAR(255);
+        ALTER TABLE grades ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);
+        ALTER TABLE grades ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);
+        ALTER TABLE attendance ADD COLUMN IF NOT EXISTS date DATE;
+        ALTER TABLE attendance ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);
+        ALTER TABLE attendance ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);
         CREATE INDEX IF NOT EXISTS idx_grades_student_id ON grades(student_id);
         CREATE INDEX IF NOT EXISTS idx_grades_school_id ON grades(school_id);
         """
