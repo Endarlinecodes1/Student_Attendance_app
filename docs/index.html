@@ -1388,13 +1388,20 @@
       }
     }
 
-    /* Responsive Table Minimum Widths ensuring proper alignment and no squishing */
+    /* Responsive Table Minimum Widths & Strict Alignment */
     #attendanceTable {
-      min-width: 580px;
+      min-width: 620px;
+      width: 100%;
     }
 
     #directoryTable {
-      min-width: 680px;
+      min-width: 820px;
+      width: 100%;
+    }
+
+    #attendanceTable th, #attendanceTable td,
+    #directoryTable th, #directoryTable td {
+      vertical-align: middle;
     }
 
     @media (max-width: 640px) {
@@ -1670,10 +1677,10 @@
           <table id="attendanceTable">
             <thead>
               <tr>
-                <th style="width: 15%;">Roll No</th>
-                <th style="width: 40%;">Student Name</th>
-                <th style="width: 20%;">Class</th>
-                <th style="width: 25%; text-align: center;">Attendance Status</th>
+                <th style="width: 14%; min-width: 90px;">Roll No</th>
+                <th style="width: 36%; min-width: 170px;">Student Name</th>
+                <th style="width: 18%; min-width: 110px;">Class</th>
+                <th style="width: 32%; min-width: 210px; text-align: center;">Attendance Status</th>
               </tr>
             </thead>
             <tbody id="attendanceTableBody">
@@ -1806,12 +1813,12 @@
           <table id="directoryTable">
             <thead>
               <tr>
-                <th style="width: 12%;">Roll No</th>
-                <th style="width: 26%;">Student Name</th>
-                <th style="width: 15%;">Class</th>
-                <th style="width: 12%;">Gender</th>
-                <th style="width: 17%;">Parent Contact</th>
-                <th style="width: 18%; text-align: right;">Actions</th>
+                <th style="width: 11%; min-width: 85px;">Roll No</th>
+                <th style="width: 25%; min-width: 160px;">Student Name</th>
+                <th style="width: 14%; min-width: 110px;">Class</th>
+                <th style="width: 12%; min-width: 85px;">Gender</th>
+                <th style="width: 16%; min-width: 130px;">Parent Contact</th>
+                <th style="width: 22%; min-width: 230px; text-align: right;">Actions</th>
               </tr>
             </thead>
             <tbody id="directoryTableBody">
@@ -2611,6 +2618,48 @@
     // ==========================================
     // STUDENTS: LOAD & SYNC
     // ==========================================
+    // STUDENT SORTING & ORDER HELPER
+    // ==========================================
+    function sortStudentsInOrder(studentsList) {
+      if (!Array.isArray(studentsList)) return [];
+      const classOrder = [
+        'primary 1', 'primary 2', 'primary 3', 'primary 4', 'primary 5', 'primary 6',
+        'jss 1', 'jss 2', 'jss 3', 'sss 1', 'sss 2', 'sss 3'
+      ];
+
+      return [...studentsList].sort((a, b) => {
+        const classA = (a.student_class || a.class || '').trim().toLowerCase();
+        const classB = (b.student_class || b.class || '').trim().toLowerCase();
+
+        const idxA = classOrder.indexOf(classA);
+        const idxB = classOrder.indexOf(classB);
+
+        // 1. Sort by standard class hierarchy (Primary 1 -> 6, JSS 1 -> 3, SSS 1 -> 3)
+        if (idxA !== -1 && idxB !== -1 && idxA !== idxB) {
+          return idxA - idxB;
+        }
+        if (idxA !== -1 && idxB === -1) return -1;
+        if (idxA === -1 && idxB !== -1) return 1;
+        if (classA !== classB) {
+          return classA.localeCompare(classB);
+        }
+
+        // 2. Sort naturally by roll number (e.g. 101, 102, 103, 201)
+        const rollA = String(a.roll_no || '').trim();
+        const rollB = String(b.roll_no || '').trim();
+        const rollComp = rollA.localeCompare(rollB, undefined, { numeric: true, sensitivity: 'base' });
+        if (rollComp !== 0) return rollComp;
+
+        // 3. Sort alphabetically by student full name
+        const nameA = String(a.student_name || a.name || '').trim();
+        const nameB = String(b.student_name || b.name || '').trim();
+        return nameA.localeCompare(nameB);
+      });
+    }
+
+    // ==========================================
+    // LOAD STUDENTS
+    // ==========================================
     async function loadStudents(showSuccessToast = false) {
       if (!state.token) return;
       try {
@@ -2618,7 +2667,8 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
-        state.students = Array.isArray(data) ? data : (data.students || []);
+        const rawList = Array.isArray(data) ? data : (data.students || []);
+        state.students = sortStudentsInOrder(rawList);
 
         updateClassFilterOptions();
         renderAttendanceList();
@@ -2692,10 +2742,11 @@
         return matchesSearch && matchesClass;
       });
 
-      state.filteredAttendanceStudents = filtered;
-      countBadge.textContent = `${filtered.length} of ${state.students.length}`;
+      const sorted = sortStudentsInOrder(filtered);
+      state.filteredAttendanceStudents = sorted;
+      countBadge.textContent = `${sorted.length} of ${state.students.length}`;
 
-      if (filtered.length === 0) {
+      if (sorted.length === 0) {
         tbody.innerHTML = '';
         emptyState.style.display = 'block';
         if (state.students.length > 0) {
@@ -2708,7 +2759,7 @@
 
       emptyState.style.display = 'none';
 
-      tbody.innerHTML = filtered.map((student, index) => {
+      tbody.innerHTML = sorted.map((student, index) => {
         const rollNo = student.roll_no;
         const studentName = student.student_name || student.name || 'Student';
         const studentClass = student.student_class || student.class || 'Primary 1';
@@ -2716,16 +2767,16 @@
 
         return `
           <tr data-roll-no="${escapeHtml(rollNo)}">
-            <td>
+            <td style="white-space: nowrap;">
               <span class="roll-badge">${escapeHtml(rollNo)}</span>
             </td>
             <td>
               <strong style="color: var(--gray-900); font-weight: 600;">${escapeHtml(studentName)}</strong>
             </td>
-            <td>
+            <td style="white-space: nowrap;">
               <span class="class-badge">${escapeHtml(studentClass)}</span>
             </td>
-            <td class="cell-status" style="text-align: center;">
+            <td class="cell-status" style="text-align: center; white-space: nowrap;">
               <div class="radio-pill-group" role="radiogroup" aria-label="Attendance for ${escapeHtml(studentName)}">
                 <div class="radio-pill-option">
                   <input type="radio" 
@@ -2805,7 +2856,10 @@
         });
 
         const result = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
+        if (!res.ok) {
+          const detail = result.details ? ` (${result.details})` : '';
+          throw new Error((result.error || result.message || `HTTP ${res.status}`) + detail);
+        }
 
         showToast('Saved!', `Successfully recorded attendance for ${payload.length} student(s) on ${date}.`, 'success');
         loadDashboardStats();
@@ -2881,7 +2935,10 @@
         });
 
         const result = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
+        if (!res.ok) {
+          const detail = result.details ? ` (${result.details})` : '';
+          throw new Error((result.error || result.message || `HTTP ${res.status}`) + detail);
+        }
 
         showToast('Student Enrolled!', `${name} (${student_class}, Roll: ${roll_no}) was successfully enrolled.`, 'success');
         document.getElementById('addStudentForm').reset();
@@ -2919,14 +2976,16 @@
         return matchesSearch && matchesClass;
       });
 
-      if (filtered.length === 0) {
+      const sorted = sortStudentsInOrder(filtered);
+
+      if (sorted.length === 0) {
         tbody.innerHTML = '';
         emptyState.style.display = 'block';
         return;
       }
 
       emptyState.style.display = 'none';
-      tbody.innerHTML = filtered.map(student => {
+      tbody.innerHTML = sorted.map(student => {
         const id = student.id;
         const rollNo = student.roll_no;
         const studentName = student.student_name || student.name || 'Unnamed';
@@ -2936,22 +2995,22 @@
 
         return `
           <tr>
-            <td>
+            <td style="white-space: nowrap;">
               <span class="roll-badge">${escapeHtml(rollNo)}</span>
             </td>
             <td>
               <strong style="color: var(--gray-900); font-weight: 600;">${escapeHtml(studentName)}</strong>
             </td>
-            <td>
+            <td style="white-space: nowrap;">
               <span class="class-badge">${escapeHtml(studentClass)}</span>
             </td>
-            <td>
+            <td style="white-space: nowrap;">
               <span style="font-weight: 500; color: ${gender === 'Unspecified' ? 'var(--danger)' : 'var(--gray-800)'};">${escapeHtml(gender)}</span>
             </td>
-            <td>
+            <td style="white-space: nowrap;">
               <span style="color: ${parentContact === 'N/A' || !parentContact ? 'var(--gray-500)' : 'var(--gray-800)'}; font-weight: 500;">${escapeHtml(parentContact)}</span>
             </td>
-            <td class="dir-actions-cell" style="text-align: right;">
+            <td class="dir-actions-cell" style="text-align: right; white-space: nowrap;">
               <div class="dir-btn-group" style="display: inline-flex; gap: 0.35rem; justify-content: flex-end;">
                 <button class="btn btn-secondary btn-sm" onclick="viewStudentReport('${escapeHtml(rollNo)}')">
                   Report →
@@ -3115,7 +3174,10 @@
         });
 
         const result = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
+        if (!res.ok) {
+          const detail = result.details ? ` (${result.details})` : '';
+          throw new Error((result.error || result.message || `HTTP ${res.status}`) + detail);
+        }
 
         showToast('Student Removed', result.message || `Student '${studentName}' and all records were deleted.`, 'success');
 
@@ -3196,16 +3258,17 @@
     function populateReportStudentDropdown() {
       const select = document.getElementById('reportStudentSelect');
       const previousValue = select.value;
+      const sorted = sortStudentsInOrder(state.students);
 
       select.innerHTML = '<option value="">-- Choose a student --</option>' +
-        state.students.map(student => {
+        sorted.map(student => {
           const rollNo = student.roll_no;
           const studentName = student.student_name || student.name || '';
           const studentClass = student.student_class || student.class || '';
           return `<option value="${escapeHtml(rollNo)}">[${escapeHtml(rollNo)}] ${escapeHtml(studentName)} (${escapeHtml(studentClass)})</option>`;
         }).join('');
 
-      if (previousValue && state.students.some(s => String(s.roll_no) === String(previousValue))) {
+      if (previousValue && sorted.some(s => String(s.roll_no) === String(previousValue))) {
         select.value = previousValue;
       }
     }
@@ -3445,7 +3508,10 @@
         });
 
         const result = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(result.error || result.message || `HTTP ${res.status}`);
+        if (!res.ok) {
+          const detail = result.details ? ` (${result.details})` : '';
+          throw new Error((result.error || result.message || `HTTP ${res.status}`) + detail);
+        }
 
         const gradeLetter = computeGradeLetter(score).letter;
         showToast('Grade Recorded', `Saved ${subject}: ${score}/100 (Grade ${gradeLetter}).`, 'success');

@@ -220,6 +220,7 @@ def init_db():
                 UPDATE teachers SET school_id = 1 WHERE school_id IS NULL;
                 CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers (email);
             """)
+            conn.commit()
 
             # 2. Students Table
             cur.execute("""
@@ -245,6 +246,7 @@ def init_db():
                 ALTER TABLE students ADD COLUMN IF NOT EXISTS parent_contact VARCHAR(100);
                 CREATE INDEX IF NOT EXISTS idx_students_roll ON students (roll_no);
             """)
+            conn.commit()
 
             # 3. Attendance Table (Make all non-essential columns nullable)
             cur.execute("""
@@ -269,11 +271,13 @@ def init_db():
                 ALTER TABLE attendance ADD COLUMN IF NOT EXISTS status VARCHAR(20);
                 ALTER TABLE attendance ADD COLUMN IF NOT EXISTS marked_by VARCHAR(100);
             """)
+            conn.commit()
 
             # Make non-essential columns in attendance nullable so inserts never fail
             for col in ['student_id', 'school_id', 'marked_by', 'status']:
                 try:
                     cur.execute(f"ALTER TABLE attendance ALTER COLUMN {col} DROP NOT NULL;")
+                    conn.commit()
                 except Exception:
                     pass
 
@@ -306,11 +310,13 @@ def init_db():
                 ALTER TABLE grades ADD COLUMN IF NOT EXISTS term VARCHAR(100) DEFAULT 'First Term 2026/2027';
                 ALTER TABLE grades ADD COLUMN IF NOT EXISTS session VARCHAR(100) DEFAULT '2026/2027';
             """)
+            conn.commit()
 
             # Make non-essential columns in grades nullable so inserts never fail
             for col in ['student_id', 'school_id', 'grade', 'remarks', 'term', 'session', 'score', 'subject']:
                 try:
                     cur.execute(f"ALTER TABLE grades ALTER COLUMN {col} DROP NOT NULL;")
+                    conn.commit()
                 except Exception:
                     pass
 
@@ -1198,6 +1204,23 @@ def save_attendance(current_user):
                 if not is_admin and str(student_class).lower() != str(assigned_class).lower():
                     continue
 
+                # Ensure student exists in students table
+                if not student_id and 'students' in all_tables:
+                    try:
+                        cur.execute("""
+                            INSERT INTO students (school_id, full_name, student_name, roll_no, class, student_class, gender, parent_contact)
+                            VALUES (%s, %s, %s, %s, %s, %s, 'Unspecified', '')
+                            RETURNING id;
+                        """, (school_id, student_name, student_name, roll_no, student_class, student_class))
+                        ret_id = cur.fetchone()
+                        if ret_id:
+                            student_id = ret_id[0]
+                    except Exception:
+                        cur.execute("SELECT id FROM students WHERE LOWER(roll_no) = LOWER(%s) LIMIT 1;", (roll_no,))
+                        st_f = cur.fetchone()
+                        if st_f:
+                            student_id = st_f[0]
+
                 # 1. Save in attendance table if table exists
                 if cols and date_col:
                     # Prevent duplicate days: delete existing record for this student on this date
@@ -1229,16 +1252,19 @@ def save_attendance(current_user):
                     placeholders = ', '.join(['%s'] * len(col_names))
                     cur.execute(f"INSERT INTO attendance ({', '.join(col_names)}) VALUES ({placeholders});", list(fields.values()))
 
-                # 2. Sync to student_records as backup
+                # 2. Sync to student_records as backup (non-fatal)
                 if 'student_records' in all_tables:
-                    cur.execute("""
-                        DELETE FROM student_records 
-                        WHERE LOWER(roll_no) = LOWER(%s) AND att_date = %s;
-                    """, (roll_no, att_date))
-                    cur.execute("""
-                        INSERT INTO student_records (student_name, roll_no, student_class, att_date, status)
-                        VALUES (%s, %s, %s, %s, %s);
-                    """, (student_name, roll_no, student_class, att_date, status))
+                    try:
+                        cur.execute("""
+                            DELETE FROM student_records 
+                            WHERE LOWER(roll_no) = LOWER(%s) AND att_date = %s;
+                        """, (roll_no, att_date))
+                        cur.execute("""
+                            INSERT INTO student_records (student_name, roll_no, student_class, att_date, status)
+                            VALUES (%s, %s, %s, %s, %s);
+                        """, (student_name, roll_no, student_class, att_date, status))
+                    except Exception as _sr_err:
+                        logger.debug("Optional legacy student_records sync notice: %s", _sr_err)
 
                 saved_count += 1
 
@@ -1252,7 +1278,7 @@ def save_attendance(current_user):
         logger.error("Error saving attendance: %s", e)
         if conn:
             conn.rollback()
-        return jsonify({"error": "Database error while saving attendance", "details": str(e)}), 500
+        return jsonify({"error": f"Database error while saving attendance: {str(e)}", "details": str(e)}), 500
     finally:
         if conn:
             conn.close()
@@ -1465,6 +1491,23 @@ def add_grade(current_user):
             if not is_admin and str(student_class).lower() != str(assigned_class).lower():
                 return jsonify({"error": "Access denied: Student belongs to another class"}), 403
 
+            # CRUCIAL: Ensure student is present in students table so student_id is NEVER None
+            if not student_id and 'students' in all_tables:
+                try:
+                    cur.execute("""
+                        INSERT INTO students (school_id, full_name, student_name, roll_no, class, student_class, gender, parent_contact)
+                        VALUES (%s, %s, %s, %s, %s, %s, 'Unspecified', '')
+                        RETURNING id;
+                    """, (school_id, student_name, student_name, roll_no, student_class, student_class))
+                    ret_id = cur.fetchone()
+                    if ret_id:
+                        student_id = ret_id[0]
+                except Exception:
+                    cur.execute("SELECT id FROM students WHERE LOWER(roll_no) = LOWER(%s) LIMIT 1;", (roll_no,))
+                    st_f = cur.fetchone()
+                    if st_f:
+                        student_id = st_f[0]
+
             # 2. Dynamic insertion into grades table
             cols = get_table_columns(conn, 'grades') if 'grades' in all_tables else set()
             grade_id = 1
@@ -1517,25 +1560,38 @@ def add_grade(current_user):
                     col_names = list(fields.keys())
                     placeholders = ', '.join(['%s'] * len(col_names))
                     if 'id' in cols:
-                        cur.execute(f"""
-                            INSERT INTO grades ({', '.join(col_names)})
-                            VALUES ({placeholders})
-                            RETURNING id;
-                        """, list(fields.values()))
-                        grade_id = cur.fetchone()[0]
+                        try:
+                            cur.execute(f"""
+                                INSERT INTO grades ({', '.join(col_names)})
+                                VALUES ({placeholders})
+                                RETURNING id;
+                            """, list(fields.values()))
+                            row_ret = cur.fetchone()
+                            grade_id = row_ret[0] if row_ret else 1
+                        except Exception:
+                            cur.execute(f"INSERT INTO grades ({', '.join(col_names)}) VALUES ({placeholders});", list(fields.values()))
+                            cur.execute("SELECT MAX(id) FROM grades;")
+                            max_row = cur.fetchone()
+                            grade_id = max_row[0] if max_row else 1
                     else:
                         cur.execute(f"INSERT INTO grades ({', '.join(col_names)}) VALUES ({placeholders});", list(fields.values()))
 
-            # Also sync into student_records for legacy compatibility
+            conn.commit()
+
+            # 3. Separate non-fatal sync into student_records for legacy compatibility
             if 'student_records' in all_tables:
-                cur.execute("""
-                    DELETE FROM student_records 
-                    WHERE LOWER(roll_no) = LOWER(%s) AND LOWER(subject) = LOWER(%s);
-                """, (roll_no, subject))
-                cur.execute("""
-                    INSERT INTO student_records (student_name, roll_no, student_class, subject, score, grade)
-                    VALUES (%s, %s, %s, %s, %s, %s);
-                """, (student_name, roll_no, student_class, subject, score_val, grade_letter))
+                try:
+                    cur.execute("""
+                        DELETE FROM student_records 
+                        WHERE LOWER(roll_no) = LOWER(%s) AND LOWER(subject) = LOWER(%s);
+                    """, (roll_no, subject))
+                    cur.execute("""
+                        INSERT INTO student_records (student_name, roll_no, student_class, subject, score, grade)
+                        VALUES (%s, %s, %s, %s, %s, %s);
+                    """, (student_name, roll_no, student_class, subject, score_val, grade_letter))
+                    conn.commit()
+                except Exception as _sync_err:
+                    logger.debug("Optional legacy student_records sync notice: %s", _sync_err)
 
         conn.commit()
         return jsonify({
@@ -1559,7 +1615,7 @@ def add_grade(current_user):
         logger.error("Error adding grade: %s", e)
         if conn:
             conn.rollback()
-        return jsonify({"error": "Database error while adding grade", "details": str(e)}), 500
+        return jsonify({"error": f"Database error while adding grade: {str(e)}", "details": str(e)}), 500
     finally:
         if conn:
             conn.close()
