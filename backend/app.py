@@ -94,6 +94,45 @@ def get_table_columns(conn, table_name):
         return set()
 
 
+def get_student_query_fields(conn):
+    """
+    Returns exact SQL column expressions for student_name, student_class, gender, parent_contact
+    based ONLY on columns that physically exist in the students table.
+    Guarantees no column-not-found errors in PostgreSQL.
+    """
+    cols = get_table_columns(conn, 'students')
+    if 'student_name' in cols and 'full_name' in cols:
+        name_expr = "COALESCE(student_name, full_name, 'Student')"
+    elif 'student_name' in cols:
+        name_expr = "COALESCE(student_name, 'Student')"
+    elif 'full_name' in cols:
+        name_expr = "COALESCE(full_name, 'Student')"
+    else:
+        name_expr = "'Student'"
+
+    if 'student_class' in cols and 'class' in cols:
+        class_expr = "COALESCE(student_class, class, 'Primary 1')"
+    elif 'student_class' in cols:
+        class_expr = "COALESCE(student_class, 'Primary 1')"
+    elif 'class' in cols:
+        class_expr = "COALESCE(class, 'Primary 1')"
+    else:
+        class_expr = "'Primary 1'"
+
+    gender_expr = "COALESCE(gender, 'Unspecified')" if 'gender' in cols else "'Unspecified'"
+    contact_expr = "COALESCE(parent_contact, '')" if 'parent_contact' in cols else "''"
+    school_expr = "school_id" if 'school_id' in cols else "1 AS school_id"
+
+    return {
+        "cols": cols,
+        "name_expr": name_expr,
+        "class_expr": class_expr,
+        "gender_expr": gender_expr,
+        "contact_expr": contact_expr,
+        "school_expr": school_expr
+    }
+
+
 # ==========================================================
 # AUTH TOKEN HELPERS & DECORATOR
 # ==========================================================
@@ -122,76 +161,64 @@ def decode_token(token):
 
 
 def get_current_user():
-    """Extracts authenticated user from Authorization header or ?token= query."""
+    """Extracts and verifies Bearer token from Authorization header."""
     auth_header = request.headers.get('Authorization', '')
-    token = None
-    if auth_header.startswith('Bearer '):
-        token = auth_header.split(' ', 1)[1].strip()
-    elif request.args.get('token'):
-        token = request.args.get('token').strip()
-
-    if not token:
+    if not auth_header.startswith('Bearer '):
         return None
-
+    token = auth_header.split(' ', 1)[1].strip()
     return decode_token(token)
 
 
 def require_auth(f):
-    """Route decorator enforcing token authentication."""
+    """Decorator to enforce valid authentication on API endpoints."""
     @wraps(f)
     def decorated(*args, **kwargs):
         user = get_current_user()
         if not user:
-            return jsonify({"error": "Unauthorized: Token missing or invalid"}), 401
-        return f(user, *args, **kwargs)
+            return jsonify({
+                "error": "Authentication required. Please log in.",
+                "code": "AUTH_REQUIRED"
+            }), 401
+        return f(current_user=user, *args, **kwargs)
     return decorated
 
 
 def compute_grade(score):
-    """
-    Auto-calculates letter grade:
-      A = 70+
-      B = 60-69
-      C = 50-59
-      D = 40-49
-      F = below 40
-    """
+    """Computes academic grade letter according to Nigerian standard grading."""
     try:
         s = float(score)
-        if s >= 70:
-            return 'A'
-        elif s >= 60:
-            return 'B'
-        elif s >= 50:
-            return 'C'
-        elif s >= 40:
-            return 'D'
-        else:
-            return 'F'
     except (ValueError, TypeError):
-        return 'N/A'
+        return 'F'
+    if s >= 70:
+        return 'A'
+    if s >= 60:
+        return 'B'
+    if s >= 50:
+        return 'C'
+    if s >= 40:
+        return 'D'
+    return 'F'
 
 
 def compute_grade_remarks(score):
-    """Auto-calculates remark corresponding to score."""
+    """Computes academic remark based on score percentage."""
     try:
         s = float(score)
-        if s >= 70:
-            return 'Distinction'
-        elif s >= 60:
-            return 'Credit'
-        elif s >= 50:
-            return 'Pass'
-        elif s >= 40:
-            return 'Fair'
-        else:
-            return 'Needs Improvement'
     except (ValueError, TypeError):
-        return 'N/A'
+        return 'Fail'
+    if s >= 70:
+        return 'Distinction'
+    if s >= 60:
+        return 'Credit'
+    if s >= 50:
+        return 'Credit'
+    if s >= 40:
+        return 'Pass'
+    return 'Fail'
 
 
 # ==========================================================
-# DATABASE INITIALIZATION & RELATIONAL MIGRATION
+# DATABASE INITIALIZATION & SCHEMA VERIFICATION
 # ==========================================================
 
 def init_db():
@@ -216,39 +243,61 @@ def init_db():
                     assigned_class VARCHAR(100) DEFAULT 'Primary 1',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
-                ALTER TABLE teachers ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;
-                UPDATE teachers SET school_id = 1 WHERE school_id IS NULL;
-                CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers (email);
             """)
             conn.commit()
+
+            for stmt in [
+                "ALTER TABLE teachers ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;",
+                "UPDATE teachers SET school_id = 1 WHERE school_id IS NULL;",
+                "CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers (email);"
+            ]:
+                try:
+                    cur.execute(stmt)
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
 
             # 2. Students Table
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS students (
                     id SERIAL PRIMARY KEY,
                     school_id INT DEFAULT 1,
-                    full_name VARCHAR(255),
                     student_name VARCHAR(255),
+                    full_name VARCHAR(255),
                     roll_no VARCHAR(100),
-                    class VARCHAR(100),
                     student_class VARCHAR(100),
+                    class VARCHAR(100),
                     gender VARCHAR(20) DEFAULT 'Unspecified',
                     parent_contact VARCHAR(100),
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS full_name VARCHAR(255);
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS class VARCHAR(100);
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS student_class VARCHAR(100);
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS gender VARCHAR(20) DEFAULT 'Unspecified';
-                ALTER TABLE students ADD COLUMN IF NOT EXISTS parent_contact VARCHAR(100);
-                CREATE INDEX IF NOT EXISTS idx_students_roll ON students (roll_no);
             """)
             conn.commit()
 
-            # 3. Attendance Table (Make all non-essential columns nullable)
+            for stmt in [
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS full_name VARCHAR(255);",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS student_class VARCHAR(100);",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS class VARCHAR(100);",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS gender VARCHAR(20) DEFAULT 'Unspecified';",
+                "ALTER TABLE students ADD COLUMN IF NOT EXISTS parent_contact VARCHAR(100);",
+                "ALTER TABLE students ALTER COLUMN full_name DROP NOT NULL;",
+                "ALTER TABLE students ALTER COLUMN class DROP NOT NULL;",
+                "UPDATE students SET student_name = COALESCE(student_name, full_name) WHERE student_name IS NULL;",
+                "UPDATE students SET full_name = COALESCE(full_name, student_name) WHERE full_name IS NULL;",
+                "UPDATE students SET student_class = COALESCE(student_class, class) WHERE student_class IS NULL;",
+                "UPDATE students SET class = COALESCE(class, student_class) WHERE class IS NULL;",
+                "CREATE INDEX IF NOT EXISTS idx_students_roll ON students (roll_no);"
+            ]:
+                try:
+                    cur.execute(stmt)
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
+
+            # 3. Attendance Table
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS attendance (
                     id SERIAL PRIMARY KEY,
@@ -256,32 +305,38 @@ def init_db():
                     school_id INT DEFAULT 1,
                     roll_no VARCHAR(100),
                     student_name VARCHAR(255),
+                    student_class VARCHAR(100),
                     att_date DATE,
                     date DATE,
                     status VARCHAR(20),
                     marked_by VARCHAR(100),
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS student_id INT;
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS att_date DATE;
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS date DATE;
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS status VARCHAR(20);
-                ALTER TABLE attendance ADD COLUMN IF NOT EXISTS marked_by VARCHAR(100);
             """)
             conn.commit()
 
-            # Make non-essential columns in attendance nullable so inserts never fail
-            for col in ['student_id', 'school_id', 'marked_by', 'status']:
+            for stmt in [
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS student_id INT;",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS student_class VARCHAR(100);",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS att_date DATE;",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS date DATE;",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS status VARCHAR(20);",
+                "ALTER TABLE attendance ADD COLUMN IF NOT EXISTS marked_by VARCHAR(100);",
+                "ALTER TABLE attendance ALTER COLUMN student_id DROP NOT NULL;",
+                "ALTER TABLE attendance ALTER COLUMN school_id DROP NOT NULL;",
+                "ALTER TABLE attendance ALTER COLUMN marked_by DROP NOT NULL;",
+                "ALTER TABLE attendance ALTER COLUMN status DROP NOT NULL;"
+            ]:
                 try:
-                    cur.execute(f"ALTER TABLE attendance ALTER COLUMN {col} DROP NOT NULL;")
+                    cur.execute(stmt)
                     conn.commit()
                 except Exception:
-                    pass
+                    conn.rollback()
 
-            # 4. Grades Table (Make all non-essential columns nullable)
+            # 4. Grades Table
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS grades (
                     id SERIAL PRIMARY KEY,
@@ -289,6 +344,7 @@ def init_db():
                     school_id INT DEFAULT 1,
                     roll_no VARCHAR(100),
                     student_name VARCHAR(255),
+                    student_class VARCHAR(100),
                     subject VARCHAR(255),
                     subject_name VARCHAR(255),
                     score NUMERIC(5, 2),
@@ -298,42 +354,50 @@ def init_db():
                     session VARCHAR(100) DEFAULT '2026/2027',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS student_id INT;
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS subject VARCHAR(255);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS subject_name VARCHAR(255);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS score NUMERIC(5, 2);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS grade VARCHAR(20);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS remarks VARCHAR(255);
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS term VARCHAR(100) DEFAULT 'First Term 2026/2027';
-                ALTER TABLE grades ADD COLUMN IF NOT EXISTS session VARCHAR(100) DEFAULT '2026/2027';
             """)
             conn.commit()
 
-            # Make non-essential columns in grades nullable so inserts never fail
-            for col in ['student_id', 'school_id', 'grade', 'remarks', 'term', 'session', 'score', 'subject']:
+            for stmt in [
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS school_id INT DEFAULT 1;",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS student_id INT;",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS roll_no VARCHAR(100);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS student_name VARCHAR(255);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS student_class VARCHAR(100);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS subject VARCHAR(255);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS subject_name VARCHAR(255);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS score NUMERIC(5, 2);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS grade VARCHAR(20);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS remarks VARCHAR(255);",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS term VARCHAR(100) DEFAULT 'First Term 2026/2027';",
+                "ALTER TABLE grades ADD COLUMN IF NOT EXISTS session VARCHAR(100) DEFAULT '2026/2027';",
+                "ALTER TABLE grades ALTER COLUMN student_id DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN school_id DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN grade DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN remarks DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN term DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN session DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN score DROP NOT NULL;",
+                "ALTER TABLE grades ALTER COLUMN subject DROP NOT NULL;"
+            ]:
                 try:
-                    cur.execute(f"ALTER TABLE grades ALTER COLUMN {col} DROP NOT NULL;")
+                    cur.execute(stmt)
                     conn.commit()
                 except Exception:
-                    pass
+                    conn.rollback()
 
-            # Safe data migration from legacy student_records if present
-            cur.execute("SELECT 1 FROM information_schema.tables WHERE table_name = 'student_records';")
-            if cur.fetchone():
-                logger.info("Syncing legacy student_records into normalized tables...")
-                try:
+            # Sync legacy student_records if present
+            try:
+                cur.execute("SELECT 1 FROM information_schema.tables WHERE table_name = 'student_records';")
+                if cur.fetchone():
                     cur.execute("""
-                        INSERT INTO students (school_id, full_name, student_name, roll_no, class, student_class, gender, parent_contact)
+                        INSERT INTO students (school_id, student_name, full_name, roll_no, student_class, class, gender, parent_contact)
                         SELECT 
                             1 AS school_id,
-                            COALESCE(MAX(NULLIF(student_name, '')), 'Student') AS full_name,
                             COALESCE(MAX(NULLIF(student_name, '')), 'Student') AS student_name,
+                            COALESCE(MAX(NULLIF(student_name, '')), 'Student') AS full_name,
                             roll_no,
-                            COALESCE(MAX(NULLIF(student_class, '')), 'Primary 1') AS class,
                             COALESCE(MAX(NULLIF(student_class, '')), 'Primary 1') AS student_class,
+                            COALESCE(MAX(NULLIF(student_class, '')), 'Primary 1') AS class,
                             COALESCE(MAX(NULLIF(gender, '')), 'Unspecified') AS gender,
                             COALESCE(MAX(NULLIF(parent_contact, '')), '') AS parent_contact
                         FROM student_records
@@ -341,40 +405,28 @@ def init_db():
                         GROUP BY roll_no
                         ON CONFLICT DO NOTHING;
                     """)
-                except Exception as _sync_err:
-                    logger.debug("Student sync note: %s", _sync_err)
+                    conn.commit()
+            except Exception:
+                conn.rollback()
 
-            # Seed default admin if missing
-            cur.execute("SELECT id FROM teachers WHERE LOWER(email) = 'admin@edutrack.com' LIMIT 1;")
-            if not cur.fetchone():
-                admin_pw = generate_password_hash('admin123')
-                cur.execute("""
-                    INSERT INTO teachers (school_id, name, email, password_hash, role, assigned_class)
-                    VALUES (1, 'Administrator', 'admin@edutrack.com', %s, 'admin', 'All');
-                """, (admin_pw,))
-                logger.info("Default admin created: admin@edutrack.com / admin123")
+            # Seed default teachers
+            for email, name, role, assigned in [
+                ('admin@edutrack.com', 'Administrator', 'admin', 'All'),
+                ('teacher@edutrack.com', 'Sarah Jenkins', 'teacher', 'Primary 1'),
+                ('teacher2@edutrack.com', 'Michael Obi', 'teacher', 'Primary 2')
+            ]:
+                try:
+                    cur.execute("SELECT id FROM teachers WHERE LOWER(email) = LOWER(%s) LIMIT 1;", (email,))
+                    if not cur.fetchone():
+                        pw_hash = generate_password_hash('admin123' if role == 'admin' else 'teacher123')
+                        cur.execute("""
+                            INSERT INTO teachers (school_id, name, email, password_hash, role, assigned_class)
+                            VALUES (1, %s, %s, %s, %s, %s);
+                        """, (name, email, pw_hash, role, assigned))
+                        conn.commit()
+                except Exception:
+                    conn.rollback()
 
-            # Seed default Primary 1 teacher if missing
-            cur.execute("SELECT id FROM teachers WHERE LOWER(email) = 'teacher@edutrack.com' LIMIT 1;")
-            if not cur.fetchone():
-                teacher_pw = generate_password_hash('teacher123')
-                cur.execute("""
-                    INSERT INTO teachers (school_id, name, email, password_hash, role, assigned_class)
-                    VALUES (1, 'Sarah Jenkins', 'teacher@edutrack.com', %s, 'teacher', 'Primary 1');
-                """, (teacher_pw,))
-                logger.info("Default Primary 1 teacher created: teacher@edutrack.com / teacher123")
-
-            # Seed default Primary 2 teacher if missing
-            cur.execute("SELECT id FROM teachers WHERE LOWER(email) = 'teacher2@edutrack.com' LIMIT 1;")
-            if not cur.fetchone():
-                teacher2_pw = generate_password_hash('teacher123')
-                cur.execute("""
-                    INSERT INTO teachers (school_id, name, email, password_hash, role, assigned_class)
-                    VALUES (1, 'Michael Obi', 'teacher2@edutrack.com', %s, 'teacher', 'Primary 2');
-                """, (teacher2_pw,))
-                logger.info("Default Primary 2 teacher created: teacher2@edutrack.com / teacher123")
-
-        conn.commit()
         logger.info("Database schema initialized and verified successfully.")
     except Exception as e:
         logger.warning("Notice during database initialization: %s", e)
@@ -385,7 +437,7 @@ def init_db():
             conn.close()
 
 
-# Auto-initialize database on application import so Gunicorn initializes on Render
+# Safe startup invocation
 try:
     init_db()
 except Exception as _startup_e:
@@ -393,63 +445,58 @@ except Exception as _startup_e:
 
 
 # ==========================================================
-# PUBLIC HEALTH & STATUS ENDPOINTS
+# PUBLIC & HEALTH ROUTES
 # ==========================================================
 
 @app.route('/', methods=['GET'])
 def root():
-    """Root endpoint for status check and API documentation."""
     return jsonify({
         "status": "online",
-        "service": "EduTrack - Student Attendance & Academic Performance API",
-        "database": DB_NAME if not DATABASE_URL else "PostgreSQL (Neon / Cloud)",
-        "architecture": "Normalized Relational Design (students, attendance, grades, teachers)",
-        "auth": "Token-based (Bearer Token / RBAC / Multi-tenant school_id)",
-        "endpoints": [
-            "GET /api/health",
-            "POST /api/auth/register",
-            "POST /api/auth/login",
-            "GET /api/auth/me",
-            "GET /api/dashboard",
-            "GET /api/students",
-            "POST /api/students",
-            "PUT /api/students/<student_id>",
-            "DELETE /api/students/<student_id>",
-            "POST /api/attendance",
-            "GET /api/report/<roll_no>",
-            "POST /api/grades",
-            "GET /api/grades/<roll_no>",
-            "DELETE /api/grades/<grade_id>"
-        ]
+        "service": "EduTrack Attendance API",
+        "version": "2.1.0",
+        "architecture": "Normalized Relational PostgreSQL Schema",
+        "endpoints": {
+            "health": "/api/health",
+            "auth_login": "POST /api/auth/login",
+            "auth_register": "POST /api/auth/register",
+            "auth_me": "GET /api/auth/me",
+            "dashboard": "GET /api/dashboard",
+            "students": "/api/students",
+            "attendance": "POST /api/attendance",
+            "grades": "/api/grades",
+            "report": "/api/report/<roll_no>"
+        }
     }), 200
 
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    """Health check endpoint testing database connectivity."""
+    db_status = "disconnected"
     conn = None
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute("SELECT 1;")
-        return jsonify({"status": "healthy", "database": "connected"}), 200
+            db_status = "connected"
     except Exception as e:
-        return jsonify({"status": "unhealthy", "database_error": str(e)}), 503
+        db_status = f"error: {str(e)}"
     finally:
         if conn:
             conn.close()
 
+    return jsonify({
+        "status": "healthy" if db_status == "connected" else "degraded",
+        "database": db_status,
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    }), 200 if db_status == "connected" else 500
+
 
 # ==========================================================
-# AUTHENTICATION ENDPOINTS
+# AUTHENTICATION ROUTES
 # ==========================================================
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
-    """
-    Registers a new teacher account:
-    Body: { "name": "...", "email": "...", "password": "...", "assigned_class": "Primary 1", "school_id": 1 }
-    """
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body must be valid JSON"}), 400
@@ -459,11 +506,7 @@ def register():
     password = str(data.get('password', '')).strip()
     assigned_class = str(data.get('assigned_class', 'Primary 1')).strip()
     role = str(data.get('role', 'teacher')).strip().lower()
-
-    try:
-        school_id = int(data.get('school_id', 1))
-    except (ValueError, TypeError):
-        school_id = 1
+    school_id = int(data.get('school_id', 1))
 
     if role not in ('teacher', 'admin'):
         role = 'teacher'
@@ -477,40 +520,47 @@ def register():
     conn = None
     try:
         conn = get_db_connection()
-        with conn.cursor() as cur:
-            cur.execute("SELECT 1 FROM teachers WHERE LOWER(email) = %s LIMIT 1;", (email,))
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT id FROM teachers WHERE LOWER(email) = LOWER(%s) LIMIT 1;", (email,))
             if cur.fetchone():
-                return jsonify({"error": f"An account with email '{email}' already exists"}), 409
+                return jsonify({"error": "An account with this email address already exists"}), 409
 
             password_hash = generate_password_hash(password)
             cur.execute("""
                 INSERT INTO teachers (school_id, name, email, password_hash, role, assigned_class)
                 VALUES (%s, %s, %s, %s, %s, %s)
-                RETURNING id;
+                RETURNING id, school_id, name, email, role, assigned_class, created_at;
             """, (school_id, name, email, password_hash, role, assigned_class))
-            user_id = cur.fetchone()[0]
+            user = cur.fetchone()
+            conn.commit()
 
-        conn.commit()
+            token = generate_token(
+                user_id=user['id'],
+                role=user['role'],
+                assigned_class=user['assigned_class'],
+                email=user['email'],
+                name=user['name'],
+                school_id=user.get('school_id', 1)
+            )
 
-        token = generate_token(user_id, role, assigned_class, email, name, school_id)
-        return jsonify({
-            "message": "Account registered successfully",
-            "token": token,
-            "user": {
-                "id": user_id,
-                "school_id": school_id,
-                "name": name,
-                "email": email,
-                "role": role,
-                "assigned_class": assigned_class
-            }
-        }), 201
+            return jsonify({
+                "message": "Account created successfully",
+                "token": token,
+                "user": {
+                    "id": user['id'],
+                    "school_id": user.get('school_id', 1),
+                    "name": user['name'],
+                    "email": user['email'],
+                    "role": user['role'],
+                    "assigned_class": user['assigned_class']
+                }
+            }), 201
 
     except Exception as e:
-        logger.error("Error registering teacher: %s", e)
+        logger.error("Error during user registration: %s", e)
         if conn:
             conn.rollback()
-        return jsonify({"error": "Database error while registering account", "details": str(e)}), 500
+        return jsonify({"error": "Database error during registration", "details": str(e)}), 500
     finally:
         if conn:
             conn.close()
@@ -518,10 +568,6 @@ def register():
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    """
-    Authenticates teacher or admin:
-    Body: { "email": "...", "password": "..." }
-    """
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body must be valid JSON"}), 400
@@ -536,42 +582,45 @@ def login():
     try:
         conn = get_db_connection()
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
-                SELECT id, school_id, name, email, password_hash, role, assigned_class
-                FROM teachers
-                WHERE LOWER(email) = %s
+            cols = get_table_columns(conn, 'teachers')
+            school_col = "school_id" if "school_id" in cols else "1 AS school_id"
+            cur.execute(f"""
+                SELECT id, {school_col}, name, email, password_hash, role, assigned_class 
+                FROM teachers 
+                WHERE LOWER(email) = LOWER(%s) 
                 LIMIT 1;
             """, (email,))
             user = cur.fetchone()
 
-        if not user or not check_password_hash(user['password_hash'], password):
-            return jsonify({"error": "Invalid email or password"}), 401
+            if not user or not check_password_hash(user['password_hash'], password):
+                return jsonify({"error": "Invalid email or password"}), 401
 
-        school_id = user.get('school_id') or 1
-        token = generate_token(
-            user['id'],
-            user['role'],
-            user['assigned_class'] or 'Primary 1',
-            user['email'],
-            user['name'],
-            school_id
-        )
+            token = generate_token(
+                user_id=user['id'],
+                role=user['role'],
+                assigned_class=user['assigned_class'],
+                email=user['email'],
+                name=user['name'],
+                school_id=user.get('school_id', 1)
+            )
 
-        return jsonify({
-            "message": "Login successful",
-            "token": token,
-            "user": {
-                "id": user['id'],
-                "school_id": school_id,
-                "name": user['name'],
-                "email": user['email'],
-                "role": user['role'],
-                "assigned_class": user['assigned_class'] or 'Primary 1'
-            }
-        }), 200
+            return jsonify({
+                "message": "Login successful",
+                "token": token,
+                "user": {
+                    "id": user['id'],
+                    "school_id": user.get('school_id', 1),
+                    "name": user['name'],
+                    "email": user['email'],
+                    "role": user['role'],
+                    "assigned_class": user['assigned_class']
+                }
+            }), 200
 
     except Exception as e:
         logger.error("Error during login: %s", e)
+        if conn:
+            conn.rollback()
         return jsonify({"error": "Database error during login", "details": str(e)}), 500
     finally:
         if conn:
@@ -581,42 +630,26 @@ def login():
 @app.route('/api/auth/me', methods=['GET'])
 @require_auth
 def get_current_user_profile(current_user):
-    """Returns currently authenticated user profile including school_id."""
-    conn = None
-    try:
-        conn = get_db_connection()
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
-                SELECT id, school_id, name, email, role, assigned_class
-                FROM teachers
-                WHERE id = %s
-                LIMIT 1;
-            """, (current_user['user_id'],))
-            user = cur.fetchone()
-
-        if not user:
-            return jsonify({"error": "User no longer exists"}), 404
-
-        return jsonify({"user": user}), 200
-
-    except Exception as e:
-        logger.error("Error in /api/auth/me: %s", e)
-        return jsonify({"error": "Database error", "details": str(e)}), 500
-    finally:
-        if conn:
-            conn.close()
+    return jsonify({
+        "user": {
+            "id": current_user.get('user_id'),
+            "school_id": current_user.get('school_id', 1),
+            "name": current_user.get('name'),
+            "email": current_user.get('email'),
+            "role": current_user.get('role'),
+            "assigned_class": current_user.get('assigned_class')
+        }
+    }), 200
 
 
 # ==========================================================
-# PROTECTED DASHBOARD ENDPOINT
+# DASHBOARD STATS
 # ==========================================================
 
 @app.route('/api/dashboard', methods=['GET'])
 @require_auth
 def get_dashboard_stats(current_user):
-    date_param = request.args.get('date')
-    target_date = date_param.strip() if date_param else datetime.date.today().isoformat()
-
+    target_date = request.args.get('date', datetime.date.today().isoformat())
     is_admin = current_user.get('role') == 'admin'
     assigned_class = current_user.get('assigned_class')
     school_id = current_user.get('school_id', 1)
@@ -627,103 +660,127 @@ def get_dashboard_stats(current_user):
         with conn.cursor() as cur:
             all_tables = get_all_tables(conn)
             total_students = 0
-
-            # 1. Total Students Count
-            if 'students' in all_tables:
-                st_cols = get_table_columns(conn, 'students')
-                class_col = 'class' if 'class' in st_cols else ('student_class' if 'student_class' in st_cols else None)
-                if is_admin or not class_col:
-                    cur.execute("SELECT COUNT(*) FROM students;")
-                else:
-                    cur.execute(f"SELECT COUNT(*) FROM students WHERE LOWER({class_col}) = LOWER(%s);", (assigned_class,))
-                total_students = cur.fetchone()[0] or 0
-            elif 'student_records' in all_tables:
-                if is_admin:
-                    cur.execute("SELECT COUNT(DISTINCT roll_no) FROM student_records WHERE student_name IS NOT NULL;")
-                else:
-                    cur.execute("SELECT COUNT(DISTINCT roll_no) FROM student_records WHERE student_name IS NOT NULL AND LOWER(student_class) = LOWER(%s);", (assigned_class,))
-                total_students = cur.fetchone()[0] or 0
-
-            # 2. Present / Absent today
             present_today = 0
             absent_today = 0
 
-            att_cols = get_table_columns(conn, 'attendance') if 'attendance' in all_tables else set()
-            date_col = 'att_date' if 'att_date' in att_cols else ('date' if 'date' in att_cols else None)
-
-            if att_cols and date_col:
+            # 1. Total Students
+            if 'students' in all_tables:
+                st_fields = get_student_query_fields(conn)
                 if is_admin:
-                    cur.execute(f"""
-                        SELECT 
-                            COUNT(*) FILTER (WHERE status = 'Present'),
-                            COUNT(*) FILTER (WHERE status = 'Absent')
-                        FROM attendance
-                        WHERE {date_col} = %s;
-                    """, (target_date,))
+                    cur.execute("SELECT COUNT(*) FROM students;")
                 else:
-                    cur.execute(f"""
-                        SELECT 
-                            COUNT(*) FILTER (WHERE a.status = 'Present'),
-                            COUNT(*) FILTER (WHERE a.status = 'Absent')
-                        FROM attendance a
-                        LEFT JOIN students s ON a.student_id = s.id
-                        WHERE a.{date_col} = %s AND (
-                            (s.class IS NOT NULL AND LOWER(s.class) = LOWER(%s))
-                            OR (a.roll_no IS NOT NULL AND LOWER(a.roll_no) IN (
-                                SELECT LOWER(roll_no) FROM students WHERE LOWER(COALESCE(class, student_class)) = LOWER(%s)
-                            ))
-                        );
-                    """, (target_date, assigned_class, assigned_class))
-                row = cur.fetchone()
-                if row:
-                    present_today = row[0] or 0
-                    absent_today = row[1] or 0
+                    cur.execute(f"SELECT COUNT(*) FROM students WHERE LOWER({st_fields['class_expr']}) = LOWER(%s);", (assigned_class,))
+                total_students = cur.fetchone()[0] or 0
+            elif 'student_records' in all_tables:
+                if is_admin:
+                    cur.execute("SELECT COUNT(DISTINCT roll_no) FROM student_records WHERE roll_no IS NOT NULL;")
+                else:
+                    cur.execute("SELECT COUNT(DISTINCT roll_no) FROM student_records WHERE roll_no IS NOT NULL AND LOWER(student_class) = LOWER(%s);", (assigned_class,))
+                total_students = cur.fetchone()[0] or 0
 
-            # Fallback to student_records if attendance table had 0 results
+            # 2. Attendance Counts Today
+            if 'attendance' in all_tables:
+                att_cols = get_table_columns(conn, 'attendance')
+                date_col = 'att_date' if 'att_date' in att_cols else ('date' if 'date' in att_cols else None)
+
+                if date_col:
+                    if is_admin:
+                        cur.execute(f"""
+                            SELECT 
+                                COUNT(*) FILTER (WHERE status = 'Present'),
+                                COUNT(*) FILTER (WHERE status = 'Absent')
+                            FROM attendance
+                            WHERE {date_col} = %s;
+                        """, (target_date,))
+                        p, a = cur.fetchone()
+                        present_today = p or 0
+                        absent_today = a or 0
+                    else:
+                        st_fields = get_student_query_fields(conn)
+                        # Join attendance with students on student_id or roll_no
+                        has_st_id = 'student_id' in att_cols
+                        has_roll = 'roll_no' in att_cols
+                        if has_st_id:
+                            cur.execute(f"""
+                                SELECT 
+                                    COUNT(*) FILTER (WHERE a.status = 'Present'),
+                                    COUNT(*) FILTER (WHERE a.status = 'Absent')
+                                FROM attendance a
+                                JOIN students s ON a.student_id = s.id
+                                WHERE a.{date_col} = %s AND LOWER({st_fields['class_expr']}) = LOWER(%s);
+                            """, (target_date, assigned_class))
+                            p, a = cur.fetchone()
+                            present_today = p or 0
+                            absent_today = a or 0
+                        elif has_roll:
+                            cur.execute(f"""
+                                SELECT 
+                                    COUNT(*) FILTER (WHERE a.status = 'Present'),
+                                    COUNT(*) FILTER (WHERE a.status = 'Absent')
+                                FROM attendance a
+                                JOIN students s ON LOWER(a.roll_no) = LOWER(s.roll_no)
+                                WHERE a.{date_col} = %s AND LOWER({st_fields['class_expr']}) = LOWER(%s);
+                            """, (target_date, assigned_class))
+                            p, a = cur.fetchone()
+                            present_today = p or 0
+                            absent_today = a or 0
+
+            # Fallback to student_records if 0 counts
             if present_today == 0 and absent_today == 0 and 'student_records' in all_tables:
                 if is_admin:
                     cur.execute("""
                         SELECT 
-                            COUNT(DISTINCT roll_no) FILTER (WHERE status = 'Present'),
-                            COUNT(DISTINCT roll_no) FILTER (WHERE status = 'Absent')
-                        FROM student_records WHERE att_date = %s;
+                            COUNT(*) FILTER (WHERE status = 'Present'),
+                            COUNT(*) FILTER (WHERE status = 'Absent')
+                        FROM student_records
+                        WHERE att_date = %s;
                     """, (target_date,))
                 else:
                     cur.execute("""
                         SELECT 
-                            COUNT(DISTINCT roll_no) FILTER (WHERE status = 'Present'),
-                            COUNT(DISTINCT roll_no) FILTER (WHERE status = 'Absent')
-                        FROM student_records WHERE att_date = %s AND LOWER(student_class) = LOWER(%s);
+                            COUNT(*) FILTER (WHERE status = 'Present'),
+                            COUNT(*) FILTER (WHERE status = 'Absent')
+                        FROM student_records
+                        WHERE att_date = %s AND LOWER(student_class) = LOWER(%s);
                     """, (target_date, assigned_class))
-                sr_row = cur.fetchone()
-                if sr_row:
-                    present_today = sr_row[0] or 0
-                    absent_today = sr_row[1] or 0
+                sr_p, sr_a = cur.fetchone()
+                present_today = sr_p or 0
+                absent_today = sr_a or 0
 
-            total_marked_today = present_today + absent_today
-            attendance_percentage = round((present_today / total_marked_today) * 100, 1) if total_marked_today > 0 else 0.0
+            marked_today = present_today + absent_today
+            attendance_percentage = round((present_today / marked_today) * 100, 1) if marked_today > 0 else 0.0
 
             return jsonify({
                 "date": target_date,
                 "role": current_user.get('role'),
-                "assigned_class": assigned_class if not is_admin else "All",
+                "assigned_class": assigned_class if not is_admin else "All Classes",
                 "total_students": total_students,
                 "present_today": present_today,
                 "absent_today": absent_today,
-                "total_marked_today": total_marked_today,
+                "marked_today": marked_today,
                 "attendance_percentage": attendance_percentage
             }), 200
 
     except Exception as e:
         logger.error("Error fetching dashboard stats: %s", e)
-        return jsonify({"error": "Database error while fetching dashboard stats", "details": str(e)}), 500
+        if conn:
+            conn.rollback()
+        return jsonify({
+            "date": target_date,
+            "total_students": 0,
+            "present_today": 0,
+            "absent_today": 0,
+            "marked_today": 0,
+            "attendance_percentage": 0.0
+        }), 200
     finally:
         if conn:
             conn.close()
 
 
 # ==========================================================
-# PROTECTED STUDENTS ENDPOINTS
+# STUDENTS CRUD API
+# Canonical 5 Fields: student_name, roll_no, student_class, gender, parent_contact
 # ==========================================================
 
 @app.route('/api/students', methods=['GET'])
@@ -738,26 +795,20 @@ def get_students(current_user):
         conn = get_db_connection()
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             all_tables = get_all_tables(conn)
-            students = []
+            raw_students = []
 
             if 'students' in all_tables:
-                st_cols = get_table_columns(conn, 'students')
-                name_expr = "COALESCE(full_name, student_name, 'Student')" if ('full_name' in st_cols and 'student_name' in st_cols) else ("full_name" if 'full_name' in st_cols else "student_name")
-                class_expr = "COALESCE(class, student_class, 'Primary 1')" if ('class' in st_cols and 'student_class' in st_cols) else ("class" if 'class' in st_cols else "student_class")
-                gender_expr = "COALESCE(gender, 'Unspecified')" if 'gender' in st_cols else "'Unspecified'"
-                contact_expr = "COALESCE(parent_contact, '')" if 'parent_contact' in st_cols else "''"
-                school_expr = "school_id" if 'school_id' in st_cols else "1 AS school_id"
-
+                f = get_student_query_fields(conn)
                 if is_admin:
                     cur.execute(f"""
                         SELECT 
                             id,
-                            {school_expr},
-                            {name_expr} AS student_name,
+                            {f['school_expr']},
+                            {f['name_expr']} AS student_name,
                             roll_no,
-                            {class_expr} AS student_class,
-                            {gender_expr} AS gender,
-                            {contact_expr} AS parent_contact
+                            {f['class_expr']} AS student_class,
+                            {f['gender_expr']} AS gender,
+                            {f['contact_expr']} AS parent_contact
                         FROM students
                         ORDER BY roll_no ASC;
                     """)
@@ -765,20 +816,19 @@ def get_students(current_user):
                     cur.execute(f"""
                         SELECT 
                             id,
-                            {school_expr},
-                            {name_expr} AS student_name,
+                            {f['school_expr']},
+                            {f['name_expr']} AS student_name,
                             roll_no,
-                            {class_expr} AS student_class,
-                            {gender_expr} AS gender,
-                            {contact_expr} AS parent_contact
+                            {f['class_expr']} AS student_class,
+                            {f['gender_expr']} AS gender,
+                            {f['contact_expr']} AS parent_contact
                         FROM students
-                        WHERE LOWER({class_expr}) = LOWER(%s)
+                        WHERE LOWER({f['class_expr']}) = LOWER(%s)
                         ORDER BY roll_no ASC;
                     """, (assigned_class,))
-                students = cur.fetchall()
+                raw_students = cur.fetchall()
 
-            # Fallback to student_records if students was empty
-            if not students and 'student_records' in all_tables:
+            if not raw_students and 'student_records' in all_tables:
                 if is_admin:
                     cur.execute("""
                         SELECT 
@@ -809,28 +859,33 @@ def get_students(current_user):
                         GROUP BY roll_no
                         ORDER BY roll_no ASC;
                     """, (assigned_class,))
-                students = cur.fetchall()
+                raw_students = cur.fetchall()
 
-        result = [
-            {
-                "id": row["id"],
-                "school_id": row.get("school_id", 1),
-                "student_name": row["student_name"],
-                "name": row["student_name"],
-                "full_name": row["student_name"],
-                "roll_no": row["roll_no"],
-                "student_class": row["student_class"] or "Primary 1",
-                "class": row["student_class"] or "Primary 1",
-                "gender": row["gender"] or "Unspecified",
-                "parent_contact": row["parent_contact"] or ""
-            }
-            for row in students
-        ]
-        return jsonify(result), 200
+            # Return canonical 5 fields (+ id, school_id)
+            students = []
+            for s in raw_students:
+                s_name = s.get('student_name') or s.get('full_name') or 'Student'
+                s_roll = s.get('roll_no') or ''
+                s_class = s.get('student_class') or s.get('class') or 'Primary 1'
+                s_gender = s.get('gender') or 'Unspecified'
+                s_contact = s.get('parent_contact') or ''
+                students.append({
+                    "id": s.get('id', 1),
+                    "school_id": s.get('school_id', 1),
+                    "student_name": s_name,
+                    "roll_no": s_roll,
+                    "student_class": s_class,
+                    "gender": s_gender,
+                    "parent_contact": s_contact
+                })
+
+            return jsonify(students), 200
 
     except Exception as e:
         logger.error("Error fetching students: %s", e)
-        return jsonify({"error": "Database error while retrieving students", "details": str(e)}), 500
+        if conn:
+            conn.rollback()
+        return jsonify([]), 200
     finally:
         if conn:
             conn.close()
@@ -847,85 +902,83 @@ def add_student(current_user):
     assigned_class = current_user.get('assigned_class')
     school_id = current_user.get('school_id', 1)
 
-    student_name = data.get('student_name') or data.get('name') or data.get('full_name')
-    roll_no = data.get('roll_no')
-    gender = data.get('gender') or 'Unspecified'
-    parent_contact = data.get('parent_contact') or data.get('contact') or ''
+    student_name = str(data.get('student_name') or data.get('full_name') or data.get('name', '')).strip()
+    roll_no = str(data.get('roll_no') or data.get('roll_number', '')).strip()
+    gender = str(data.get('gender', 'Unspecified')).strip()
+    parent_contact = str(data.get('parent_contact', '')).strip()
 
     if is_admin:
-        student_class = data.get('student_class') or data.get('class') or 'Primary 1'
+        student_class = str(data.get('student_class') or data.get('class_name') or data.get('class', 'Primary 1')).strip()
     else:
-        student_class = assigned_class or 'Primary 1'
+        student_class = assigned_class
 
-    if not student_name or not roll_no:
-        return jsonify({"error": "Both 'student_name' and 'roll_no' are required"}), 400
-
-    student_name = str(student_name).strip()
-    roll_no = str(roll_no).strip()
-    student_class = str(student_class).strip()
-    gender = str(gender).strip()
-    parent_contact = str(parent_contact).strip()
+    if not student_name or not roll_no or not student_class:
+        return jsonify({"error": "student_name, roll_no, and student_class are required"}), 400
 
     conn = None
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
             all_tables = get_all_tables(conn)
-            new_id = 1
+            inserted_id = 1
 
-            # 1. Check duplicate roll_no
+            # Check duplicate roll_no
             if 'students' in all_tables:
-                cur.execute("SELECT 1 FROM students WHERE LOWER(roll_no) = LOWER(%s) LIMIT 1;", (roll_no,))
+                cur.execute("SELECT id FROM students WHERE LOWER(roll_no) = LOWER(%s) LIMIT 1;", (roll_no,))
                 if cur.fetchone():
-                    return jsonify({"error": f"Student with roll number '{roll_no}' already exists"}), 409
+                    return jsonify({"error": f"Roll number '{roll_no}' is already registered"}), 409
 
                 cols = get_table_columns(conn, 'students')
                 fields = {}
-                if 'full_name' in cols:
-                    fields['full_name'] = student_name
+                if 'school_id' in cols:
+                    fields['school_id'] = school_id
                 if 'student_name' in cols:
                     fields['student_name'] = student_name
+                if 'full_name' in cols:
+                    fields['full_name'] = student_name
                 if 'roll_no' in cols:
                     fields['roll_no'] = roll_no
-                if 'class' in cols:
-                    fields['class'] = student_class
                 if 'student_class' in cols:
                     fields['student_class'] = student_class
+                if 'class' in cols:
+                    fields['class'] = student_class
                 if 'gender' in cols:
                     fields['gender'] = gender
                 if 'parent_contact' in cols:
                     fields['parent_contact'] = parent_contact
-                if 'school_id' in cols:
-                    fields['school_id'] = school_id
 
                 col_names = list(fields.keys())
                 placeholders = ', '.join(['%s'] * len(col_names))
+
                 cur.execute(f"""
                     INSERT INTO students ({', '.join(col_names)})
                     VALUES ({placeholders})
                     RETURNING id;
                 """, list(fields.values()))
-                new_id = cur.fetchone()[0]
+                res = cur.fetchone()
+                if res:
+                    inserted_id = res[0]
+                conn.commit()
 
-            # 2. Sync into student_records if table exists
+            # Separate non-fatal sync to student_records
             if 'student_records' in all_tables:
-                cur.execute("""
-                    INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact)
-                    VALUES (%s, %s, %s, %s, %s);
-                """, (student_name, roll_no, student_class, gender, parent_contact))
+                try:
+                    cur.execute("""
+                        INSERT INTO student_records (student_name, roll_no, student_class, gender, parent_contact)
+                        VALUES (%s, %s, %s, %s, %s);
+                    """, (student_name, roll_no, student_class, gender, parent_contact))
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
 
-        conn.commit()
         return jsonify({
-            "message": "Student added successfully",
+            "message": f"Student '{student_name}' enrolled successfully",
             "student": {
-                "id": new_id,
+                "id": inserted_id,
                 "school_id": school_id,
                 "student_name": student_name,
-                "name": student_name,
-                "full_name": student_name,
                 "roll_no": roll_no,
                 "student_class": student_class,
-                "class": student_class,
                 "gender": gender,
                 "parent_contact": parent_contact
             }
@@ -944,8 +997,6 @@ def add_student(current_user):
 @app.route('/api/students/<string:student_id>', methods=['PUT'])
 @require_auth
 def update_student(current_user, student_id):
-    """Updates student demographic information in both students and student_records."""
-    student_id = student_id.strip()
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body must be valid JSON"}), 400
@@ -954,30 +1005,31 @@ def update_student(current_user, student_id):
     assigned_class = current_user.get('assigned_class')
     school_id = current_user.get('school_id', 1)
 
-    new_name = str(data.get('student_name') or data.get('name') or data.get('full_name', '')).strip()
-    new_roll = str(data.get('roll_no', '')).strip()
+    new_name = str(data.get('student_name') or data.get('full_name') or data.get('name', '')).strip()
+    new_roll = str(data.get('roll_no') or data.get('roll_number', '')).strip()
     new_gender = str(data.get('gender', 'Unspecified')).strip()
     new_contact = str(data.get('parent_contact') or data.get('contact', '')).strip()
 
     if is_admin:
-        new_class = str(data.get('student_class') or data.get('class', 'Primary 1')).strip()
+        new_class = str(data.get('student_class') or data.get('class_name') or data.get('class', 'Primary 1')).strip()
     else:
         new_class = assigned_class
 
     if not new_name or not new_roll:
-        return jsonify({"error": "Student name and roll number cannot be empty"}), 400
+        return jsonify({"error": "student_name and roll_no cannot be empty"}), 400
 
     conn = None
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
             all_tables = get_all_tables(conn)
-            old_roll_no = new_roll
             actual_id = 1
+            old_roll_no = new_roll
 
             if 'students' in all_tables:
-                cur.execute("""
-                    SELECT id, roll_no, COALESCE(class, student_class)
+                f = get_student_query_fields(conn)
+                cur.execute(f"""
+                    SELECT id, roll_no, {f['class_expr']}
                     FROM students
                     WHERE id::text = %s OR LOWER(roll_no) = LOWER(%s)
                     LIMIT 1;
@@ -988,24 +1040,23 @@ def update_student(current_user, student_id):
                     if not is_admin and str(old_class).lower() != str(assigned_class).lower():
                         return jsonify({"error": "Access denied: You can only edit students in your assigned class"}), 403
 
-                # Update students table dynamically
                 cols = get_table_columns(conn, 'students')
                 updates = []
                 vals = []
-                if 'full_name' in cols:
-                    updates.append("full_name = %s")
-                    vals.append(new_name)
                 if 'student_name' in cols:
                     updates.append("student_name = %s")
+                    vals.append(new_name)
+                if 'full_name' in cols:
+                    updates.append("full_name = %s")
                     vals.append(new_name)
                 if 'roll_no' in cols:
                     updates.append("roll_no = %s")
                     vals.append(new_roll)
-                if 'class' in cols:
-                    updates.append("class = %s")
-                    vals.append(new_class)
                 if 'student_class' in cols:
                     updates.append("student_class = %s")
+                    vals.append(new_class)
+                if 'class' in cols:
+                    updates.append("class = %s")
                     vals.append(new_class)
                 if 'gender' in cols:
                     updates.append("gender = %s")
@@ -1016,30 +1067,32 @@ def update_student(current_user, student_id):
 
                 if updates:
                     cur.execute(f"UPDATE students SET {', '.join(updates)} WHERE id::text = %s OR LOWER(roll_no) = LOWER(%s);", vals + [student_id, student_id])
+                conn.commit()
 
+            # Sync legacy student_records
             if 'student_records' in all_tables:
-                cur.execute("""
-                    UPDATE student_records
-                    SET student_name = %s,
-                        roll_no = %s,
-                        student_class = %s,
-                        gender = %s,
-                        parent_contact = %s
-                    WHERE LOWER(roll_no) = LOWER(%s) OR id::text = %s;
-                """, (new_name, new_roll, new_class, new_gender, new_contact, old_roll_no, student_id))
+                try:
+                    cur.execute("""
+                        UPDATE student_records
+                        SET student_name = %s,
+                            roll_no = %s,
+                            student_class = %s,
+                            gender = %s,
+                            parent_contact = %s
+                        WHERE LOWER(roll_no) = LOWER(%s) OR id::text = %s;
+                    """, (new_name, new_roll, new_class, new_gender, new_contact, old_roll_no, student_id))
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
 
-        conn.commit()
         return jsonify({
             "message": f"Student '{new_name}' updated successfully",
             "student": {
                 "id": actual_id,
                 "school_id": school_id,
                 "student_name": new_name,
-                "name": new_name,
-                "full_name": new_name,
                 "roll_no": new_roll,
                 "student_class": new_class,
-                "class": new_class,
                 "gender": new_gender,
                 "parent_contact": new_contact
             }
@@ -1058,7 +1111,6 @@ def update_student(current_user, student_id):
 @app.route('/api/students/<string:student_id>', methods=['DELETE'])
 @require_auth
 def delete_student(current_user, student_id):
-    student_id = student_id.strip()
     is_admin = current_user.get('role') == 'admin'
     assigned_class = current_user.get('assigned_class')
 
@@ -1067,47 +1119,46 @@ def delete_student(current_user, student_id):
         conn = get_db_connection()
         with conn.cursor() as cur:
             all_tables = get_all_tables(conn)
-            roll_no = student_id
-            st_id = None
-            student_name = "Student"
+            resolved_roll = None
+            resolved_id = None
+            student_class = None
 
             if 'students' in all_tables:
-                cur.execute("""
-                    SELECT id, roll_no, COALESCE(full_name, student_name), COALESCE(class, student_class)
+                f = get_student_query_fields(conn)
+                cur.execute(f"""
+                    SELECT id, roll_no, {f['class_expr']}
                     FROM students
                     WHERE id::text = %s OR LOWER(roll_no) = LOWER(%s)
                     LIMIT 1;
                 """, (student_id, student_id))
                 row = cur.fetchone()
                 if row:
-                    st_id, roll_no, student_name, st_class = row
-                    if not is_admin and str(st_class).lower() != str(assigned_class).lower():
-                        return jsonify({"error": "Access denied: You can only remove students in your assigned class"}), 403
+                    resolved_id, resolved_roll, student_class = row
 
-                    cur.execute("DELETE FROM students WHERE id::text = %s OR LOWER(roll_no) = LOWER(%s);", (student_id, student_id))
+            if not is_admin and student_class and str(student_class).lower() != str(assigned_class).lower():
+                return jsonify({"error": "Access denied: You can only remove students in your assigned class"}), 403
 
-            # Cascade manually to ensure everything is deleted regardless of FK constraints
+            target_roll = resolved_roll or student_id
+
             if 'attendance' in all_tables:
-                att_cols = get_table_columns(conn, 'attendance')
-                if 'student_id' in att_cols and st_id:
-                    cur.execute("DELETE FROM attendance WHERE student_id = %s;", (st_id,))
-                if 'roll_no' in att_cols:
-                    cur.execute("DELETE FROM attendance WHERE LOWER(roll_no) = LOWER(%s);", (roll_no,))
+                if resolved_id:
+                    cur.execute("DELETE FROM attendance WHERE student_id = %s;", (resolved_id,))
+                cur.execute("DELETE FROM attendance WHERE LOWER(roll_no) = LOWER(%s);", (target_roll,))
 
             if 'grades' in all_tables:
-                gr_cols = get_table_columns(conn, 'grades')
-                if 'student_id' in gr_cols and st_id:
-                    cur.execute("DELETE FROM grades WHERE student_id = %s;", (st_id,))
-                if 'roll_no' in gr_cols:
-                    cur.execute("DELETE FROM grades WHERE LOWER(roll_no) = LOWER(%s);", (roll_no,))
+                if resolved_id:
+                    cur.execute("DELETE FROM grades WHERE student_id = %s;", (resolved_id,))
+                cur.execute("DELETE FROM grades WHERE LOWER(roll_no) = LOWER(%s);", (target_roll,))
+
+            if 'students' in all_tables:
+                cur.execute("DELETE FROM students WHERE id::text = %s OR LOWER(roll_no) = LOWER(%s);", (student_id, target_roll))
 
             if 'student_records' in all_tables:
-                cur.execute("DELETE FROM student_records WHERE LOWER(roll_no) = LOWER(%s) OR id::text = %s;", (roll_no, student_id))
+                cur.execute("DELETE FROM student_records WHERE LOWER(roll_no) = LOWER(%s) OR id::text = %s;", (target_roll, student_id))
 
-        conn.commit()
-        return jsonify({
-            "message": f"Student '{student_name}' (Roll: {roll_no}) and all records deleted successfully."
-        }), 200
+            conn.commit()
+
+        return jsonify({"message": f"Student '{target_roll}' and associated attendance and grade records deleted."}), 200
 
     except Exception as e:
         logger.error("Error deleting student: %s", e)
@@ -1120,18 +1171,12 @@ def delete_student(current_user, student_id):
 
 
 # ==========================================================
-# ATTENDANCE ENDPOINTS (DYNAMIC SCHEMA COMPATIBILITY)
+# ATTENDANCE API
 # ==========================================================
 
 @app.route('/api/attendance', methods=['POST'])
 @require_auth
 def save_attendance(current_user):
-    """
-    Requirement 2: Mark Attendance
-    Dynamically maps to whatever columns exist in the attendance table.
-    Deletes previous attendance for the student on that date to prevent duplicates
-    without relying on strict ON CONFLICT constraints that may be missing in Neon.
-    """
     data = request.get_json(silent=True)
     if data is None:
         return jsonify({"error": "Request body must be valid JSON"}), 400
@@ -1167,14 +1212,14 @@ def save_attendance(current_user):
 
                 roll_no = str(roll_no).strip()
 
-                # Look up student in students table or student_records
                 student_id = None
                 student_name = record.get('student_name') or record.get('name')
                 student_class = record.get('student_class') or record.get('class')
 
                 if 'students' in all_tables:
-                    cur.execute("""
-                        SELECT id, COALESCE(full_name, student_name), COALESCE(class, student_class)
+                    f = get_student_query_fields(conn)
+                    cur.execute(f"""
+                        SELECT id, {f['name_expr']}, {f['class_expr']}
                         FROM students 
                         WHERE LOWER(roll_no) = LOWER(%s) OR id::text = %s
                         LIMIT 1;
@@ -1185,107 +1230,106 @@ def save_attendance(current_user):
                         student_name = student_name or st_row[1] or "Student"
                         student_class = student_class or st_row[2] or "Primary 1"
 
-                if not student_class and 'student_records' in all_tables:
-                    cur.execute("""
-                        SELECT id, student_name, student_class 
-                        FROM student_records 
-                        WHERE LOWER(roll_no) = LOWER(%s) AND student_name IS NOT NULL 
-                        LIMIT 1;
-                    """, (roll_no,))
-                    sr_row = cur.fetchone()
-                    if sr_row:
-                        student_name = student_name or sr_row[1] or "Student"
-                        student_class = student_class or sr_row[2] or "Primary 1"
-
                 student_name = student_name or "Student"
                 student_class = student_class or "Primary 1"
 
-                # If teacher, enforce class boundary
+                # Check teacher class boundary
                 if not is_admin and str(student_class).lower() != str(assigned_class).lower():
                     continue
 
-                # Ensure student exists in students table
+                # Auto-create student in students table if not found
                 if not student_id and 'students' in all_tables:
                     try:
-                        cur.execute("""
-                            INSERT INTO students (school_id, full_name, student_name, roll_no, class, student_class, gender, parent_contact)
-                            VALUES (%s, %s, %s, %s, %s, %s, 'Unspecified', '')
+                        st_cols = get_table_columns(conn, 'students')
+                        f_ins = {}
+                        if 'school_id' in st_cols: f_ins['school_id'] = school_id
+                        if 'student_name' in st_cols: f_ins['student_name'] = student_name
+                        if 'full_name' in st_cols: f_ins['full_name'] = student_name
+                        if 'roll_no' in st_cols: f_ins['roll_no'] = roll_no
+                        if 'student_class' in st_cols: f_ins['student_class'] = student_class
+                        if 'class' in st_cols: f_ins['class'] = student_class
+                        if 'gender' in st_cols: f_ins['gender'] = 'Unspecified'
+                        if 'parent_contact' in st_cols: f_ins['parent_contact'] = ''
+
+                        cur.execute(f"""
+                            INSERT INTO students ({', '.join(f_ins.keys())})
+                            VALUES ({', '.join(['%s'] * len(f_ins))})
                             RETURNING id;
-                        """, (school_id, student_name, student_name, roll_no, student_class, student_class))
-                        ret_id = cur.fetchone()
-                        if ret_id:
-                            student_id = ret_id[0]
+                        """, list(f_ins.values()))
+                        r = cur.fetchone()
+                        if r: student_id = r[0]
+                        conn.commit()
                     except Exception:
-                        cur.execute("SELECT id FROM students WHERE LOWER(roll_no) = LOWER(%s) LIMIT 1;", (roll_no,))
-                        st_f = cur.fetchone()
-                        if st_f:
-                            student_id = st_f[0]
+                        conn.rollback()
 
-                # 1. Save in attendance table if table exists
+                # Insert into attendance table
                 if cols and date_col:
-                    # Prevent duplicate days: delete existing record for this student on this date
-                    if 'student_id' in cols and student_id:
-                        cur.execute(f"DELETE FROM attendance WHERE student_id = %s AND {date_col} = %s;", (student_id, att_date))
-                    elif 'roll_no' in cols:
-                        cur.execute(f"DELETE FROM attendance WHERE LOWER(roll_no) = LOWER(%s) AND {date_col} = %s;", (roll_no, att_date))
+                    try:
+                        if 'student_id' in cols and student_id:
+                            cur.execute(f"DELETE FROM attendance WHERE student_id = %s AND {date_col} = %s;", (student_id, att_date))
+                        elif 'roll_no' in cols:
+                            cur.execute(f"DELETE FROM attendance WHERE LOWER(roll_no) = LOWER(%s) AND {date_col} = %s;", (roll_no, att_date))
 
-                    # Insert only columns that exist
-                    fields = {}
-                    if 'student_id' in cols and student_id:
-                        fields['student_id'] = student_id
-                    if 'school_id' in cols:
-                        fields['school_id'] = school_id
-                    if 'roll_no' in cols:
-                        fields['roll_no'] = roll_no
-                    if 'student_name' in cols:
-                        fields['student_name'] = student_name
-                    if 'att_date' in cols:
-                        fields['att_date'] = att_date
-                    elif 'date' in cols:
-                        fields['date'] = att_date
-                    if 'status' in cols:
-                        fields['status'] = status
-                    if 'marked_by' in cols:
-                        fields['marked_by'] = marked_by
+                        att_fields = {}
+                        if 'student_id' in cols and student_id:
+                            att_fields['student_id'] = student_id
+                        if 'school_id' in cols:
+                            att_fields['school_id'] = school_id
+                        if 'roll_no' in cols:
+                            att_fields['roll_no'] = roll_no
+                        if 'student_name' in cols:
+                            att_fields['student_name'] = student_name
+                        if 'student_class' in cols:
+                            att_fields['student_class'] = student_class
+                        if 'att_date' in cols:
+                            att_fields['att_date'] = att_date
+                        if 'date' in cols:
+                            att_fields['date'] = att_date
+                        if 'status' in cols:
+                            att_fields['status'] = status
+                        if 'marked_by' in cols:
+                            att_fields['marked_by'] = marked_by
 
-                    col_names = list(fields.keys())
-                    placeholders = ', '.join(['%s'] * len(col_names))
-                    cur.execute(f"INSERT INTO attendance ({', '.join(col_names)}) VALUES ({placeholders});", list(fields.values()))
+                        cur.execute(f"""
+                            INSERT INTO attendance ({', '.join(att_fields.keys())})
+                            VALUES ({', '.join(['%s'] * len(att_fields))});
+                        """, list(att_fields.values()))
+                        conn.commit()
+                        saved_count += 1
+                    except Exception as _att_err:
+                        conn.rollback()
+                        logger.warning("Attendance row insert note: %s", _att_err)
 
-                # 2. Sync to student_records as backup (non-fatal)
+                # Legacy student_records sync
                 if 'student_records' in all_tables:
                     try:
-                        cur.execute("""
-                            DELETE FROM student_records 
-                            WHERE LOWER(roll_no) = LOWER(%s) AND att_date = %s;
-                        """, (roll_no, att_date))
+                        cur.execute("DELETE FROM student_records WHERE LOWER(roll_no) = LOWER(%s) AND att_date = %s;", (roll_no, att_date))
                         cur.execute("""
                             INSERT INTO student_records (student_name, roll_no, student_class, att_date, status)
                             VALUES (%s, %s, %s, %s, %s);
                         """, (student_name, roll_no, student_class, att_date, status))
-                    except Exception as _sr_err:
-                        logger.debug("Optional legacy student_records sync notice: %s", _sr_err)
+                        conn.commit()
+                    except Exception:
+                        conn.rollback()
 
-                saved_count += 1
-
-        conn.commit()
-        return jsonify({
-            "message": "Attendance saved successfully",
-            "saved_count": saved_count
-        }), 201
+            conn.commit()
+            return jsonify({
+                "message": f"Successfully recorded attendance for {len(records)} student(s).",
+                "saved_count": saved_count
+            }), 200
 
     except Exception as e:
         logger.error("Error saving attendance: %s", e)
         if conn:
             conn.rollback()
-        return jsonify({"error": f"Database error while saving attendance: {str(e)}", "details": str(e)}), 500
+        return jsonify({"error": "Database error while saving attendance", "details": str(e)}), 500
     finally:
         if conn:
             conn.close()
 
 
 # ==========================================================
-# REPORT & GRADES ENDPOINTS (DYNAMIC SCHEMA COMPATIBILITY)
+# REPORT CARD API
 # ==========================================================
 
 @app.route('/api/report/<string:roll_no>', methods=['GET'])
@@ -1303,26 +1347,26 @@ def get_student_report(current_user, roll_no):
         with conn.cursor() as cur:
             all_tables = get_all_tables(conn)
 
-            # 1. Student demographic info
             student_id = None
-            full_name = None
+            student_name = None
             st_roll = roll_no
             st_class = "Primary 1"
             gender = "Unspecified"
             parent_contact = ""
 
             if 'students' in all_tables:
-                cur.execute("""
-                    SELECT id, COALESCE(full_name, student_name), roll_no, COALESCE(class, student_class), gender, parent_contact
+                f = get_student_query_fields(conn)
+                cur.execute(f"""
+                    SELECT id, {f['name_expr']}, roll_no, {f['class_expr']}, {f['gender_expr']}, {f['contact_expr']}
                     FROM students
                     WHERE LOWER(roll_no) = LOWER(%s)
                     LIMIT 1;
                 """, (roll_no,))
                 row = cur.fetchone()
                 if row:
-                    student_id, full_name, st_roll, st_class, gender, parent_contact = row
+                    student_id, student_name, st_roll, st_class, gender, parent_contact = row
 
-            if not full_name and 'student_records' in all_tables:
+            if not student_name and 'student_records' in all_tables:
                 cur.execute("""
                     SELECT id, student_name, roll_no, student_class, gender, parent_contact
                     FROM student_records
@@ -1331,16 +1375,16 @@ def get_student_report(current_user, roll_no):
                 """, (roll_no,))
                 sr_row = cur.fetchone()
                 if sr_row:
-                    student_id, full_name, st_roll, st_class, gender, parent_contact = sr_row
+                    student_id, student_name, st_roll, st_class, gender, parent_contact = sr_row
 
-            if not full_name:
+            if not student_name:
                 return jsonify({"error": f"No student found with roll number '{roll_no}'"}), 404
 
             st_class = st_class or "Primary 1"
             if not is_admin and str(st_class).lower() != str(assigned_class).lower():
                 return jsonify({"error": "Access denied: Student belongs to another class"}), 403
 
-            # 2. Attendance summary
+            # Attendance calculations
             total = 0
             present = 0
             absent = 0
@@ -1370,7 +1414,7 @@ def get_student_report(current_user, roll_no):
                 if att_res:
                     total, present, absent = att_res
 
-            # Fallback to student_records if attendance table had 0 results
+            # Fallback to student_records
             if total == 0 and 'student_records' in all_tables:
                 cur.execute("""
                     SELECT 
@@ -1393,9 +1437,9 @@ def get_student_report(current_user, roll_no):
                 "id": student_id,
                 "school_id": school_id,
                 "roll_no": st_roll,
-                "student_name": full_name or "Student",
-                "name": full_name or "Student",
-                "full_name": full_name or "Student",
+                "student_name": student_name or "Student",
+                "name": student_name or "Student",
+                "full_name": student_name or "Student",
                 "student_class": st_class,
                 "class": st_class,
                 "gender": gender or "Unspecified",
@@ -1408,20 +1452,21 @@ def get_student_report(current_user, roll_no):
 
     except Exception as e:
         logger.error("Error generating report: %s", e)
+        if conn:
+            conn.rollback()
         return jsonify({"error": "Database error while generating report", "details": str(e)}), 500
     finally:
         if conn:
             conn.close()
 
 
+# ==========================================================
+# GRADES API
+# ==========================================================
+
 @app.route('/api/grades', methods=['POST'])
 @require_auth
 def add_grade(current_user):
-    """
-    Requirement 1: Record Grade
-    Dynamically maps Subject, Score, Grade, Remarks to real existing columns in Neon.
-    Never fails on missing or null columns.
-    """
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "Request body must be valid JSON"}), 400
@@ -1458,10 +1503,11 @@ def add_grade(current_user):
             student_name = data.get('student_name') or data.get('name')
             student_class = None
 
-            # 1. Student Lookup
+            # Student lookup
             if 'students' in all_tables:
-                cur.execute("""
-                    SELECT id, COALESCE(full_name, student_name), COALESCE(class, student_class)
+                f = get_student_query_fields(conn)
+                cur.execute(f"""
+                    SELECT id, {f['name_expr']}, {f['class_expr']}
                     FROM students 
                     WHERE LOWER(roll_no) = LOWER(%s)
                     LIMIT 1;
@@ -1472,51 +1518,47 @@ def add_grade(current_user):
                     student_name = student_name or st_row[1]
                     student_class = st_row[2]
 
-            if not student_class and 'student_records' in all_tables:
-                cur.execute("""
-                    SELECT id, student_name, student_class
-                    FROM student_records
-                    WHERE LOWER(roll_no) = LOWER(%s) AND student_name IS NOT NULL
-                    LIMIT 1;
-                """, (roll_no,))
-                sr_row = cur.fetchone()
-                if sr_row:
-                    student_name = student_name or sr_row[1]
-                    student_class = sr_row[2]
-
             student_name = student_name or "Student"
             student_class = student_class or "Primary 1"
 
-            # Check teacher permission
             if not is_admin and str(student_class).lower() != str(assigned_class).lower():
                 return jsonify({"error": "Access denied: Student belongs to another class"}), 403
 
-            # CRUCIAL: Ensure student is present in students table so student_id is NEVER None
+            # Ensure student is present in students table
             if not student_id and 'students' in all_tables:
                 try:
-                    cur.execute("""
-                        INSERT INTO students (school_id, full_name, student_name, roll_no, class, student_class, gender, parent_contact)
-                        VALUES (%s, %s, %s, %s, %s, %s, 'Unspecified', '')
+                    st_cols = get_table_columns(conn, 'students')
+                    f_ins = {}
+                    if 'school_id' in st_cols: f_ins['school_id'] = school_id
+                    if 'student_name' in st_cols: f_ins['student_name'] = student_name
+                    if 'full_name' in st_cols: f_ins['full_name'] = student_name
+                    if 'roll_no' in st_cols: f_ins['roll_no'] = roll_no
+                    if 'student_class' in st_cols: f_ins['student_class'] = student_class
+                    if 'class' in st_cols: f_ins['class'] = student_class
+                    if 'gender' in st_cols: f_ins['gender'] = 'Unspecified'
+                    if 'parent_contact' in st_cols: f_ins['parent_contact'] = ''
+
+                    cur.execute(f"""
+                        INSERT INTO students ({', '.join(f_ins.keys())})
+                        VALUES ({', '.join(['%s'] * len(f_ins))})
                         RETURNING id;
-                    """, (school_id, student_name, student_name, roll_no, student_class, student_class))
-                    ret_id = cur.fetchone()
-                    if ret_id:
-                        student_id = ret_id[0]
+                    """, list(f_ins.values()))
+                    ret = cur.fetchone()
+                    if ret: student_id = ret[0]
+                    conn.commit()
                 except Exception:
+                    conn.rollback()
                     cur.execute("SELECT id FROM students WHERE LOWER(roll_no) = LOWER(%s) LIMIT 1;", (roll_no,))
                     st_f = cur.fetchone()
-                    if st_f:
-                        student_id = st_f[0]
+                    if st_f: student_id = st_f[0]
 
-            # 2. Dynamic insertion into grades table
+            # Dynamic insertion into grades table
             cols = get_table_columns(conn, 'grades') if 'grades' in all_tables else set()
             grade_id = 1
 
             if cols:
-                # Determine subject column name
                 sub_col = 'subject' if 'subject' in cols else ('subject_name' if 'subject_name' in cols else None)
 
-                # Check if existing grade for this student and subject exists
                 existing_id = None
                 if sub_col:
                     if 'student_id' in cols and student_id:
@@ -1527,7 +1569,6 @@ def add_grade(current_user):
                     if found:
                         existing_id = found[0]
 
-                # Map data ONLY to columns that physically exist in the database table
                 fields = {}
                 if 'student_id' in cols and student_id:
                     fields['student_id'] = student_id
@@ -1537,6 +1578,8 @@ def add_grade(current_user):
                     fields['roll_no'] = roll_no
                 if 'student_name' in cols:
                     fields['student_name'] = student_name
+                if 'student_class' in cols:
+                    fields['student_class'] = student_class
                 if 'subject' in cols:
                     fields['subject'] = subject
                 elif 'subject_name' in cols:
@@ -1569,6 +1612,7 @@ def add_grade(current_user):
                             row_ret = cur.fetchone()
                             grade_id = row_ret[0] if row_ret else 1
                         except Exception:
+                            conn.rollback()
                             cur.execute(f"INSERT INTO grades ({', '.join(col_names)}) VALUES ({placeholders});", list(fields.values()))
                             cur.execute("SELECT MAX(id) FROM grades;")
                             max_row = cur.fetchone()
@@ -1576,9 +1620,9 @@ def add_grade(current_user):
                     else:
                         cur.execute(f"INSERT INTO grades ({', '.join(col_names)}) VALUES ({placeholders});", list(fields.values()))
 
-            conn.commit()
+                conn.commit()
 
-            # 3. Separate non-fatal sync into student_records for legacy compatibility
+            # Separate non-fatal sync into student_records
             if 'student_records' in all_tables:
                 try:
                     cur.execute("""
@@ -1590,10 +1634,9 @@ def add_grade(current_user):
                         VALUES (%s, %s, %s, %s, %s, %s);
                     """, (student_name, roll_no, student_class, subject, score_val, grade_letter))
                     conn.commit()
-                except Exception as _sync_err:
-                    logger.debug("Optional legacy student_records sync notice: %s", _sync_err)
+                except Exception:
+                    conn.rollback()
 
-        conn.commit()
         return jsonify({
             "message": "Grade saved successfully",
             "grade": {
@@ -1602,6 +1645,7 @@ def add_grade(current_user):
                 "school_id": school_id,
                 "roll_no": roll_no,
                 "student_name": student_name,
+                "student_class": student_class,
                 "subject": subject,
                 "score": score_val,
                 "grade": grade_letter,
@@ -1638,8 +1682,9 @@ def get_grades(current_user, roll_no):
             student_id = None
 
             if 'students' in all_tables:
-                cur.execute("""
-                    SELECT id, COALESCE(class, student_class) AS st_class 
+                f = get_student_query_fields(conn)
+                cur.execute(f"""
+                    SELECT id, {f['class_expr']} AS st_class 
                     FROM students 
                     WHERE LOWER(roll_no) = LOWER(%s)
                     LIMIT 1;
@@ -1663,7 +1708,6 @@ def get_grades(current_user, roll_no):
             if st_class and not is_admin and str(st_class).lower() != str(assigned_class).lower():
                 return jsonify({"error": "Access denied: Student belongs to another class"}), 403
 
-            # Inspect columns of grades table
             cols = get_table_columns(conn, 'grades') if 'grades' in all_tables else set()
             rows = []
 
@@ -1703,7 +1747,7 @@ def get_grades(current_user, roll_no):
                 """, tuple(params))
                 rows = cur.fetchall()
 
-            # Fallback to student_records if no rows found in grades table
+            # Fallback to student_records
             if not rows and 'student_records' in all_tables:
                 cur.execute("""
                     SELECT id, subject, score, grade
@@ -1731,6 +1775,8 @@ def get_grades(current_user, roll_no):
 
     except Exception as e:
         logger.error("Error fetching grades: %s", e)
+        if conn:
+            conn.rollback()
         # Never crash with 500 - return empty list gracefully
         return jsonify([]), 200
     finally:
@@ -1749,10 +1795,11 @@ def delete_grade(current_user, grade_id):
             if 'grades' in all_tables:
                 cur.execute("DELETE FROM grades WHERE id = %s;", (grade_id,))
             if 'student_records' in all_tables:
-                cur.execute("DELETE FROM student_records WHERE id = %s AND subject IS NOT NULL;", (grade_id,))
+                cur.execute("DELETE FROM student_records WHERE id = %s;", (grade_id,))
+            conn.commit()
 
-        conn.commit()
-        return jsonify({"message": "Grade record deleted successfully"}), 200
+        return jsonify({"message": f"Grade entry {grade_id} deleted successfully."}), 200
+
     except Exception as e:
         logger.error("Error deleting grade: %s", e)
         if conn:
@@ -1763,12 +1810,8 @@ def delete_grade(current_user, grade_id):
             conn.close()
 
 
-# ==========================================================
-# SERVER STARTUP
-# ==========================================================
 if __name__ == '__main__':
     port = int(os.getenv('FLASK_PORT', 5000))
-    debug = os.getenv('FLASK_DEBUG', 'True').lower() in ('true', '1', 't')
-
-    logger.info("Starting EduTrack API server on port %s...", port)
+    debug = os.getenv('FLASK_DEBUG', 'False').lower() in ('true', '1')
+    logger.info("EduTrack Flask Server starting on port %d...", port)
     app.run(host='0.0.0.0', port=port, debug=debug)

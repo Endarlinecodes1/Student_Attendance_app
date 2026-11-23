@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>EduTrack - Student Attendance & Academic Portal</title>
   <meta name="description"
@@ -783,6 +786,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
       text-align: left;
       font-size: 0.9rem;
     }
@@ -792,8 +796,17 @@
       border-bottom: 1px solid var(--gray-300);
     }
 
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+
     th {
-      padding: 0.8rem 1rem;
       font-weight: 700;
       color: var(--gray-700);
       text-transform: uppercase;
@@ -801,11 +814,8 @@
       letter-spacing: 0.05em;
     }
 
-    td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--gray-200);
-      color: var(--gray-800);
-      vertical-align: middle;
+    td:nth-child(2) {
+      white-space: normal;
     }
 
     tbody tr:last-child td {
@@ -852,7 +862,8 @@
 
     .radio-pill-option {
       position: relative;
-      flex: 1;
+      display: inline-flex;
+      justify-content: center;
     }
 
     .radio-pill-option input[type="radio"] {
@@ -863,30 +874,39 @@
     }
 
     .radio-pill-option label {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.35rem;
-      padding: 0.45rem 0.85rem;
+      padding: 0.45rem 0.95rem;
       font-size: 0.825rem;
       font-weight: 700;
       border-radius: var(--radius-full);
       cursor: pointer;
       transition: var(--transition);
+      background: var(--gray-100);
+      border: 1.5px solid var(--gray-300);
       color: var(--gray-600);
       user-select: none;
       min-height: 38px;
       white-space: nowrap;
     }
 
+    .radio-pill-option label:hover {
+      background: var(--gray-200);
+      border-color: var(--gray-400);
+    }
+
     .radio-pill-option input[value="Present"]:checked+label {
       background: var(--success);
+      border-color: var(--success);
       color: var(--white);
       box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
     }
 
     .radio-pill-option input[value="Absent"]:checked+label {
       background: var(--danger);
+      border-color: var(--danger);
       color: var(--white);
       box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
     }
@@ -1677,10 +1697,10 @@
           <table id="attendanceTable">
             <thead>
               <tr>
-                <th style="width: 14%; min-width: 90px;">Roll No</th>
-                <th style="width: 36%; min-width: 170px;">Student Name</th>
-                <th style="width: 18%; min-width: 110px;">Class</th>
-                <th style="width: 32%; min-width: 210px; text-align: center;">Attendance Status</th>
+                <th style="width: 15%;">ROLL NO</th>
+                <th style="width: 45%;">STUDENT NAME</th>
+                <th style="width: 20%; text-align: center;">PRESENT</th>
+                <th style="width: 20%; text-align: center;">ABSENT</th>
               </tr>
             </thead>
             <tbody id="attendanceTableBody">
@@ -1813,12 +1833,12 @@
           <table id="directoryTable">
             <thead>
               <tr>
-                <th style="width: 11%; min-width: 85px;">Roll No</th>
-                <th style="width: 25%; min-width: 160px;">Student Name</th>
-                <th style="width: 14%; min-width: 110px;">Class</th>
-                <th style="width: 12%; min-width: 85px;">Gender</th>
-                <th style="width: 16%; min-width: 130px;">Parent Contact</th>
-                <th style="width: 22%; min-width: 230px; text-align: right;">Actions</th>
+                <th style="width: 12%;">ROLL NO</th>
+                <th style="width: 26%;">STUDENT NAME</th>
+                <th style="width: 14%;">CLASS</th>
+                <th style="width: 12%;">GENDER</th>
+                <th style="width: 18%;">PARENT CONTACT</th>
+                <th style="width: 18%; text-align: right;">ACTIONS</th>
               </tr>
             </thead>
             <tbody id="directoryTableBody">
@@ -2329,7 +2349,11 @@
 
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
+        navigator.serviceWorker.register('sw.js?v=7')
+          .then((reg) => {
+            if (reg && reg.update) reg.update();
+          })
+          .catch(() => {});
       }
     }
 
@@ -2628,8 +2652,8 @@
       ];
 
       return [...studentsList].sort((a, b) => {
-        const classA = (a.student_class || a.class || '').trim().toLowerCase();
-        const classB = (b.student_class || b.class || '').trim().toLowerCase();
+        const classA = String(a.student_class || '').trim().toLowerCase();
+        const classB = String(b.student_class || '').trim().toLowerCase();
 
         const idxA = classOrder.indexOf(classA);
         const idxB = classOrder.indexOf(classB);
@@ -2651,8 +2675,8 @@
         if (rollComp !== 0) return rollComp;
 
         // 3. Sort alphabetically by student full name
-        const nameA = String(a.student_name || a.name || '').trim();
-        const nameB = String(b.student_name || b.name || '').trim();
+        const nameA = String(a.student_name || '').trim();
+        const nameB = String(b.student_name || '').trim();
         return nameA.localeCompare(nameB);
       });
     }
@@ -2668,7 +2692,16 @@
 
         const data = await res.json();
         const rawList = Array.isArray(data) ? data : (data.students || []);
-        state.students = sortStudentsInOrder(rawList);
+        state.students = rawList.map(s => ({
+          id: s.id,
+          school_id: s.school_id || 1,
+          student_name: s.student_name || s.full_name || "",
+          roll_no: s.roll_no || s.roll_number || "",
+          student_class: s.student_class || s.class_name || s.class || "",
+          gender: s.gender || "Unspecified",
+          parent_contact: s.parent_contact || ""
+        }));
+        state.students = sortStudentsInOrder(state.students);
 
         updateClassFilterOptions();
         renderAttendanceList();
@@ -2687,7 +2720,7 @@
     function updateClassFilterOptions() {
       const classes = new Set(['Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'JSS 1', 'JSS 2', 'JSS 3', 'SSS 1', 'SSS 2', 'SSS 3']);
       state.students.forEach(s => {
-        const cls = s.student_class || s.class;
+        const cls = s.student_class;
         if (cls) classes.add(cls);
       });
 
@@ -2732,9 +2765,9 @@
       }
 
       const filtered = state.students.filter(s => {
-        const name = (s.student_name || s.name || '').toLowerCase();
+        const name = (s.student_name || '').toLowerCase();
         const roll = String(s.roll_no || '').toLowerCase();
-        const cls = (s.student_class || s.class || '').toLowerCase();
+        const cls = (s.student_class || '').toLowerCase();
 
         const matchesSearch = !searchTerm || name.includes(searchTerm) || roll.includes(searchTerm);
         const matchesClass = !selectedClass || cls === selectedClass;
@@ -2761,9 +2794,9 @@
 
       tbody.innerHTML = sorted.map((student, index) => {
         const rollNo = student.roll_no;
-        const studentName = student.student_name || student.name || 'Student';
-        const studentClass = student.student_class || student.class || 'Primary 1';
-        const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+        const studentName = student.student_name || 'Student';
+        const studentClass = student.student_class || 'Primary 1';
+        const fieldKey = `att_${index}_${String(rollNo).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
 
         return `
           <tr data-roll-no="${escapeHtml(rollNo)}">
@@ -2771,28 +2804,26 @@
               <span class="roll-badge">${escapeHtml(rollNo)}</span>
             </td>
             <td>
-              <strong style="color: var(--gray-900); font-weight: 600;">${escapeHtml(studentName)}</strong>
+              <div style="font-weight: 600; color: var(--gray-900); line-height: 1.25;">${escapeHtml(studentName)}</div>
+              <small style="color: var(--gray-600); font-size: 0.775rem; font-weight: 500;">${escapeHtml(studentClass)}</small>
             </td>
-            <td style="white-space: nowrap;">
-              <span class="class-badge">${escapeHtml(studentClass)}</span>
+            <td style="text-align: center; white-space: nowrap;">
+              <div class="radio-pill-option">
+                <input type="radio" 
+                       id="present_${fieldKey}" 
+                       name="attendance_${fieldKey}" 
+                       value="Present" 
+                       checked>
+                <label for="present_${fieldKey}">✓ Present</label>
+              </div>
             </td>
-            <td class="cell-status" style="text-align: center; white-space: nowrap;">
-              <div class="radio-pill-group" role="radiogroup" aria-label="Attendance for ${escapeHtml(studentName)}">
-                <div class="radio-pill-option">
-                  <input type="radio" 
-                         id="present_${fieldKey}" 
-                         name="attendance_${fieldKey}" 
-                         value="Present" 
-                         checked>
-                  <label for="present_${fieldKey}">✓ Present</label>
-                </div>
-                <div class="radio-pill-option">
-                  <input type="radio" 
-                         id="absent_${fieldKey}" 
-                         name="attendance_${fieldKey}" 
-                         value="Absent">
-                  <label for="absent_${fieldKey}">✗ Absent</label>
-                </div>
+            <td style="text-align: center; white-space: nowrap;">
+              <div class="radio-pill-option">
+                <input type="radio" 
+                       id="absent_${fieldKey}" 
+                       name="attendance_${fieldKey}" 
+                       value="Absent">
+                <label for="absent_${fieldKey}">✗ Absent</label>
               </div>
             </td>
           </tr>
@@ -2829,8 +2860,8 @@
       const payload = [];
       targetList.forEach((student, index) => {
         const rollNo = student.roll_no;
-        const studentName = student.student_name || student.name || '';
-        const studentClass = student.student_class || student.class || '';
+        const studentName = student.student_name || '';
+        const studentClass = student.student_class || '';
 
         const fieldKey = `att_${index}_${rollNo.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
         const selectedRadio = document.querySelector(`input[name="attendance_${fieldKey}"]:checked`);
@@ -2966,9 +2997,9 @@
       const selectedClass = (document.getElementById('dirClassFilter')?.value || '').trim().toLowerCase();
 
       const filtered = state.students.filter(s => {
-        const name = (s.student_name || s.name || '').toLowerCase();
+        const name = (s.student_name || '').toLowerCase();
         const roll = String(s.roll_no || '').toLowerCase();
-        const cls = (s.student_class || s.class || '').toLowerCase();
+        const cls = (s.student_class || '').toLowerCase();
 
         const matchesSearch = !searchTerm || name.includes(searchTerm) || roll.includes(searchTerm);
         const matchesClass = !selectedClass || cls === selectedClass;
@@ -2988,8 +3019,8 @@
       tbody.innerHTML = sorted.map(student => {
         const id = student.id;
         const rollNo = student.roll_no;
-        const studentName = student.student_name || student.name || 'Unnamed';
-        const studentClass = student.student_class || student.class || 'Primary 1';
+        const studentName = student.student_name || 'Unnamed';
+        const studentClass = student.student_class || 'Primary 1';
         const gender = student.gender || 'Unspecified';
         const parentContact = student.parent_contact || 'N/A';
 
@@ -3040,7 +3071,7 @@
 
       document.getElementById('editStudentId').value = student.id || id;
       document.getElementById('editOriginalRollNo').value = student.roll_no;
-      document.getElementById('editStudentName').value = student.student_name || student.name || '';
+      document.getElementById('editStudentName').value = student.student_name || '';
       document.getElementById('editStudentRoll').value = student.roll_no;
       
       const classSelect = document.getElementById('editStudentClass');
@@ -3051,7 +3082,7 @@
         editCustomClassInput.required = false;
       }
 
-      const currentClass = student.student_class || student.class || 'Primary 1';
+      const currentClass = student.student_class || 'Primary 1';
       let matchIndex = -1;
       for (let i = 0; i < classSelect.options.length; i++) {
         if (classSelect.options[i].value.toLowerCase() === currentClass.toLowerCase()) {
@@ -3263,8 +3294,8 @@
       select.innerHTML = '<option value="">-- Choose a student --</option>' +
         sorted.map(student => {
           const rollNo = student.roll_no;
-          const studentName = student.student_name || student.name || '';
-          const studentClass = student.student_class || student.class || '';
+          const studentName = student.student_name || '';
+          const studentClass = student.student_class || '';
           return `<option value="${escapeHtml(rollNo)}">[${escapeHtml(rollNo)}] ${escapeHtml(studentName)} (${escapeHtml(studentClass)})</option>`;
         }).join('');
 
@@ -3295,7 +3326,7 @@
       state.selectedStudentObj = student;
 
       const studentName = student ? (student.student_name || student.name) : 'Student';
-      const studentClass = student ? (student.student_class || student.class) : 'Primary 1';
+      const studentClass = student ? (student.student_class || 'Primary 1') : 'Primary 1';
       const gender = student?.gender || 'Unspecified';
       const contact = student?.parent_contact || 'N/A';
 
@@ -3481,8 +3512,8 @@
       }
 
       const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
-      const studentName = student ? (student.student_name || student.name) : '';
-      const studentClass = student ? (student.student_class || student.class) : '';
+      const studentName = student ? student.student_name : '';
+      const studentClass = student ? student.student_class : '';
 
       try {
         submitBtn.disabled = true;
@@ -3605,9 +3636,9 @@
       const grades = state.selectedStudentGrades || [];
 
       // Student Meta (Shows real Gender and Contact after edit)
-      document.getElementById('printStudentName').textContent = report.student_name || student.student_name || student.full_name || student.name || 'N/A';
+      document.getElementById('printStudentName').textContent = report.student_name || student.student_name || 'N/A';
       document.getElementById('printRollNo').textContent = report.roll_no || student.roll_no || 'N/A';
-      document.getElementById('printClass').textContent = report.student_class || student.student_class || student.class || 'Primary 1';
+      document.getElementById('printClass').textContent = report.student_class || student.student_class || 'Primary 1';
       
       const gender = (report.gender && report.gender !== 'Unspecified') ? report.gender : (student.gender || 'Female');
       document.getElementById('printGender').textContent = gender;
@@ -3703,13 +3734,13 @@
       // Safety check: teacher cannot download other class reports
       const user = state.user || {};
       const isTeacher = user.role === 'teacher';
-      const studentClass = student.student_class || student.class || '';
+      const studentClass = student.student_class || '';
       if (isTeacher && user.assigned_class && studentClass.toLowerCase() !== user.assigned_class.toLowerCase()) {
         showToast('Access Denied', 'You can only download reports for students in your assigned class.', 'error');
         return;
       }
 
-      const rawName = student.student_name || student.full_name || student.name || 'Student';
+      const rawName = student.student_name || 'Student';
       const cleanName = rawName.replace(/[^a-zA-Z0-9_-]/g, '_');
       const cleanClass = studentClass.replace(/[^a-zA-Z0-9_-]/g, '_');
       const cleanSession = (state.selectedSession || 'Term').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -3751,7 +3782,7 @@
       // Safety check: Only logged-in teacher for that class or admin can share
       const user = state.user || {};
       const isTeacher = user.role === 'teacher';
-      const studentClass = student.student_class || student.class || 'Primary 1';
+      const studentClass = student.student_class || 'Primary 1';
       if (isTeacher && user.assigned_class && studentClass.toLowerCase() !== user.assigned_class.toLowerCase()) {
         showToast('Access Denied', 'You can only share reports for students in your assigned class.', 'error');
         return;
@@ -3768,7 +3799,7 @@
       }
 
       const parentNumber = formatWhatsAppPhone(contact);
-      const studentName = report.student_name || student.student_name || student.full_name || student.name || 'Student';
+      const studentName = report.student_name || student.student_name || 'Student';
       const sessionTerm = state.selectedSession || 'First Term 2026/2027';
 
       // Attendance Summary
