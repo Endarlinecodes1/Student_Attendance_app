@@ -217,81 +217,376 @@
     /* ==========================================
        LOGIN & REGISTER AUTH SCREEN
        ========================================== */
-    .auth-wrapper {
+        /* ==========================================
+       CAPTIVATING HERO LOGIN PORTAL STYLING
+       ========================================== */
+    .auth-portal-wrapper {
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
-      padding: 1rem;
-    }
-
-    .auth-card {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 2.25rem 2rem;
-      max-width: 460px;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 50%, #fff7ed 100%);
+      padding: 1.5rem;
+      box-sizing: border-box;
       width: 100%;
-      box-shadow: var(--shadow-xl);
-      border: 1px solid var(--gray-300);
-      position: relative;
-      overflow: hidden;
     }
 
-    .auth-card::before {
+    .auth-portal-container {
+      width: 100%;
+      max-width: 1140px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(15, 181, 168, 0.2), 0 10px 25px -5px rgba(255, 107, 53, 0.12);
+      border: 1px solid rgba(15, 181, 168, 0.15);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .auth-portal-container::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 5px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      background: linear-gradient(90deg, #0FB5A8, #FF6B35);
+      z-index: 10;
     }
 
-    .auth-header {
-      text-align: center;
+    /* Left Hero Showcase */
+    .auth-hero-showcase {
+      background: linear-gradient(160deg, #05322E 0%, #084C46 55%, #0FB5A8 100%);
+      color: #ffffff;
+      padding: 2.75rem 2.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-hero-showcase::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(255, 107, 53, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-visual-card {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.2);
       margin-bottom: 1.75rem;
     }
 
-    .auth-header .brand-icon {
-      margin: 0 auto 0.75rem;
-      width: 52px;
-      height: 52px;
-      font-size: 1.75rem;
+    .hero-classroom-img {
+      width: 100%;
+      height: 270px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
     }
 
-    .auth-header h2 {
+    .hero-visual-card:hover .hero-classroom-img {
+      transform: scale(1.03);
+    }
+
+    .hero-img-badge {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
+      background: rgba(5, 50, 46, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.65rem 0.95rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.825rem;
+    }
+
+    .hero-img-badge .badge-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #E7FAF8;
+      font-weight: 600;
+    }
+
+    .hero-img-badge .badge-stat strong {
+      color: #FF6B35;
+      font-weight: 800;
+    }
+
+    .hero-text-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 107, 53, 0.2);
+      border: 1px solid rgba(255, 107, 53, 0.45);
+      color: #FFA07A;
+      font-size: 0.775rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 0.85rem;
+    }
+
+    .hero-main-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin: 0 0 0.65rem 0;
+      color: #ffffff;
+    }
+
+    .hero-main-title .gradient-word {
+      background: linear-gradient(90deg, #38ef7d, #2dd4bf, #FF6B35);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-description {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin: 0 0 1.5rem 0;
+    }
+
+    .hero-feature-pills {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+    }
+
+    .hero-feature-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    .hero-feature-pill span {
+      font-size: 1.05rem;
+    }
+
+    /* Right Form Section */
+    .auth-form-pane {
+      padding: 2.75rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      background: #ffffff;
+    }
+
+    .auth-form-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-form-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-form-brand .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0FB5A8, #FF6B35);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 10px rgba(15, 181, 168, 0.3);
+    }
+
+    .auth-form-brand h2 {
       font-size: 1.45rem;
       font-weight: 800;
-      color: var(--gray-900);
+      color: #0f172a;
+      margin: 0;
     }
 
-    .auth-header p {
+    .auth-form-header p {
       font-size: 0.85rem;
-      color: var(--gray-600);
-      margin-top: 0.25rem;
+      color: #64748b;
+      margin: 0.25rem 0 0 0;
     }
 
-    .auth-tabs {
-      display: flex;
-      background: var(--gray-100);
-      padding: 0.3rem;
-      border-radius: var(--radius-md);
-      margin-bottom: 1.5rem;
-      gap: 0.25rem;
+    /* Role Choice Cards */
+    .role-choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
     }
 
-    .auth-tab-btn {
-      flex: 1;
-      padding: 0.55rem;
-      font-size: 0.85rem;
-      font-weight: 700;
-      border: none;
-      background: transparent;
-      color: var(--gray-600);
-      border-radius: var(--radius-sm);
+    .role-choice-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.75rem 0.85rem;
       cursor: pointer;
-      transition: var(--transition);
-      font-family: inherit;
+      transition: all 0.2s ease;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      position: relative;
+    }
+
+    .role-choice-card:hover {
+      border-color: #0FB5A8;
+      background: #f0fdfa;
+    }
+
+    .role-choice-card.active {
+      border-color: #0FB5A8;
+      background: #E7FAF8;
+      box-shadow: 0 0 0 2px rgba(15, 181, 168, 0.2);
+    }
+
+    .role-choice-card.admin-card.active {
+      border-color: #FF6B35;
+      background: #FFF2EB;
+      box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+    }
+
+    .role-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .role-card-icon {
+      font-size: 1.35rem;
+    }
+
+    .role-card-radio {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .role-choice-card.active .role-card-radio {
+      border-color: #0FB5A8;
+    }
+
+    .role-choice-card.admin-card.active .role-card-radio {
+      border-color: #FF6B35;
+    }
+
+    .role-choice-card.active .role-card-radio::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #0FB5A8;
+      border-radius: 50%;
+    }
+
+    .role-choice-card.admin-card.active .role-card-radio::after {
+      background: #FF6B35;
+    }
+
+    .role-card-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .role-card-sub {
+      font-size: 0.725rem;
+      color: #64748b;
+      line-height: 1.25;
+    }
+
+    /* Password Input with Eye Toggle */
+    .password-input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-group input {
+      padding-right: 44px !important;
+      width: 100%;
+    }
+
+    .password-toggle-button {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      font-size: 1.15rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+
+    .password-toggle-button:hover {
+      background: #f1f5f9;
+      color: #0FB5A8;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 900px) {
+      .auth-portal-container {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+        border-radius: 18px;
+      }
+      .auth-hero-showcase {
+        padding: 1.75rem 1.5rem;
+      }
+      .hero-classroom-img {
+        height: 200px;
+      }
+      .hero-feature-pills {
+        grid-template-columns: 1fr;
+      }
+      .auth-form-pane {
+        padding: 1.75rem 1.5rem;
+      }
     }
 
     .auth-tab-btn.active {
@@ -1451,103 +1746,194 @@
   <!-- ========================================== -->
   <!-- 1. LOGIN & REGISTER AUTH SCREEN            -->
   <!-- ========================================== -->
-  <div id="authScreen" class="auth-wrapper">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="brand-icon" aria-hidden="true">🎓</div>
-        <h2>EduTrack Portal</h2>
-        <p>Sign in to access your class attendance & grades</p>
+    <!-- ========================================== -->
+  <!-- 1. LOGIN & REGISTER AUTH SCREEN (HERO REDESIGN) -->
+  <!-- ========================================== -->
+  <div id="authScreen" class="auth-portal-wrapper">
+    <div class="auth-portal-container">
+      
+      <!-- LEFT: HERO SHOWCASE WITH STUDENTS IMAGE -->
+      <div class="auth-hero-section auth-hero-showcase">
+        <div class="hero-visual-card">
+          <img src="hero.jpg" alt="EduTrack Classroom Students" class="hero-classroom-img">
+          <div class="hero-img-badge">
+            <div class="badge-stat">
+              <span>📍</span>
+              <span>Classroom: <strong>Primary 1 Active</strong></span>
+            </div>
+            <div class="badge-stat">
+              <span>⭐</span>
+              <span>Today: <strong>24 / 26 Present</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-text-content">
+          <div class="hero-pill-tag">
+            <span>✨</span>
+            <span>Next-Gen School Portal</span>
+          </div>
+          <h1 class="hero-main-title">
+            Empowering Every Student, <br><span class="gradient-word">Connecting Every Classroom.</span>
+          </h1>
+          <p class="hero-description">
+            EduTrack brings smart daily attendance, effortless term grading, and instant parent communication directly to modern schools.
+          </p>
+
+          <div class="hero-feature-pills">
+            <div class="hero-feature-pill">
+              <span>⚡</span>
+              <div>1-Click Attendance</div>
+            </div>
+            <div class="hero-feature-pill">
+              <span>📊</span>
+              <div>Instant GPA & Grades</div>
+            </div>
+            <div class="hero-feature-pill">
+              <span>📱</span>
+              <div>WhatsApp Reports</div>
+            </div>
+            <div class="hero-feature-pill">
+              <span>🔒</span>
+              <div>Role-Based Protection</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Auth Tabs -->
-      <div class="auth-tabs">
-        <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Teacher / Admin Login</button>
-        <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register Teacher</button>
-      </div>
-
-      <!-- Login Form -->
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group" style="margin-bottom: 1rem;">
-          <label class="form-label" for="loginEmail">Email Address *</label>
-          <input type="email" id="loginEmail" class="form-control" placeholder="e.g. teacher@edutrack.com" required autocomplete="email">
+      <!-- RIGHT: LOGIN & REGISTER FORM PANE -->
+      <div class="auth-form-pane">
+        <div class="auth-form-header">
+          <div class="auth-form-brand">
+            <div class="brand-icon" aria-hidden="true">🎓</div>
+            <h2>EduTrack Portal</h2>
+          </div>
+          <p>Sign in to access your class attendance & academic grades</p>
         </div>
 
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-          <label class="form-label" for="loginPassword">Password *</label>
-          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        <!-- Role Choice Cards: Choose Teacher vs Admin -->
+        <div class="role-choice-grid">
+          <div class="role-choice-card active" id="roleSelectTeacher" onclick="selectRole('teacher')">
+            <div class="role-card-top">
+              <span class="role-card-icon">👩‍🏫</span>
+              <div class="role-card-radio"></div>
+            </div>
+            <div class="role-card-title">Teacher Portal</div>
+            <div class="role-card-sub">Mark class roll & scores</div>
+          </div>
+          <div class="role-choice-card admin-card" id="roleSelectAdmin" onclick="selectRole('admin')">
+            <div class="role-card-top">
+              <span class="role-card-icon">🛡️</span>
+              <div class="role-card-radio"></div>
+            </div>
+            <div class="role-card-title">Administrator</div>
+            <div class="role-card-sub">All classes & teachers</div>
+          </div>
         </div>
 
-        <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
-          <span>🔑</span> Sign In
-        </button>
-      </form>
-
-      <!-- Register Form -->
-      <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
-        <div class="form-group" style="margin-bottom: 0.85rem;">
-          <label class="form-label" for="regName">Teacher Full Name *</label>
-          <input type="text" id="regName" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+        <!-- Auth Tabs (Sign In vs Register Teacher) -->
+        <div class="auth-tabs" style="margin-bottom: 1.25rem;">
+          <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
+          <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register Teacher</button>
         </div>
 
-        <div class="form-group" style="margin-bottom: 0.85rem;">
-          <label class="form-label" for="regEmail">Email Address *</label>
-          <input type="email" id="regEmail" class="form-control" placeholder="e.g. teacher@school.com" required>
-        </div>
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="loginEmail">Email Address *</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="e.g. teacher@edutrack.com" required autocomplete="email">
+          </div>
 
-        <div class="form-group" style="margin-bottom: 0.85rem;">
-          <label class="form-label" for="regPassword">Password (min 6 chars) *</label>
-          <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required minlength="6">
-        </div>
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" for="loginPassword">Password *</label>
+            <div class="password-input-group">
+              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="password-toggle-button" onclick="togglePasswordVisibility('loginPassword', this)" title="Show password" aria-label="Toggle password visibility">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
+          </div>
 
-        <div class="form-group" style="margin-bottom: 1.25rem;">
-          <label class="form-label" for="regClass">Assigned Class *</label>
-          <select id="regClass" class="form-control" required onchange="handleRegClassChange(this)">
-            <optgroup label="Primary Classes">
-              <option value="Primary 1" selected>Primary 1</option>
-              <option value="Primary 2">Primary 2</option>
-              <option value="Primary 3">Primary 3</option>
-              <option value="Primary 4">Primary 4</option>
-              <option value="Primary 5">Primary 5</option>
-              <option value="Primary 6">Primary 6</option>
-            </optgroup>
-            <optgroup label="Secondary Classes">
-              <option value="JSS 1">JSS 1</option>
-              <option value="JSS 2">JSS 2</option>
-              <option value="JSS 3">JSS 3</option>
-              <option value="SSS 1">SSS 1</option>
-              <option value="SSS 2">SSS 2</option>
-              <option value="SSS 3">SSS 3</option>
-            </optgroup>
-            <optgroup label="Other">
-              <option value="custom">Custom Class...</option>
-            </optgroup>
-          </select>
-          <input type="text" id="regCustomClassInput" class="form-control" placeholder="Type custom class name (e.g. Nursery 1, Basic 7)" style="display: none; margin-top: 0.4rem;">
-        </div>
-
-        <button type="submit" id="regSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
-          <span>👤</span> Create Account & Sign In
-        </button>
-      </form>
-
-      <!-- Quick Demo Login Helpers for Fast Testing -->
-      <div class="demo-accounts-box">
-        <strong style="color: var(--gray-700);">Quick Demo Login (One-Click):</strong>
-        <div class="demo-pill-group">
-          <button type="button" class="demo-pill" onclick="quickFillLogin('admin@edutrack.com', 'admin123')">
-            👑 Admin (All Classes)
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
+            <span>🔑</span> <span id="loginSubmitText">Sign In as Teacher</span>
           </button>
-          <button type="button" class="demo-pill" onclick="quickFillLogin('teacher@edutrack.com', 'teacher123')">
-            👩‍🏫 Teacher (Primary 1)
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" onsubmit="handleRegister(event)" style="display: none;">
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" for="regName">Teacher Full Name *</label>
+            <input type="text" id="regName" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" for="regEmail">Email Address *</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="e.g. teacher@school.com" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" for="regPassword">Password (min 6 chars) *</label>
+            <div class="password-input-group">
+              <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required minlength="6">
+              <button type="button" class="password-toggle-button" onclick="togglePasswordVisibility('regPassword', this)" title="Show password" aria-label="Toggle password visibility">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" for="regClass">Assigned Class *</label>
+            <select id="regClass" class="form-control" required onchange="handleRegClassChange(this)">
+              <optgroup label="Primary Classes">
+                <option value="Primary 1" selected>Primary 1</option>
+                <option value="Primary 2">Primary 2</option>
+                <option value="Primary 3">Primary 3</option>
+                <option value="Primary 4">Primary 4</option>
+                <option value="Primary 5">Primary 5</option>
+                <option value="Primary 6">Primary 6</option>
+              </optgroup>
+              <optgroup label="Secondary Classes">
+                <option value="JSS 1">JSS 1</option>
+                <option value="JSS 2">JSS 2</option>
+                <option value="JSS 3">JSS 3</option>
+                <option value="SSS 1">SSS 1</option>
+                <option value="SSS 2">SSS 2</option>
+                <option value="SSS 3">SSS 3</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="custom">Custom Class...</option>
+              </optgroup>
+            </select>
+            <input type="text" id="regCustomClassInput" class="form-control" placeholder="Type custom class name (e.g. Nursery 1, Basic 7)" style="display: none; margin-top: 0.4rem;">
+          </div>
+
+          <button type="submit" id="regSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
+            <span>👤</span> Create Account & Sign In
           </button>
-          <button type="button" class="demo-pill" onclick="quickFillLogin('teacher2@edutrack.com', 'teacher123')">
-            👨‍🏫 Teacher (Primary 2)
-          </button>
+        </form>
+
+        <!-- Quick Demo Login Helpers -->
+        <div class="demo-accounts-box" style="margin-top: 1.25rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong style="color: var(--gray-700); font-size: 0.8rem;">⚡ Quick Demo (One-Click):</strong>
+            <span style="font-size: 0.725rem; color: #0FB5A8; font-weight: 600;">Instant Test Access</span>
+          </div>
+          <div class="demo-pill-group" style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <button type="button" class="demo-pill" onclick="quickFillRole('teacher', 'teacher@edutrack.com', 'teacher123')">
+              👩‍🏫 Teacher (Primary 1)
+            </button>
+            <button type="button" class="demo-pill" onclick="quickFillRole('teacher2', 'teacher2@edutrack.com', 'teacher123')">
+              👨‍🏫 Teacher (Primary 2)
+            </button>
+            <button type="button" class="demo-pill" onclick="quickFillRole('admin', 'admin@edutrack.com', 'admin123')">
+              🛡️ Admin (All Classes)
+            </button>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
-
 
   <!-- ========================================== -->
   <!-- 2. MAIN APPLICATION (HIDDEN UNTIL LOGIN)   -->
@@ -2363,7 +2749,7 @@
 
     function registerServiceWorker() {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js?v=8')
+        navigator.serviceWorker.register('sw.js?v=9')
           .then((reg) => {
             if (reg && reg.update) reg.update();
           })
@@ -2492,6 +2878,47 @@
         regForm.style.display = 'block';
         loginForm.style.display = 'none';
       }
+    }
+
+        // ==========================================
+    // RECREATED HERO LOGIN & ROLE HELPERS
+    // ==========================================
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      const icon = btn.querySelector('.eye-icon') || btn;
+      icon.textContent = isPass ? '🙈' : '👁️';
+      btn.setAttribute('title', isPass ? 'Hide password' : 'Show password');
+    }
+
+    function selectRole(role) {
+      const teacherCard = document.getElementById('roleSelectTeacher');
+      const adminCard = document.getElementById('roleSelectAdmin');
+      const submitText = document.getElementById('loginSubmitText');
+      const emailInput = document.getElementById('loginEmail');
+      
+      if (role === 'admin') {
+        if (adminCard) adminCard.classList.add('active');
+        if (teacherCard) teacherCard.classList.remove('active');
+        if (submitText) submitText.textContent = 'Sign In as Administrator';
+        if (emailInput && (!emailInput.value || emailInput.value === 'teacher@edutrack.com' || emailInput.value === 'teacher2@edutrack.com')) {
+          emailInput.placeholder = 'e.g. admin@edutrack.com';
+        }
+      } else {
+        if (teacherCard) teacherCard.classList.add('active');
+        if (adminCard) adminCard.classList.remove('active');
+        if (submitText) submitText.textContent = 'Sign In as Teacher';
+        if (emailInput && (!emailInput.value || emailInput.value === 'admin@edutrack.com')) {
+          emailInput.placeholder = 'e.g. teacher@edutrack.com';
+        }
+      }
+    }
+
+    function quickFillRole(role, email, password) {
+      selectRole(role);
+      quickFillLogin(email, password);
     }
 
     function quickFillLogin(email, password) {

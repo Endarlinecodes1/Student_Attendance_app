@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>EduTrack - Login</title>
+  <title>EduTrack Portal - Sign In</title>
   <meta name="theme-color" content="#0FB5A8">
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,39 +14,315 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body style="background: linear-gradient(135deg, #f0fdfa 0%, #fff7ed 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; padding: 1rem; font-family: 'Plus Jakarta Sans', sans-serif;">
-  <div class="auth-wrapper" style="width: 100%; max-width: 440px;">
-    <div class="auth-card" style="box-shadow: 0 20px 25px -5px rgba(15, 181, 168, 0.15), 0 8px 10px -6px rgba(255, 107, 53, 0.1);">
-      <div class="auth-header" style="text-align: center; margin-bottom: 1.5rem;">
-        <div class="brand-icon" style="width: 56px; height: 56px; font-size: 1.85rem; margin: 0 auto 0.75rem; background: linear-gradient(135deg, #0FB5A8, #FF6B35); display: flex; align-items: center; justify-content: center; border-radius: 14px; box-shadow: 0 4px 10px rgba(15, 181, 168, 0.35); color: #fff;">🎓</div>
-        <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0;">EduTrack Portal</h2>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Sign in to access your class attendance & grades</p>
+<body style="margin: 0; background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 50%, #fff7ed 100%); font-family: 'Plus Jakarta Sans', sans-serif;">
+
+  <div class="auth-portal-wrapper">
+    <div class="auth-portal-container">
+      
+      <!-- LEFT: HERO SHOWCASE WITH STUDENTS IMAGE -->
+      <div class="auth-hero-section auth-hero-showcase">
+        <div class="hero-visual-card">
+          <img src="hero.jpg" alt="EduTrack Classroom Students" class="hero-classroom-img">
+          <div class="hero-img-badge">
+            <div class="badge-stat">
+              <span>📍</span>
+              <span>Classroom: <strong>Primary 1 Active</strong></span>
+            </div>
+            <div class="badge-stat">
+              <span>⭐</span>
+              <span>Today: <strong>24 / 26 Present</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-text-content">
+          <div class="hero-pill-tag">
+            <span>✨</span>
+            <span>Next-Gen School Portal</span>
+          </div>
+          <h1 class="hero-main-title">
+            Empowering Every Student, <br><span class="gradient-word">Connecting Every Classroom.</span>
+          </h1>
+          <p class="hero-description">
+            EduTrack brings smart daily attendance, effortless term grading, and instant parent communication directly to modern schools.
+          </p>
+
+          <div class="hero-feature-pills">
+            <div class="hero-feature-pill">
+              <span>⚡</span>
+              <div>1-Click Attendance</div>
+            </div>
+            <div class="hero-feature-pill">
+              <span>📊</span>
+              <div>Instant GPA & Grades</div>
+            </div>
+            <div class="hero-feature-pill">
+              <span>📱</span>
+              <div>WhatsApp Reports</div>
+            </div>
+            <div class="hero-feature-pill">
+              <span>🔒</span>
+              <div>Role-Based Protection</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="auth-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: #f1f5f9; padding: 0.25rem; border-radius: 10px;">
-        <button type="button" class="auth-tab-btn active" id="tabLoginBtn" style="flex: 1; padding: 0.65rem; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; background: #fff; color: #0FB5A8; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Teacher / Admin Login</button>
-        <button type="button" class="auth-tab-btn" id="tabRegisterBtn" style="flex: 1; padding: 0.65rem; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; background: transparent; color: #64748b;">Register Teacher</button>
-      </div>
-
-      <!-- Login Form -->
-      <form id="loginForm" onsubmit="event.preventDefault(); window.location.href='index.html';">
-        <div style="margin-bottom: 1rem;">
-          <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Email Address *</label>
-          <input type="email" class="form-control" required placeholder="e.g. teacher@edutrack.com">
+      <!-- RIGHT: LOGIN & REGISTER FORM PANE -->
+      <div class="auth-form-pane">
+        <div class="auth-form-header">
+          <div class="auth-form-brand">
+            <div class="brand-icon" aria-hidden="true">🎓</div>
+            <h2>EduTrack Portal</h2>
+          </div>
+          <p>Sign in to access your class attendance & academic grades</p>
         </div>
-        <div style="margin-bottom: 1.25rem;">
-          <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Password *</label>
-          <input type="password" class="form-control" required placeholder="••••••••">
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-weight: 700; background: #0FB5A8; color: #fff; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 10px rgba(15, 181, 168, 0.35);">
-          🔑 Sign In
-        </button>
-      </form>
 
-      <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
-        <a href="index.html" style="color: #FF6B35; font-weight: 700; font-size: 0.85rem; text-decoration: none;">← Open Full Portal</a>
+        <!-- Role Choice Cards: Choose Teacher vs Admin -->
+        <div class="role-choice-grid">
+          <div class="role-choice-card active" id="roleSelectTeacher" onclick="selectRole('teacher')">
+            <div class="role-card-top">
+              <span class="role-card-icon">👩‍🏫</span>
+              <div class="role-card-radio"></div>
+            </div>
+            <div class="role-card-title">Teacher Portal</div>
+            <div class="role-card-sub">Mark class roll & scores</div>
+          </div>
+          <div class="role-choice-card admin-card" id="roleSelectAdmin" onclick="selectRole('admin')">
+            <div class="role-card-top">
+              <span class="role-card-icon">🛡️</span>
+              <div class="role-card-radio"></div>
+            </div>
+            <div class="role-card-title">Administrator</div>
+            <div class="role-card-sub">All classes & teachers</div>
+          </div>
+        </div>
+
+        <!-- Auth Tabs (Sign In vs Register Teacher) -->
+        <div class="auth-tabs" style="margin-bottom: 1.25rem;">
+          <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
+          <button class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Register Teacher</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLoginDirect(event)">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" for="loginEmail">Email Address *</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="e.g. teacher@edutrack.com" required autocomplete="email">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" for="loginPassword">Password *</label>
+            <div class="password-input-group">
+              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="password-toggle-button" onclick="togglePasswordVisibility('loginPassword', this)" title="Show password" aria-label="Toggle password visibility">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
+            <span>🔑</span> <span id="loginSubmitText">Sign In as Teacher</span>
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" onsubmit="handleRegisterDirect(event)" style="display: none;">
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" for="regName">Teacher Full Name *</label>
+            <input type="text" id="regName" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" for="regEmail">Email Address *</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="e.g. teacher@school.com" required>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.85rem;">
+            <label class="form-label" for="regPassword">Password (min 6 chars) *</label>
+            <div class="password-input-group">
+              <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required minlength="6">
+              <button type="button" class="password-toggle-button" onclick="togglePasswordVisibility('regPassword', this)" title="Show password" aria-label="Toggle password visibility">
+                <span class="eye-icon">👁️</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" for="regClass">Assigned Class *</label>
+            <select id="regClass" class="form-control" required>
+              <optgroup label="Primary Classes">
+                <option value="Primary 1" selected>Primary 1</option>
+                <option value="Primary 2">Primary 2</option>
+                <option value="Primary 3">Primary 3</option>
+                <option value="Primary 4">Primary 4</option>
+                <option value="Primary 5">Primary 5</option>
+                <option value="Primary 6">Primary 6</option>
+              </optgroup>
+              <optgroup label="Secondary Classes">
+                <option value="JSS 1">JSS 1</option>
+                <option value="JSS 2">JSS 2</option>
+                <option value="JSS 3">JSS 3</option>
+                <option value="SSS 1">SSS 1</option>
+                <option value="SSS 2">SSS 2</option>
+                <option value="SSS 3">SSS 3</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <button type="submit" id="regSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
+            <span>👤</span> Create Account & Sign In
+          </button>
+        </form>
+
+        <!-- Quick Demo Login Helpers -->
+        <div class="demo-accounts-box" style="margin-top: 1.25rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 0.85rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong style="color: var(--gray-700); font-size: 0.8rem;">⚡ Quick Demo (One-Click):</strong>
+            <span style="font-size: 0.725rem; color: #0FB5A8; font-weight: 600;">Instant Test Access</span>
+          </div>
+          <div class="demo-pill-group" style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <button type="button" class="demo-pill" onclick="quickFillRole('teacher', 'teacher@edutrack.com', 'teacher123')">
+              👩‍🏫 Teacher (Primary 1)
+            </button>
+            <button type="button" class="demo-pill" onclick="quickFillRole('teacher2', 'teacher2@edutrack.com', 'teacher123')">
+              👨‍🏫 Teacher (Primary 2)
+            </button>
+            <button type="button" class="demo-pill" onclick="quickFillRole('admin', 'admin@edutrack.com', 'admin123')">
+              🛡️ Admin (All Classes)
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
+
+  <script>
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://127.0.0.1:5000'
+      : 'https://edutrack-g2ej.onrender.com';
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      const icon = btn.querySelector('.eye-icon') || btn;
+      icon.textContent = isPass ? '🙈' : '👁️';
+      btn.setAttribute('title', isPass ? 'Hide password' : 'Show password');
+    }
+
+    function selectRole(role) {
+      const teacherCard = document.getElementById('roleSelectTeacher');
+      const adminCard = document.getElementById('roleSelectAdmin');
+      const submitText = document.getElementById('loginSubmitText');
+      const emailInput = document.getElementById('loginEmail');
+      
+      if (role === 'admin') {
+        if (adminCard) adminCard.classList.add('active');
+        if (teacherCard) teacherCard.classList.remove('active');
+        if (submitText) submitText.textContent = 'Sign In as Administrator';
+        if (emailInput && (!emailInput.value || emailInput.value === 'teacher@edutrack.com')) {
+          emailInput.placeholder = 'e.g. admin@edutrack.com';
+        }
+      } else {
+        if (teacherCard) teacherCard.classList.add('active');
+        if (adminCard) adminCard.classList.remove('active');
+        if (submitText) submitText.textContent = 'Sign In as Teacher';
+        if (emailInput && (!emailInput.value || emailInput.value === 'admin@edutrack.com')) {
+          emailInput.placeholder = 'e.g. teacher@edutrack.com';
+        }
+      }
+    }
+
+    function quickFillRole(role, email, password) {
+      selectRole(role);
+      switchAuthTab('login');
+      document.getElementById('loginEmail').value = email;
+      document.getElementById('loginPassword').value = password;
+      document.getElementById('loginSubmitBtn').click();
+    }
+
+    function switchAuthTab(mode) {
+      const loginTab = document.getElementById('tabLoginBtn');
+      const regTab = document.getElementById('tabRegisterBtn');
+      const loginForm = document.getElementById('loginForm');
+      const regForm = document.getElementById('registerForm');
+
+      if (mode === 'login') {
+        loginTab.classList.add('active');
+        regTab.classList.remove('active');
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+      } else {
+        regTab.classList.add('active');
+        loginTab.classList.remove('active');
+        regForm.style.display = 'block';
+        loginForm.style.display = 'none';
+      }
+    }
+
+    async function handleLoginDirect(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const submitBtn = document.getElementById('loginSubmitBtn');
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+
+        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+
+        localStorage.setItem('edutrack_token', data.token);
+        // Direct to index.html
+        window.location.href = 'index.html';
+      } catch (err) {
+        alert('Login Failed: ' + (err.message || 'Invalid credentials'));
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔑</span> Sign In';
+      }
+    }
+
+    async function handleRegisterDirect(event) {
+      event.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value.trim();
+      const assigned_class = document.getElementById('regClass').value;
+      const submitBtn = document.getElementById('regSubmitBtn');
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+
+        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, assigned_class })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+        localStorage.setItem('edutrack_token', data.token);
+        window.location.href = 'index.html';
+      } catch (err) {
+        alert('Registration Failed: ' + (err.message || 'Error creating account'));
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>👤</span> Create Account & Sign In';
+      }
+    }
+  </script>
 </body>
 </html>
