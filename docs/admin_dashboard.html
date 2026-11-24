@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduTrack - Administrator Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+  <meta name="theme-color" content="#0FB5A8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    :root {
+      --primary: #0FB5A8;
+      --primary-hover: #0d9b90;
+      --primary-light: rgba(15, 181, 168, 0.12);
+      --secondary: #FF6B35;
+      --secondary-hover: #e85924;
+      --secondary-light: rgba(255, 107, 53, 0.12);
+      --dark: #0f172a;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --white: #ffffff;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.06);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: var(--gray-800);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .admin-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    /* Admin Header Bar */
+    .admin-header {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      border: 1px solid var(--gray-200);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.6rem;
+      box-shadow: 0 4px 12px rgba(15, 181, 168, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-info h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-info .admin-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.775rem;
+      font-weight: 700;
+      color: var(--secondary);
+      background: var(--secondary-light);
+      padding: 0.2rem 0.65rem;
+      border-radius: var(--radius-full);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .admin-user-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gray-100);
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      border: 1px solid var(--gray-300);
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .kpi-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .kpi-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      flex-shrink: 0;
+    }
+
+    .kpi-icon.teal {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .kpi-icon.orange {
+      background: var(--secondary-light);
+      color: var(--secondary);
+    }
+
+    .kpi-details .kpi-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-500);
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-details .kpi-val {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1.1;
+    }
+
+    .kpi-details .kpi-sub {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      margin-top: 0.25rem;
+    }
+
+    /* Navigation Tabs */
+    .admin-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--gray-200);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .admin-nav-btn {
+      background: transparent;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gray-600);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      position: relative;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .admin-nav-btn:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .admin-nav-btn.active {
+      color: var(--primary);
+      background: var(--white);
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .admin-nav-btn .badge-pill {
+      background: var(--gray-200);
+      color: var(--gray-700);
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-full);
+      font-weight: 800;
+    }
+
+    .admin-nav-btn.active .badge-pill {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    /* Tab Content Cards */
+    .admin-tab-pane {
+      display: none;
+    }
+
+    .admin-tab-pane.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .content-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+    }
+
+    .card-topbar {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .card-topbar h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-topbar p {
+      margin: 0.2rem 0 0;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: var(--gray-50);
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    th {
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-600);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--gray-200);
+      vertical-align: middle;
+      color: var(--gray-800);
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Badges & Buttons */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.775rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .badge-teal {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .badge-orange {
+      background: var(--secondary-light);
+      color: var(--secondary);
+    }
+
+    .badge-success {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.12);
+      color: #d97706;
+    }
+
+    .badge-gray {
+      background: var(--gray-200);
+      color: var(--gray-700);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 10px rgba(15, 181, 168, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--gray-700);
+      border-color: var(--gray-300);
+    }
+    .btn-secondary:hover {
+      background: var(--gray-100);
+      border-color: var(--gray-400);
+    }
+
+    .btn-orange {
+      background: var(--secondary);
+      color: var(--white);
+    }
+    .btn-orange:hover {
+      background: var(--secondary-hover);
+      box-shadow: 0 4px 10px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+    .btn-danger:hover {
+      background: #fecaca;
+      color: #b91c1c;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-group {
+      display: inline-flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    /* Class Cards Grid for Overview */
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.25rem;
+      padding: 1.25rem;
+    }
+
+    .class-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .class-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .class-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .class-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--gray-900);
+    }
+
+    .class-teacher-info {
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      margin: 0.75rem 0;
+      border: 1px solid var(--gray-200);
+    }
+
+    .teacher-title {
+      font-size: 0.725rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 0.15rem;
+    }
+
+    .teacher-name-txt {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--gray-800);
+    }
+
+    .class-stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--gray-200);
+      font-size: 0.85rem;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      padding: 1rem 1.5rem;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-inputs {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+      flex: 1;
+    }
+
+    .form-control {
+      font-family: inherit;
+      font-size: 0.875rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-300);
+      background: var(--white);
+      color: var(--gray-800);
+      outline: none;
+      transition: var(--transition);
+      min-width: 200px;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 181, 168, 0.2);
+    }
+
+    /* Report Card Preview in Tab 3 */
+    .report-preview-box {
+      background: var(--white);
+      border: 2px solid var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .report-school-header {
+      text-align: center;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .report-school-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--gray-900);
+      letter-spacing: -0.02em;
+    }
+
+    .report-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      background: var(--gray-50);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--gray-200);
+    }
+
+    .meta-item .meta-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--gray-500);
+    }
+
+    .meta-item .meta-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-top: 0.15rem;
+    }
+
+    .report-summary-pills {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .summary-pill {
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .summary-pill.highlight {
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+      border-color: var(--primary);
+    }
+
+    .summary-pill .val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--gray-900);
+    }
+
+    .summary-pill .lbl {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--gray-600);
+      margin-top: 0.25rem;
+    }
+
+    .comments-box {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .comments-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comment-card {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      background: var(--gray-50);
+    }
+
+    .comment-card h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gray-700);
+      text-transform: uppercase;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      transform: translateY(20px);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-backdrop.open .modal-dialog {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--gray-900);
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--gray-500);
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: var(--gray-700);
+      margin-bottom: 0.35rem;
+    }
+
+    /* Print Styles */
+    @media print {
+      body { background: white !important; }
+      .admin-header, .admin-nav, .kpi-grid, .card-topbar, .filter-bar, .report-action-buttons, .admin-actions {
+        display: none !important;
+      }
+      .admin-container { padding: 0 !important; max-width: 100% !important; }
+      .content-card { border: none !important; box-shadow: none !important; }
+      .report-preview-box { border: 2px solid #000 !important; padding: 1.5cm !important; margin: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+
+    <!-- Top Admin Header Bar -->
+    <header class="admin-header">
+      <div class="brand-section">
+        <div class="brand-logo-icon">🎓</div>
+        <div class="brand-info">
+          <h1>EduTrack Administrator</h1>
+          <span class="admin-tag">👑 System Control Center</span>
+        </div>
+      </div>
+
+      <div class="admin-actions">
+        <div class="admin-user-pill">
+          <span>👤</span>
+          <span id="adminGreetingName">Administrator</span>
+          <span class="badge badge-teal" style="margin-left: 0.25rem;">All Classes</span>
+        </div>
+
+        <a href="index.html" class="btn btn-secondary btn-sm" title="Go to Teacher Class View">
+          👩‍🏫 Teacher View
+        </a>
+
+        <button class="btn btn-orange btn-sm" onclick="handleAdminLogout()">
+          🚪 Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Summary Row -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon teal">👨‍🏫</div>
+        <div class="kpi-details">
+          <div class="kpi-label">Total Teachers</div>
+          <div class="kpi-val" id="kpiTotalTeachers">--</div>
+          <div class="kpi-sub" id="kpiTeachersSub">Loading assignments...</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon teal">🎓</div>
+        <div class="kpi-details">
+          <div class="kpi-label">Total Students</div>
+          <div class="kpi-val" id="kpiTotalStudents">--</div>
+          <div class="kpi-sub">All classes combined</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon orange">🏫</div>
+        <div class="kpi-details">
+          <div class="kpi-label">Active Classes</div>
+          <div class="kpi-val" id="kpiTotalClasses">12</div>
+          <div class="kpi-sub">Primary 1 to SSS 3</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon orange">📅</div>
+        <div class="kpi-details">
+          <div class="kpi-label">Today's Attendance</div>
+          <div class="kpi-val" id="kpiAttendanceRate">--%</div>
+          <div class="kpi-sub" id="kpiAttendanceCounts">0 Present across school</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Navigation Tabs -->
+    <nav class="admin-nav" role="tablist">
+      <button class="admin-nav-btn active" id="tabBtnClasses" onclick="switchAdminTab('classes')">
+        <span>🏫</span> All Classes Overview
+        <span class="badge-pill" id="badgeClassesCount">12</span>
+      </button>
+
+      <button class="admin-nav-btn" id="tabBtnTeachers" onclick="switchAdminTab('teachers')">
+        <span>👨‍🏫</span> Manage Teachers
+        <span class="badge-pill" id="badgeTeachersCount">0</span>
+      </button>
+
+      <button class="admin-nav-btn" id="tabBtnReports" onclick="switchAdminTab('reports')">
+        <span>📑</span> View All Reports
+      </button>
+
+      <button class="admin-nav-btn" id="tabBtnStudents" onclick="switchAdminTab('students')">
+        <span>👥</span> All Students Directory
+        <span class="badge-pill" id="badgeStudentsCount">0</span>
+      </button>
+    </nav>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: ALL CLASSES OVERVIEW                              -->
+    <!-- ======================================================== -->
+    <div class="admin-tab-pane active" id="tabPaneClasses">
+      <div class="content-card">
+        <div class="card-topbar">
+          <div>
+            <h2><span>🏫</span> All Classes Overview</h2>
+            <p>Monitor assigned teachers, total enrolled students, and daily attendance performance per class.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadOverviewData(true)">
+            🔄 Refresh Metrics
+          </button>
+        </div>
+
+        <div class="class-grid" id="classesCardsGrid">
+          <!-- Dynamically populated class cards -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: MANAGE TEACHERS                                   -->
+    <!-- ======================================================== -->
+    <div class="admin-tab-pane" id="tabPaneTeachers">
+      <div class="content-card">
+        <div class="card-topbar">
+          <div>
+            <h2><span>👨‍🏫</span> Manage School Teachers</h2>
+            <p>Register new teachers, update login details, reassign teachers to different classes, or remove accounts.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddTeacherModal()">
+            ➕ Add New Teacher
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-inputs">
+            <input type="text" id="teacherSearchInput" class="form-control" placeholder="Search teacher by name, email or class..." oninput="filterTeachersTable()">
+            <select id="teacherClassFilterSelect" class="form-control" onchange="filterTeachersTable()">
+              <option value="">All Assigned Classes</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--gray-600); font-weight: 600;" id="teacherListCountText">
+            Showing all teachers
+          </span>
+        </div>
+
+        <div class="table-container">
+          <table id="teachersTable">
+            <thead>
+              <tr>
+                <th style="width: 25%;">Teacher Name</th>
+                <th style="width: 25%;">Email Address</th>
+                <th style="width: 15%;">Role</th>
+                <th style="width: 15%;">Assigned Class</th>
+                <th style="width: 20%; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="teachersTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: VIEW ALL REPORTS                                  -->
+    <!-- ======================================================== -->
+    <div class="admin-tab-pane" id="tabPaneReports">
+      <div class="content-card">
+        <div class="card-topbar">
+          <div>
+            <h2><span>📑</span> View All Academic Reports</h2>
+            <p>Access, inspect, print, and WhatsApp share official report cards for any student in any class.</p>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-inputs">
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase;">1. Filter Class</label>
+              <select id="reportClassFilter" class="form-control" onchange="onReportClassFilterChange()">
+                <option value="">-- All Classes --</option>
+              </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase;">2. Select Student *</label>
+              <select id="reportStudentSelect" class="form-control" style="min-width: 260px;" onchange="onReportStudentSelectChange()">
+                <option value="">-- Choose a student --</option>
+              </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase;">3. Session / Term</label>
+              <select id="reportSessionSelect" class="form-control" onchange="onReportSessionChange()">
+                <option value="First Term 2026/2027" selected>First Term 2026/2027</option>
+                <option value="Second Term 2026/2027">Second Term 2026/2027</option>
+                <option value="Third Term 2026/2027">Third Term 2026/2027</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Report Card Preview Area -->
+        <div id="reportCardViewContainer" style="display: none;">
+          <div style="padding: 1rem 1.5rem 0; display: flex; justify-content: flex-end; gap: 0.75rem;" class="report-action-buttons">
+            <button class="btn btn-primary btn-sm" onclick="window.print()">
+              🖨️ Print Report Card
+            </button>
+            <button class="btn btn-orange btn-sm" id="adminWhatsappBtn" onclick="shareReportWhatsApp()">
+              📱 Share on WhatsApp
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="downloadPdf()">
+              📥 Download PDF
+            </button>
+          </div>
+
+          <div class="report-preview-box" id="printableReportCard">
+            <div class="report-school-header">
+              <div style="font-size: 0.9rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem;">
+                FEDERAL REPUBLIC OF NIGERIA • BASIC EDUCATION BOARD
+              </div>
+              <div class="report-school-title">EDUTRACK DEMONSTRATION ACADEMY</div>
+              <div style="font-size: 0.85rem; color: var(--gray-600); margin-top: 0.25rem;">
+                Official Student Academic Continuous Assessment & Attendance Report
+              </div>
+            </div>
+
+            <div class="report-meta-grid">
+              <div class="meta-item">
+                <div class="meta-label">Student Name</div>
+                <div class="meta-val" id="repStudentName">--</div>
+              </div>
+              <div class="meta-item">
+                <div class="meta-label">Roll Number</div>
+                <div class="meta-val" id="repRollNo">--</div>
+              </div>
+              <div class="meta-item">
+                <div class="meta-label">Class</div>
+                <div class="meta-val" id="repClass">--</div>
+              </div>
+              <div class="meta-item">
+                <div class="meta-label">Gender</div>
+                <div class="meta-val" id="repGender">--</div>
+              </div>
+              <div class="meta-item">
+                <div class="meta-label">Session & Term</div>
+                <div class="meta-val" id="repSessionTerm">First Term 2026/2027</div>
+              </div>
+              <div class="meta-item">
+                <div class="meta-label">Parent / Guardian Contact</div>
+                <div class="meta-val" id="repParentContact">--</div>
+              </div>
+            </div>
+
+            <!-- Summary KPI Badges -->
+            <div class="report-summary-pills">
+              <div class="summary-pill highlight">
+                <div class="val" id="repCumulativeAverage">0.0%</div>
+                <div class="lbl">Cumulative Average</div>
+              </div>
+              <div class="summary-pill highlight">
+                <div class="val" id="repOverallGrade">-</div>
+                <div class="lbl">Overall Grade</div>
+              </div>
+              <div class="summary-pill">
+                <div class="val" id="repTotalSubjects">0</div>
+                <div class="lbl">Subjects Recorded</div>
+              </div>
+              <div class="summary-pill">
+                <div class="val" id="repAttendanceRate">0.0%</div>
+                <div class="lbl">Term Attendance</div>
+              </div>
+            </div>
+
+            <!-- Subjects & Grades Table -->
+            <div class="table-container" style="margin: 1.5rem 0;">
+              <table style="border: 1px solid var(--gray-200);">
+                <thead>
+                  <tr>
+                    <th style="width: 10%;">#</th>
+                    <th style="width: 45%;">Subject</th>
+                    <th style="width: 15%; text-align: center;">Score (/100)</th>
+                    <th style="width: 15%; text-align: center;">Grade</th>
+                    <th style="width: 15%; text-align: right;">Remarks</th>
+                  </tr>
+                </thead>
+                <tbody id="repGradesTableBody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Remarks Sections -->
+            <div class="comments-box">
+              <div class="comment-card">
+                <h4>Class Teacher's Remarks</h4>
+                <div id="repTeacherCommentText" style="font-size: 0.9rem; color: var(--gray-800); line-height: 1.5; font-style: italic;">
+                  "Shows keen enthusiasm and consistent performance. Keep up the commendable effort."
+                </div>
+              </div>
+
+              <div class="comment-card">
+                <h4>Principal's Observations & Seal</h4>
+                <div id="repPrincipalCommentText" style="font-size: 0.9rem; color: var(--gray-800); line-height: 1.5; font-style: italic;">
+                  "A very promising result. Approved for record advancement."
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prompt when no student is selected -->
+        <div id="reportEmptyPrompt" style="padding: 3rem 1.5rem; text-align: center;">
+          <div style="font-size: 2.75rem; margin-bottom: 0.75rem;">🔍</div>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--gray-800); margin: 0 0 0.25rem;">
+            Select a Student to View Academic Report Card
+          </h3>
+          <p style="color: var(--gray-500); font-size: 0.875rem; max-width: 440px; margin: 0 auto;">
+            Choose a class and student from the dropdown controls above to preview, print, or share their official academic report card.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: ALL STUDENTS DIRECTORY                            -->
+    <!-- ======================================================== -->
+    <div class="admin-tab-pane" id="tabPaneStudents">
+      <div class="content-card">
+        <div class="card-topbar">
+          <div>
+            <h2><span>👥</span> All Students Directory (School-wide)</h2>
+            <p>Complete directory of all registered students across all classes with direct edit and report links.</p>
+          </div>
+          <a href="index.html#tab2" class="btn btn-primary btn-sm">
+            ➕ Enroll New Student
+          </a>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-inputs">
+            <input type="text" id="studentSearchInput" class="form-control" placeholder="Search student by name or roll number..." oninput="filterStudentsTable()">
+            <select id="studentClassFilterSelect" class="form-control" onchange="filterStudentsTable()">
+              <option value="">All Classes</option>
+            </select>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--gray-600); font-weight: 600;" id="studentListCountText">
+            Showing all students
+          </span>
+        </div>
+
+        <div class="table-container">
+          <table id="allStudentsTable">
+            <thead>
+              <tr>
+                <th style="width: 12%;">Roll No</th>
+                <th style="width: 28%;">Student Name</th>
+                <th style="width: 15%;">Class</th>
+                <th style="width: 12%;">Gender</th>
+                <th style="width: 18%;">Parent Contact</th>
+                <th style="width: 15%; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="allStudentsTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: ADD NEW TEACHER                                    -->
+  <!-- ======================================================== -->
+  <div class="modal-backdrop" id="addTeacherModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><span>➕</span> Add New Teacher</h3>
+        <button class="modal-close-btn" onclick="closeModal('addTeacherModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreateTeacher(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="newTeacherName">Full Name *</label>
+            <input type="text" id="newTeacherName" class="form-control" placeholder="e.g. Mrs. Grace Okonkwo" required>
+          </div>
+
+          <div class="form-group">
+            <label for="newTeacherEmail">Email Address *</label>
+            <input type="email" id="newTeacherEmail" class="form-control" placeholder="e.g. grace.okonkwo@edutrack.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="newTeacherPassword">Temporary Password *</label>
+            <div style="position: relative;">
+              <input type="password" id="newTeacherPassword" class="form-control" placeholder="Min. 6 characters" required minlength="6" style="padding-right: 2.5rem;">
+              <button type="button" onclick="togglePasswordVisibility('newTeacherPassword', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem;">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="newTeacherClass">Assigned Class *</label>
+            <select id="newTeacherClass" class="form-control" required onchange="handleNewTeacherClassChange(this.value)">
+              <option value="Primary 1">Primary 1</option>
+              <option value="Primary 2">Primary 2</option>
+              <option value="Primary 3">Primary 3</option>
+              <option value="Primary 4">Primary 4</option>
+              <option value="Primary 5">Primary 5</option>
+              <option value="Primary 6">Primary 6</option>
+              <option value="JSS 1">JSS 1</option>
+              <option value="JSS 2">JSS 2</option>
+              <option value="JSS 3">JSS 3</option>
+              <option value="SSS 1">SSS 1</option>
+              <option value="SSS 2">SSS 2</option>
+              <option value="SSS 3">SSS 3</option>
+              <option value="custom">Other / Custom Class...</option>
+            </select>
+            <input type="text" id="newTeacherCustomClass" class="form-control" placeholder="Enter custom class name" style="display: none; margin-top: 0.5rem;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('addTeacherModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveTeacherSubmitBtn">Create Teacher Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: REASSIGN TEACHER CLASS                            -->
+  <!-- ======================================================== -->
+  <div class="modal-backdrop" id="reassignTeacherModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><span>🔄</span> Reassign Teacher Class</h3>
+        <button class="modal-close-btn" onclick="closeModal('reassignTeacherModal')">✕</button>
+      </div>
+      <form onsubmit="handleReassignTeacherSubmit(event)">
+        <input type="hidden" id="reassignTeacherId">
+        <div class="modal-body">
+          <div style="background: var(--gray-50); padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--gray-200); margin-bottom: 1.25rem;">
+            <div style="font-size: 0.775rem; font-weight: 700; color: var(--gray-500); text-transform: uppercase;">Teacher</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: var(--gray-900);" id="reassignTeacherNameDisplay">--</div>
+            <div style="font-size: 0.8rem; color: var(--gray-600);" id="reassignTeacherEmailDisplay">--</div>
+          </div>
+
+          <div class="form-group">
+            <label for="reassignClassSelect">New Assigned Class *</label>
+            <select id="reassignClassSelect" class="form-control" required onchange="handleReassignCustomChange(this.value)">
+              <option value="Primary 1">Primary 1</option>
+              <option value="Primary 2">Primary 2</option>
+              <option value="Primary 3">Primary 3</option>
+              <option value="Primary 4">Primary 4</option>
+              <option value="Primary 5">Primary 5</option>
+              <option value="Primary 6">Primary 6</option>
+              <option value="JSS 1">JSS 1</option>
+              <option value="JSS 2">JSS 2</option>
+              <option value="JSS 3">JSS 3</option>
+              <option value="SSS 1">SSS 1</option>
+              <option value="SSS 2">SSS 2</option>
+              <option value="SSS 3">SSS 3</option>
+              <option value="custom">Other / Custom Class...</option>
+            </select>
+            <input type="text" id="reassignCustomClassInput" class="form-control" placeholder="Enter custom class name" style="display: none; margin-top: 0.5rem;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('reassignTeacherModal')">Cancel</button>
+          <button type="submit" class="btn btn-orange" id="saveReassignBtn">Save Reassignment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ========================================================
+    // GLOBAL CONFIG & SECURITY AUTHENTICATION CHECK
+    // ========================================================
+    const LOCAL_API_URL = 'http://127.0.0.1:5000';
+    const RENDER_API_URL = 'https://edutrack-g2ej.onrender.com';
+    let API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '')
+      ? LOCAL_API_URL
+      : RENDER_API_URL;
+
+    const state = {
+      token: localStorage.getItem('edutrack_token'),
+      user: null,
+      teachers: [],
+      students: [],
+      classesOverview: [],
+      currentReportStudent: null,
+      currentReportGrades: []
+    };
+
+    // Authenticated API request helper with automatic Render fallback
+    async function authFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      if (state.token) {
+        options.headers['Authorization'] = `Bearer ${state.token}`;
+      }
+      try {
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+          handleAdminLogout();
+          throw new Error('Unauthorized');
+        }
+        return res;
+      } catch (err) {
+        if (API_BASE_URL === LOCAL_API_URL && url.startsWith(LOCAL_API_URL)) {
+          const fallback = url.replace(LOCAL_API_URL, RENDER_API_URL);
+          API_BASE_URL = RENDER_API_URL;
+          return authFetch(fallback, options);
+        }
+        throw err;
+      }
+    }
+
+    // Role Guard: Verify Admin Role
+    async function verifyAdminAuth() {
+      if (!state.token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/auth/me`);
+        if (!res.ok) throw new Error('Session invalid');
+        const data = await res.json();
+        state.user = data.user;
+
+        // Teacher CANNOT access Admin Dashboard
+        if (state.user.role !== 'admin') {
+          alert('Access Denied: The Administrator Dashboard is restricted to administrative staff.');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // Display Admin Name
+        document.getElementById('adminGreetingName').textContent = state.user.name || 'Administrator';
+
+        // Load all data
+        await Promise.all([
+          loadOverviewData(),
+          loadTeachersData(),
+          loadStudentsData()
+        ]);
+
+      } catch (err) {
+        console.error('Auth verification error:', err);
+        handleAdminLogout();
+      }
+    }
+
+    function handleAdminLogout() {
+      localStorage.removeItem('edutrack_token');
+      window.location.href = 'login.html';
+    }
+
+    // ========================================================
+    // TAB NAVIGATION
+    // ========================================================
+    function switchAdminTab(tabName) {
+      const tabs = ['classes', 'teachers', 'reports', 'students'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        const pane = document.getElementById(`tabPane${t.charAt(0).toUpperCase() + t.slice(1)}`);
+        if (btn) btn.classList.toggle('active', t === tabName);
+        if (pane) pane.classList.toggle('active', t === tabName);
+      });
+    }
+
+    // ========================================================
+    // LOAD ADMIN OVERVIEW DATA
+    // ========================================================
+    async function loadOverviewData(showNotice = false) {
+      try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const res = await authFetch(`${API_BASE_URL}/api/admin/overview?date=${todayStr}`);
+        if (!res.ok) throw new Error('Failed to load overview data');
+        const data = await res.json();
+
+        state.classesOverview = data.classes || [];
+        renderOverviewCards(data);
+
+        if (showNotice) {
+          alert('Overview metrics refreshed successfully.');
+        }
+      } catch (err) {
+        console.error('Error in loadOverviewData:', err);
+      }
+    }
+
+    function renderOverviewCards(data) {
+      // 1. KPI Cards
+      document.getElementById('kpiTotalTeachers').textContent = data.total_teachers || 0;
+      document.getElementById('kpiTotalStudents').textContent = data.total_students || 0;
+      document.getElementById('kpiTotalClasses').textContent = (data.classes || []).length;
+      document.getElementById('badgeClassesCount').textContent = (data.classes || []).length;
+
+      // Calculate total present today
+      let totalPresent = 0;
+      let totalEnrolled = data.total_students || 0;
+      (data.classes || []).forEach(c => {
+        totalPresent += (c.present_today || 0);
+      });
+
+      const schoolRate = totalEnrolled > 0 ? ((totalPresent / totalEnrolled) * 100).toFixed(1) : '0.0';
+      document.getElementById('kpiAttendanceRate').textContent = `${schoolRate}%`;
+      document.getElementById('kpiAttendanceCounts').textContent = `${totalPresent} present of ${totalEnrolled} students`;
+      document.getElementById('kpiTeachersSub').textContent = `${data.total_teachers || 0} active teacher accounts`;
+
+      // 2. Class Cards Grid
+      const grid = document.getElementById('classesCardsGrid');
+      grid.innerHTML = (data.classes || []).map(cls => {
+        const isAssigned = cls.teacher_name && cls.teacher_name !== 'Unassigned';
+        const rate = cls.attendance_rate || 0;
+        const rateBadgeClass = rate >= 75 ? 'badge-success' : (rate >= 50 ? 'badge-warning' : 'badge-gray');
+
+        return `
+          <div class="class-card">
+            <div>
+              <div class="class-card-header">
+                <span class="class-name">${escapeHtml(cls.class_name)}</span>
+                <span class="badge ${isAssigned ? 'badge-teal' : 'badge-orange'}">
+                  ${isAssigned ? 'Assigned' : 'Vacant'}
+                </span>
+              </div>
+
+              <div class="class-teacher-info">
+                <div class="teacher-title">Class Teacher</div>
+                <div class="teacher-name-txt" style="${isAssigned ? '' : 'color: var(--secondary);'}">
+                  ${isAssigned ? escapeHtml(cls.teacher_name) : '⚠️ Unassigned Teacher'}
+                </div>
+                ${cls.teacher_email ? `<small style="color: var(--gray-500); font-size: 0.75rem;">${escapeHtml(cls.teacher_email)}</small>` : ''}
+              </div>
+
+              <div style="font-size: 0.85rem; color: var(--gray-700); margin-top: 0.5rem; display: flex; justify-content: space-between;">
+                <span>Enrolled Students:</span>
+                <strong style="color: var(--gray-900);">${cls.student_count || 0}</strong>
+              </div>
+
+              <div style="font-size: 0.85rem; color: var(--gray-700); margin-top: 0.35rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>Today's Attendance:</span>
+                <span class="badge ${rateBadgeClass}">${rate}% (${cls.present_today || 0}/${cls.student_count || 0})</span>
+              </div>
+            </div>
+
+            <div class="class-stats-row">
+              <button class="btn btn-secondary btn-sm" onclick="filterToClassStudents('${escapeHtml(cls.class_name)}')">
+                👥 View Students
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="filterToClassReports('${escapeHtml(cls.class_name)}')">
+                📑 Reports →
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ========================================================
+    // LOAD TEACHERS DATA & MANAGEMENT
+    // ========================================================
+    async function loadTeachersData() {
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/teachers`);
+        if (!res.ok) throw new Error('Failed to load teachers');
+        state.teachers = await res.json();
+
+        document.getElementById('badgeTeachersCount').textContent = state.teachers.length;
+        populateTeacherClassFilter();
+        renderTeachersTable(state.teachers);
+      } catch (err) {
+        console.error('Error in loadTeachersData:', err);
+      }
+    }
+
+    function populateTeacherClassFilter() {
+      const select = document.getElementById('teacherClassFilterSelect');
+      const current = select.value;
+      const classes = Array.from(new Set(state.teachers.map(t => t.assigned_class).filter(Boolean))).sort();
+
+      select.innerHTML = '<option value="">All Assigned Classes</option>' +
+        classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+      select.value = current;
+    }
+
+    function renderTeachersTable(teachers) {
+      const tbody = document.getElementById('teachersTableBody');
+      document.getElementById('teacherListCountText').textContent = `Showing ${teachers.length} teacher(s)`;
+
+      if (teachers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-500); padding: 2rem;">No teachers found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = teachers.map(t => {
+        const isCurrentAdmin = state.user && state.user.id === t.id;
+        const roleBadge = t.role === 'admin' ? '<span class="badge badge-orange">Administrator</span>' : '<span class="badge badge-teal">Teacher</span>';
+
+        return `
+          <tr>
+            <td>
+              <strong style="color: var(--gray-900);">${escapeHtml(t.name)}</strong>
+              ${isCurrentAdmin ? '<span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; margin-left: 0.25rem;">(You)</span>' : ''}
+            </td>
+            <td>${escapeHtml(t.email)}</td>
+            <td>${roleBadge}</td>
+            <td>
+              <span class="badge badge-teal" style="font-size: 0.8rem;">${escapeHtml(t.assigned_class || 'Primary 1')}</span>
+            </td>
+            <td style="text-align: right;">
+              <div class="btn-group">
+                <button class="btn btn-secondary btn-sm" onclick="openReassignModal(${t.id}, '${escapeHtml(t.name)}', '${escapeHtml(t.email)}', '${escapeHtml(t.assigned_class || 'Primary 1')}')" title="Reassign Teacher to Another Class">
+                  🔄 Reassign
+                </button>
+                ${!isCurrentAdmin ? `
+                  <button class="btn btn-danger btn-sm" onclick="handleDeleteTeacher(${t.id}, '${escapeHtml(t.name)}')" title="Remove Teacher Account">
+                    🗑️ Remove
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterTeachersTable() {
+      const term = (document.getElementById('teacherSearchInput').value || '').trim().toLowerCase();
+      const cls = (document.getElementById('teacherClassFilterSelect').value || '').trim().toLowerCase();
+
+      const filtered = state.teachers.filter(t => {
+        const matchesTerm = !term || (t.name || '').toLowerCase().includes(term) || (t.email || '').toLowerCase().includes(term);
+        const matchesCls = !cls || (t.assigned_class || '').toLowerCase() === cls;
+        return matchesTerm && matchesCls;
+      });
+
+      renderTeachersTable(filtered);
+    }
+
+    // Modal helpers
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function openAddTeacherModal() {
+      document.getElementById('newTeacherName').value = '';
+      document.getElementById('newTeacherEmail').value = '';
+      document.getElementById('newTeacherPassword').value = '';
+      document.getElementById('newTeacherClass').value = 'Primary 1';
+      document.getElementById('newTeacherCustomClass').style.display = 'none';
+      openModal('addTeacherModal');
+    }
+
+    function handleNewTeacherClassChange(val) {
+      const custom = document.getElementById('newTeacherCustomClass');
+      custom.style.display = (val === 'custom') ? 'block' : 'none';
+      if (val === 'custom') custom.focus();
+    }
+
+    async function handleCreateTeacher(event) {
+      event.preventDefault();
+      const submitBtn = document.getElementById('saveTeacherSubmitBtn');
+      const name = document.getElementById('newTeacherName').value.trim();
+      const email = document.getElementById('newTeacherEmail').value.trim();
+      const password = document.getElementById('newTeacherPassword').value.trim();
+      const classSelect = document.getElementById('newTeacherClass').value;
+      const assigned_class = (classSelect === 'custom')
+        ? document.getElementById('newTeacherCustomClass').value.trim()
+        : classSelect;
+
+      if (!name || !email || !password || !assigned_class) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
+        const res = await authFetch(`${API_BASE_URL}/api/teachers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, assigned_class, role: 'teacher' })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to add teacher');
+
+        alert(`Teacher '${name}' added successfully and assigned to ${assigned_class}!`);
+        closeModal('addTeacherModal');
+
+        // Reload data
+        await Promise.all([loadTeachersData(), loadOverviewData()]);
+
+      } catch (err) {
+        alert('Error adding teacher: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Teacher Account';
+      }
+    }
+
+    function openReassignModal(id, name, email, currentClass) {
+      document.getElementById('reassignTeacherId').value = id;
+      document.getElementById('reassignTeacherNameDisplay').textContent = name;
+      document.getElementById('reassignTeacherEmailDisplay').textContent = email;
+
+      const select = document.getElementById('reassignClassSelect');
+      const custom = document.getElementById('reassignCustomClassInput');
+
+      let found = false;
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value.toLowerCase() === (currentClass || '').toLowerCase()) {
+          select.selectedIndex = i;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found && currentClass) {
+        select.value = 'custom';
+        custom.style.display = 'block';
+        custom.value = currentClass;
+      } else {
+        custom.style.display = 'none';
+        custom.value = '';
+      }
+
+      openModal('reassignTeacherModal');
+    }
+
+    function handleReassignCustomChange(val) {
+      const custom = document.getElementById('reassignCustomClassInput');
+      custom.style.display = (val === 'custom') ? 'block' : 'none';
+      if (val === 'custom') custom.focus();
+    }
+
+    async function handleReassignTeacherSubmit(event) {
+      event.preventDefault();
+      const id = document.getElementById('reassignTeacherId').value;
+      const classSelect = document.getElementById('reassignClassSelect').value;
+      const assigned_class = (classSelect === 'custom')
+        ? document.getElementById('reassignCustomClassInput').value.trim()
+        : classSelect;
+
+      if (!assigned_class) {
+        alert('Please specify the new class assignment.');
+        return;
+      }
+
+      const btn = document.getElementById('saveReassignBtn');
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+
+        const res = await authFetch(`${API_BASE_URL}/api/teachers/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assigned_class })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to reassign teacher');
+
+        alert(`Class reassigned successfully to ${assigned_class}!`);
+        closeModal('reassignTeacherModal');
+
+        // Reload data
+        await Promise.all([loadTeachersData(), loadOverviewData()]);
+
+      } catch (err) {
+        alert('Error reassigning class: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Reassignment';
+      }
+    }
+
+    async function handleDeleteTeacher(id, name) {
+      if (!confirm(`Are you sure you want to permanently remove teacher '${name}'? This action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/teachers/${id}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to remove teacher');
+
+        alert(`Teacher '${name}' has been removed successfully.`);
+        await Promise.all([loadTeachersData(), loadOverviewData()]);
+      } catch (err) {
+        alert('Error removing teacher: ' + err.message);
+      }
+    }
+
+    // ========================================================
+    // LOAD STUDENTS DATA & DIRECTORY
+    // ========================================================
+    async function loadStudentsData() {
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/students`);
+        if (!res.ok) throw new Error('Failed to load students');
+        state.students = await res.json();
+
+        document.getElementById('badgeStudentsCount').textContent = state.students.length;
+        populateStudentClassDropdowns();
+        renderStudentsTable(state.students);
+      } catch (err) {
+        console.error('Error in loadStudentsData:', err);
+      }
+    }
+
+    function populateStudentClassDropdowns() {
+      const classes = Array.from(new Set(state.students.map(s => s.student_class).filter(Boolean))).sort();
+
+      // Student directory filter
+      const dirFilter = document.getElementById('studentClassFilterSelect');
+      dirFilter.innerHTML = '<option value="">All Classes</option>' +
+        classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+
+      // Report class filter
+      const repFilter = document.getElementById('reportClassFilter');
+      repFilter.innerHTML = '<option value="">-- All Classes --</option>' +
+        classes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+
+      populateReportStudentSelect();
+    }
+
+    function renderStudentsTable(students) {
+      const tbody = document.getElementById('allStudentsTableBody');
+      document.getElementById('studentListCountText').textContent = `Showing ${students.length} student(s)`;
+
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-500); padding: 2rem;">No students found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = students.map(s => {
+        return `
+          <tr>
+            <td><strong style="color: var(--primary);">${escapeHtml(s.roll_no)}</strong></td>
+            <td><strong>${escapeHtml(s.student_name)}</strong></td>
+            <td><span class="badge badge-teal">${escapeHtml(s.student_class || 'Primary 1')}</span></td>
+            <td>${escapeHtml(s.gender || 'Unspecified')}</td>
+            <td>${escapeHtml(s.parent_contact || 'N/A')}</td>
+            <td style="text-align: right;">
+              <button class="btn btn-primary btn-sm" onclick="viewStudentReportDirectly('${escapeHtml(s.roll_no)}', '${escapeHtml(s.student_class)}')">
+                📑 Report Card
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterStudentsTable() {
+      const term = (document.getElementById('studentSearchInput').value || '').trim().toLowerCase();
+      const cls = (document.getElementById('studentClassFilterSelect').value || '').trim().toLowerCase();
+
+      const filtered = state.students.filter(s => {
+        const matchesTerm = !term || (s.student_name || '').toLowerCase().includes(term) || (s.roll_no || '').toLowerCase().includes(term);
+        const matchesCls = !cls || (s.student_class || '').toLowerCase() === cls;
+        return matchesTerm && matchesCls;
+      });
+
+      renderStudentsTable(filtered);
+    }
+
+    function filterToClassStudents(className) {
+      switchAdminTab('students');
+      document.getElementById('studentClassFilterSelect').value = className;
+      filterStudentsTable();
+    }
+
+    function filterToClassReports(className) {
+      switchAdminTab('reports');
+      document.getElementById('reportClassFilter').value = className;
+      onReportClassFilterChange();
+    }
+
+    // ========================================================
+    // TAB 3: REPORT CARD LOGIC
+    // ========================================================
+    function populateReportStudentSelect() {
+      const select = document.getElementById('reportStudentSelect');
+      const selectedClass = document.getElementById('reportClassFilter').value;
+
+      const filtered = selectedClass
+        ? state.students.filter(s => (s.student_class || '').toLowerCase() === selectedClass.toLowerCase())
+        : state.students;
+
+      select.innerHTML = '<option value="">-- Choose a student --</option>' +
+        filtered.map(s => `<option value="${escapeHtml(s.roll_no)}">${escapeHtml(s.roll_no)} - ${escapeHtml(s.student_name)} (${escapeHtml(s.student_class)})</option>`).join('');
+    }
+
+    function onReportClassFilterChange() {
+      populateReportStudentSelect();
+      document.getElementById('reportCardViewContainer').style.display = 'none';
+      document.getElementById('reportEmptyPrompt').style.display = 'block';
+    }
+
+    async function onReportStudentSelectChange() {
+      const rollNo = document.getElementById('reportStudentSelect').value;
+      if (!rollNo) {
+        document.getElementById('reportCardViewContainer').style.display = 'none';
+        document.getElementById('reportEmptyPrompt').style.display = 'block';
+        return;
+      }
+      await loadStudentReportCard(rollNo);
+    }
+
+    function onReportSessionChange() {
+      const session = document.getElementById('reportSessionSelect').value;
+      document.getElementById('repSessionTerm').textContent = session;
+    }
+
+    async function viewStudentReportDirectly(rollNo, studentClass) {
+      switchAdminTab('reports');
+      document.getElementById('reportClassFilter').value = studentClass;
+      populateReportStudentSelect();
+      document.getElementById('reportStudentSelect').value = rollNo;
+      await loadStudentReportCard(rollNo);
+    }
+
+    async function loadStudentReportCard(rollNo) {
+      const student = state.students.find(s => s.roll_no === rollNo);
+      if (!student) return;
+
+      state.currentReportStudent = student;
+
+      // Populate Meta
+      document.getElementById('repStudentName').textContent = student.student_name;
+      document.getElementById('repRollNo').textContent = student.roll_no;
+      document.getElementById('repClass').textContent = student.student_class || 'Primary 1';
+      document.getElementById('repGender').textContent = student.gender || 'Unspecified';
+      document.getElementById('repParentContact').textContent = student.parent_contact || 'N/A';
+      document.getElementById('repSessionTerm').textContent = document.getElementById('reportSessionSelect').value;
+
+      try {
+        // Fetch grades for this student
+        const res = await authFetch(`${API_BASE_URL}/api/grades/${encodeURIComponent(rollNo)}`);
+        const grades = res.ok ? await res.json() : [];
+        state.currentReportGrades = grades;
+
+        renderReportGrades(grades);
+
+        // Fetch attendance stats for this student
+        const attRes = await authFetch(`${API_BASE_URL}/api/students/${encodeURIComponent(rollNo)}/attendance`);
+        if (attRes.ok) {
+          const attData = await attRes.json();
+          const rate = attData.attendance_percentage || attData.percentage || 0;
+          document.getElementById('repAttendanceRate').textContent = `${Number(rate).toFixed(1)}%`;
+        } else {
+          document.getElementById('repAttendanceRate').textContent = '100.0%';
+        }
+
+        document.getElementById('reportEmptyPrompt').style.display = 'none';
+        document.getElementById('reportCardViewContainer').style.display = 'block';
+
+      } catch (err) {
+        console.error('Error fetching report details:', err);
+      }
+    }
+
+    function renderReportGrades(grades) {
+      const tbody = document.getElementById('repGradesTableBody');
+      document.getElementById('repTotalSubjects').textContent = grades.length;
+
+      if (grades.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-500); padding: 1.5rem;">No academic grades recorded for this student yet.</td></tr>`;
+        document.getElementById('repCumulativeAverage').textContent = '0.0%';
+        document.getElementById('repOverallGrade').textContent = '-';
+        return;
+      }
+
+      let totalScore = 0;
+      tbody.innerHTML = grades.map((g, idx) => {
+        const score = Number(g.score || 0);
+        totalScore += score;
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td><strong>${escapeHtml(g.subject)}</strong></td>
+            <td style="text-align: center; font-weight: 700;">${score.toFixed(1)}</td>
+            <td style="text-align: center;"><span class="badge badge-teal">${escapeHtml(g.grade || 'A')}</span></td>
+            <td style="text-align: right; color: var(--gray-600);">${escapeHtml(g.remarks || 'Commendable')}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const avg = totalScore / grades.length;
+      document.getElementById('repCumulativeAverage').textContent = `${avg.toFixed(1)}%`;
+      document.getElementById('repOverallGrade').textContent = computeGradeLetter(avg);
+    }
+
+    function computeGradeLetter(score) {
+      if (score >= 70) return 'A (Distinction)';
+      if (score >= 60) return 'B (Very Good)';
+      if (score >= 50) return 'C (Credit)';
+      if (score >= 45) return 'D (Pass)';
+      if (score >= 40) return 'E (Fair)';
+      return 'F (Fail)';
+    }
+
+    // ========================================================
+    // WHATSAPP REPORT SHARE
+    // ========================================================
+    function shareReportWhatsApp() {
+      const student = state.currentReportStudent;
+      if (!student) {
+        alert('Please select a student report first.');
+        return;
+      }
+
+      let phone = (student.parent_contact || '').trim();
+      if (!phone || phone === 'N/A') {
+        alert('Add a valid Parent Contact Number in student profile to share via WhatsApp.');
+        return;
+      }
+
+      // Clean phone number: remove non-digits
+      phone = phone.replace(/[^0-9]/g, '');
+      if (phone.startsWith('0')) {
+        phone = '234' + phone.substring(1);
+      } else if (!phone.startsWith('234') && phone.length === 10) {
+        phone = '234' + phone;
+      }
+
+      const session = document.getElementById('repSessionTerm').textContent;
+      const attRate = document.getElementById('repAttendanceRate').textContent;
+      const avg = document.getElementById('repCumulativeAverage').textContent;
+      const grade = document.getElementById('repOverallGrade').textContent;
+      const comment = "Shows keen enthusiasm and consistent performance. Keep up the commendable effort.";
+
+      const msg = `Hello, this is EduTrack Demonstration Academy. Here is ${student.student_name} - ${student.student_class} Report Card for ${session}. Attendance: ${attRate}, Average: ${avg}, Overall Grade: ${grade}. Teacher Comment: ${comment}. To view full report, please contact school or check printed copy. Thank you - EduTrack Academy`;
+
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function downloadPdf() {
+      window.print();
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', verifyAdminAuth);
+  </script>
+</body>
+</html>

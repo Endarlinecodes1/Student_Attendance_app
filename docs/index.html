@@ -210,14 +210,19 @@
     }
 
     @keyframes pulseDot {
-      from { opacity: 0.4; }
-      to { opacity: 1; }
+      from {
+        opacity: 0.4;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     /* ==========================================
        LOGIN & REGISTER AUTH SCREEN
        ========================================== */
-        /* ==========================================
+    /* ==========================================
        CAPTIVATING HERO LOGIN PORTAL STYLING
        ========================================== */
     .auth-portal-wrapper {
@@ -575,15 +580,19 @@
         max-width: 520px;
         border-radius: 18px;
       }
+
       .auth-hero-showcase {
         padding: 1.75rem 1.5rem;
       }
+
       .hero-classroom-img {
         height: 200px;
       }
+
       .hero-feature-pills {
         grid-template-columns: 1fr;
       }
+
       .auth-form-pane {
         padding: 1.75rem 1.5rem;
       }
@@ -684,10 +693,21 @@
       width: 4px;
     }
 
-    .metric-card.metric-total::before { background: var(--primary); }
-    .metric-card.metric-present::before { background: var(--success); }
-    .metric-card.metric-absent::before { background: var(--danger); }
-    .metric-card.metric-rate::before { background: var(--secondary); }
+    .metric-card.metric-total::before {
+      background: var(--primary);
+    }
+
+    .metric-card.metric-present::before {
+      background: var(--success);
+    }
+
+    .metric-card.metric-absent::before {
+      background: var(--danger);
+    }
+
+    .metric-card.metric-rate::before {
+      background: var(--secondary);
+    }
 
     .metric-top {
       display: flex;
@@ -796,8 +816,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Card Component */
@@ -956,13 +983,15 @@
       transform: translateY(0);
     }
 
-    .btn-accent, .btn-orange {
+    .btn-accent,
+    .btn-orange {
       background: var(--secondary);
       color: var(--white);
       box-shadow: 0 2px 4px rgba(255, 107, 53, 0.25);
     }
 
-    .btn-accent:hover, .btn-orange:hover {
+    .btn-accent:hover,
+    .btn-orange:hover {
       background: var(--secondary-hover);
       box-shadow: 0 4px 10px rgba(255, 107, 53, 0.4);
       transform: translateY(-1px);
@@ -1104,7 +1133,8 @@
       border-bottom: 1px solid var(--gray-300);
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px;
       text-align: left;
       border-bottom: 1px solid #ddd;
@@ -1327,11 +1357,35 @@
       min-width: 34px;
     }
 
-    .grade-A { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-    .grade-B { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
-    .grade-C { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
-    .grade-D { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
-    .grade-F { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .grade-A {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #86efac;
+    }
+
+    .grade-B {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #7dd3fc;
+    }
+
+    .grade-C {
+      background: #fef9c3;
+      color: #854d0e;
+      border: 1px solid #fde047;
+    }
+
+    .grade-D {
+      background: #ffedd5;
+      color: #9a3412;
+      border: 1px solid #fdba74;
+    }
+
+    .grade-F {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
 
     /* Score Badge */
     .score-badge {
@@ -1341,9 +1395,20 @@
       font-size: 0.85rem;
     }
 
-    .score-high { background: #dcfce7; color: #15803d; }
-    .score-med { background: #fef9c3; color: #854d0e; }
-    .score-low { background: #fee2e2; color: #b91c1c; }
+    .score-high {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .score-med {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .score-low {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
 
     /* Toast Notification System */
     .toast-container {
@@ -1375,14 +1440,38 @@
       border-bottom: 1px solid var(--gray-200);
     }
 
-    .toast.toast-success { border-left-color: var(--success); }
-    .toast.toast-error { border-left-color: var(--danger); }
-    .toast.toast-warning { border-left-color: var(--warning); }
-    .toast.toast-info { border-left-color: var(--secondary); }
+    .toast.toast-success {
+      border-left-color: var(--success);
+    }
 
-    .toast-content { flex: 1; }
-    .toast-title { font-weight: 700; font-size: 0.875rem; color: var(--gray-900); }
-    .toast-message { font-size: 0.8rem; color: var(--gray-600); margin-top: 0.15rem; }
+    .toast.toast-error {
+      border-left-color: var(--danger);
+    }
+
+    .toast.toast-warning {
+      border-left-color: var(--warning);
+    }
+
+    .toast.toast-info {
+      border-left-color: var(--secondary);
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--gray-900);
+    }
+
+    .toast-message {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      margin-top: 0.15rem;
+    }
+
     .toast-close {
       background: none;
       border: none;
@@ -1392,11 +1481,21 @@
       line-height: 1;
       padding: 0;
     }
-    .toast-close:hover { color: var(--gray-700); }
+
+    .toast-close:hover {
+      color: var(--gray-700);
+    }
 
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Empty State */
@@ -1437,7 +1536,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* MODAL BASE */
@@ -1472,8 +1573,15 @@
     }
 
     @keyframes modalZoom {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
     .modal-header {
@@ -1565,7 +1673,7 @@
       margin-bottom: 1.15rem;
     }
 
-    .report-print-table th, 
+    .report-print-table th,
     .report-print-table td {
       border: 1px solid #cbd5e1;
       padding: 0.55rem 0.75rem;
@@ -1727,8 +1835,10 @@
       width: 100%;
     }
 
-    #attendanceTable th, #attendanceTable td,
-    #directoryTable th, #directoryTable td {
+    #attendanceTable th,
+    #attendanceTable td,
+    #directoryTable th,
+    #directoryTable td {
       vertical-align: middle;
     }
 
@@ -1746,12 +1856,12 @@
   <!-- ========================================== -->
   <!-- 1. LOGIN & REGISTER AUTH SCREEN            -->
   <!-- ========================================== -->
-    <!-- ========================================== -->
+  <!-- ========================================== -->
   <!-- 1. LOGIN & REGISTER AUTH SCREEN (HERO REDESIGN) -->
   <!-- ========================================== -->
   <div id="authScreen" class="auth-portal-wrapper">
     <div class="auth-portal-container">
-      
+
       <!-- LEFT: HERO SHOWCASE WITH STUDENTS IMAGE -->
       <div class="auth-hero-section auth-hero-showcase">
         <div class="hero-visual-card">
@@ -1777,7 +1887,8 @@
             Empowering Every Student, <br><span class="gradient-word">Connecting Every Classroom.</span>
           </h1>
           <p class="hero-description">
-            EduTrack brings smart daily attendance, effortless term grading, and instant parent communication directly to modern schools.
+            EduTrack brings smart daily attendance, effortless term grading, and instant parent communication directly
+            to modern schools.
           </p>
 
           <div class="hero-feature-pills">
@@ -1841,20 +1952,25 @@
         <form id="loginForm" onsubmit="handleLogin(event)">
           <div class="form-group" style="margin-bottom: 1rem;">
             <label class="form-label" for="loginEmail">Email Address *</label>
-            <input type="email" id="loginEmail" class="form-control" placeholder="e.g. teacher@edutrack.com" required autocomplete="email">
+            <input type="email" id="loginEmail" class="form-control" placeholder="e.g. teacher@edutrack.com" required
+              autocomplete="email">
           </div>
 
           <div class="form-group" style="margin-bottom: 1.25rem;">
             <label class="form-label" for="loginPassword">Password *</label>
             <div class="password-input-group">
-              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
-              <button type="button" class="password-toggle-button" onclick="togglePasswordVisibility('loginPassword', this)" title="Show password" aria-label="Toggle password visibility">
+              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required
+                autocomplete="current-password">
+              <button type="button" class="password-toggle-button"
+                onclick="togglePasswordVisibility('loginPassword', this)" title="Show password"
+                aria-label="Toggle password visibility">
                 <span class="eye-icon">👁️</span>
               </button>
             </div>
           </div>
 
-          <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary"
+            style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
             <span>🔑</span> <span id="loginSubmitText">Sign In as Teacher</span>
           </button>
         </form>
@@ -1874,8 +1990,11 @@
           <div class="form-group" style="margin-bottom: 0.85rem;">
             <label class="form-label" for="regPassword">Password (min 6 chars) *</label>
             <div class="password-input-group">
-              <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required minlength="6">
-              <button type="button" class="password-toggle-button" onclick="togglePasswordVisibility('regPassword', this)" title="Show password" aria-label="Toggle password visibility">
+              <input type="password" id="regPassword" class="form-control" placeholder="••••••••" required
+                minlength="6">
+              <button type="button" class="password-toggle-button"
+                onclick="togglePasswordVisibility('regPassword', this)" title="Show password"
+                aria-label="Toggle password visibility">
                 <span class="eye-icon">👁️</span>
               </button>
             </div>
@@ -1904,25 +2023,30 @@
                 <option value="custom">Custom Class...</option>
               </optgroup>
             </select>
-            <input type="text" id="regCustomClassInput" class="form-control" placeholder="Type custom class name (e.g. Nursery 1, Basic 7)" style="display: none; margin-top: 0.4rem;">
+            <input type="text" id="regCustomClassInput" class="form-control"
+              placeholder="Type custom class name (e.g. Nursery 1, Basic 7)" style="display: none; margin-top: 0.4rem;">
           </div>
 
-          <button type="submit" id="regSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
+          <button type="submit" id="regSubmitBtn" class="btn btn-primary"
+            style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px;">
             <span>👤</span> Create Account & Sign In
           </button>
         </form>
 
         <!-- Quick Demo Login Helpers -->
-        <div class="demo-accounts-box" style="margin-top: 1.25rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 0.85rem;">
+        <div class="demo-accounts-box"
+          style="margin-top: 1.25rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 0.85rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
             <strong style="color: var(--gray-700); font-size: 0.8rem;">⚡ Quick Demo (One-Click):</strong>
             <span style="font-size: 0.725rem; color: #0FB5A8; font-weight: 600;">Instant Test Access</span>
           </div>
           <div class="demo-pill-group" style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-            <button type="button" class="demo-pill" onclick="quickFillRole('teacher', 'teacher@edutrack.com', 'teacher123')">
+            <button type="button" class="demo-pill"
+              onclick="quickFillRole('teacher', 'teacher@edutrack.com', 'teacher123')">
               👩‍🏫 Teacher (Primary 1)
             </button>
-            <button type="button" class="demo-pill" onclick="quickFillRole('teacher2', 'teacher2@edutrack.com', 'teacher123')">
+            <button type="button" class="demo-pill"
+              onclick="quickFillRole('teacher2', 'teacher2@edutrack.com', 'teacher123')">
               👨‍🏫 Teacher (Primary 2)
             </button>
             <button type="button" class="demo-pill" onclick="quickFillRole('admin', 'admin@edutrack.com', 'admin123')">
@@ -1951,6 +2075,9 @@
       </div>
 
       <div class="header-user-bar">
+        <a href="admin_dashboard.html" id="adminDashboardHeaderLink" class="btn btn-secondary btn-sm" style="display: none; background: rgba(255, 107, 53, 0.12); color: #FF6B35; border: 1px solid rgba(255, 107, 53, 0.35); font-weight: 700;">
+          👑 Admin Dashboard →
+        </a>
         <div class="user-welcome-badge">
           <span>👋</span>
           <span>Welcome, <strong id="userDisplayName">Teacher</strong></span>
@@ -1971,7 +2098,8 @@
     <div id="backendAlert" class="alert-banner" role="alert">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <span>⚠️</span>
-        <span id="backendAlertMessage">Backend API at <strong>https://edutrack-g2ej.onrender.com</strong> is unreachable.</span>
+        <span id="backendAlertMessage">Backend API at <strong>https://edutrack-g2ej.onrender.com</strong> is
+          unreachable.</span>
       </div>
       <button class="btn btn-secondary btn-sm" onclick="retryBackendConnection()">Retry</button>
     </div>
@@ -2051,11 +2179,12 @@
         <div class="card-header">
           <div>
             <h2 class="card-title"><span>📝</span> Mark Daily Attendance</h2>
-            <p class="card-subtitle">Mark each student as Present or Absent and save to Neon Postgres.</p>
+            <p class="card-subtitle">Mark each student as Present or Absent</p>
           </div>
           <div class="date-badge-wrapper">
             <span class="date-label">Date:</span>
-            <input type="date" id="attendanceDate" class="date-input" aria-label="Attendance Date" onchange="onAttendanceDateChange()">
+            <input type="date" id="attendanceDate" class="date-input" aria-label="Attendance Date"
+              onchange="onAttendanceDateChange()">
           </div>
         </div>
 
@@ -2064,14 +2193,16 @@
           <div class="filter-group">
             <div class="search-input-wrapper">
               <span class="search-icon">🔍</span>
-              <input type="text" id="attendanceSearch" class="form-control" placeholder="Search by name or roll..." oninput="handleAttendanceFilter()">
+              <input type="text" id="attendanceSearch" class="form-control" placeholder="Search by name or roll..."
+                oninput="handleAttendanceFilter()">
             </div>
             <div style="min-width: 140px;" id="attendanceClassFilterWrapper">
               <select id="attendanceClassFilter" class="form-control" onchange="handleAttendanceFilter()">
                 <option value="">All Classes</option>
               </select>
             </div>
-            <button class="btn btn-secondary btn-sm" id="clearAttendanceFilterBtn" onclick="clearAttendanceFilters()" style="display: none;">
+            <button class="btn btn-secondary btn-sm" id="clearAttendanceFilterBtn" onclick="clearAttendanceFilters()"
+              style="display: none;">
               ✕ Reset
             </button>
           </div>
@@ -2082,7 +2213,8 @@
         </div>
 
         <!-- Quick actions toolbar -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
           <div class="btn-group">
             <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Present')">✓ Mark All Present</button>
             <button class="btn btn-secondary btn-sm" onclick="bulkSetAttendance('Absent')">✗ Mark All Absent</button>
@@ -2113,7 +2245,8 @@
         <div id="attendanceEmptyState" class="empty-state" style="display: none;">
           <div class="empty-state-icon">👥</div>
           <h3 class="empty-state-title">No Students Found</h3>
-          <p class="empty-state-desc" id="attendanceEmptyMsg">You haven't enrolled any students yet. Head to "Enroll Student" to register your first student.</p>
+          <p class="empty-state-desc" id="attendanceEmptyMsg">You haven't enrolled any students yet. Head to "Enroll
+            Student" to register your first student.</p>
           <button class="btn btn-primary btn-sm" onclick="switchTab('tab2')">+ Enroll Student</button>
         </div>
 
@@ -2143,12 +2276,14 @@
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label" for="studentName">Student Full Name *</label>
-              <input type="text" id="studentName" class="form-control" placeholder="e.g. Alice Johnson" required autocomplete="off">
+              <input type="text" id="studentName" class="form-control" placeholder="e.g. Alice Johnson" required
+                autocomplete="off">
             </div>
 
             <div class="form-group">
               <label class="form-label" for="studentRoll">Roll Number *</label>
-              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or PRI-01" required autocomplete="off">
+              <input type="text" id="studentRoll" class="form-control" placeholder="e.g. 101 or PRI-01" required
+                autocomplete="off">
             </div>
 
             <div class="form-group">
@@ -2177,7 +2312,8 @@
                   <option value="custom">Enter Custom Class...</option>
                 </optgroup>
               </select>
-              <input type="text" id="customClassInput" class="form-control" placeholder="Type custom class name" style="display: none; margin-top: 0.4rem;">
+              <input type="text" id="customClassInput" class="form-control" placeholder="Type custom class name"
+                style="display: none; margin-top: 0.4rem;">
             </div>
 
             <div class="form-group">
@@ -2191,7 +2327,8 @@
 
             <div class="form-group" style="grid-column: 1 / -1;">
               <label class="form-label" for="parentContact">Parent / Guardian Contact Number *</label>
-              <input type="tel" id="parentContact" class="form-control" placeholder="e.g. +234 801 234 5678" required autocomplete="off">
+              <input type="tel" id="parentContact" class="form-control" placeholder="e.g. +234 801 234 5678" required
+                autocomplete="off">
             </div>
           </div>
 
@@ -2219,7 +2356,8 @@
           <div class="filter-group">
             <div class="search-input-wrapper">
               <span class="search-icon">🔍</span>
-              <input type="text" id="dirSearch" class="form-control" placeholder="Filter directory by name or roll..." oninput="handleDirectoryFilter()">
+              <input type="text" id="dirSearch" class="form-control" placeholder="Filter directory by name or roll..."
+                oninput="handleDirectoryFilter()">
             </div>
             <div style="min-width: 140px;" id="dirClassFilterWrapper">
               <select id="dirClassFilter" class="form-control" onchange="handleDirectoryFilter()">
@@ -2265,7 +2403,8 @@
         <div class="card-header">
           <div>
             <h2 class="card-title"><span>📈</span> Student Performance & Report Card</h2>
-            <p class="card-subtitle">Select a student and academic session to view metrics, record grades, and print reports.</p>
+            <p class="card-subtitle">Select a student and academic session to view metrics, record grades, and print
+              reports.</p>
           </div>
         </div>
 
@@ -2285,7 +2424,8 @@
               <option value="Third Term 2026/2027">Third Term 2026/2027</option>
               <option value="custom">Custom Session...</option>
             </select>
-            <input type="text" id="customSessionInput" class="form-control" style="display: none; margin-top: 0.35rem;" placeholder="e.g. 2026/2027 Annual Session" oninput="syncCustomSession(this.value)">
+            <input type="text" id="customSessionInput" class="form-control" style="display: none; margin-top: 0.35rem;"
+              placeholder="e.g. 2026/2027 Annual Session" oninput="syncCustomSession(this.value)">
           </div>
         </div>
       </div>
@@ -2297,18 +2437,23 @@
         <div class="report-card">
           <div class="report-header">
             <div>
-              <div style="font-size: 0.775rem; opacity: 0.8; font-weight: 700; letter-spacing: 0.05em;">STUDENT PROFILE & ATTENDANCE</div>
-              <h3 id="reportStudentNameDisplay" style="font-size: 1.35rem; font-weight: 800; margin-top: 0.2rem;">Student Name</h3>
-              <div style="font-size: 0.825rem; opacity: 0.9; margin-top: 0.15rem;" id="reportStudentDetailsLine">Class: Primary 1 | Roll: 101</div>
+              <div style="font-size: 0.775rem; opacity: 0.8; font-weight: 700; letter-spacing: 0.05em;">STUDENT PROFILE
+                & ATTENDANCE</div>
+              <h3 id="reportStudentNameDisplay" style="font-size: 1.35rem; font-weight: 800; margin-top: 0.2rem;">
+                Student Name</h3>
+              <div style="font-size: 0.825rem; opacity: 0.9; margin-top: 0.15rem;" id="reportStudentDetailsLine">Class:
+                Primary 1 | Roll: 101</div>
             </div>
             <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
               <div id="attendanceBadge" class="badge badge-success">Good Standing</div>
               <!-- Print Report Card Button -->
-              <button class="btn btn-secondary btn-sm" onclick="openPrintModal()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
+              <button class="btn btn-secondary btn-sm" onclick="openPrintModal()"
+                style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
                 <span>🖨️</span> Print Report Card
               </button>
               <!-- Download PDF Button -->
-              <button class="btn btn-secondary btn-sm" onclick="downloadReportPDF()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
+              <button class="btn btn-secondary btn-sm" onclick="downloadReportPDF()"
+                style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
                 <span>📥</span> Download PDF
               </button>
               <!-- WhatsApp Share Slot (Green button if contact exists, notice if empty) -->
@@ -2352,28 +2497,33 @@
           <div class="card-header">
             <div>
               <h3 class="card-title"><span>✍️</span> Report Card Remarks & Observations</h3>
-              <p class="card-subtitle">Type your comments below — what you write appears directly on the printed Report Card.</p>
+              <p class="card-subtitle">Type your comments below — what you write appears directly on the printed Report
+                Card.</p>
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom: 1.15rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
               <label class="form-label" for="tab3TeacherComment">Class Teacher's Remarks & Observations *</label>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="autoSuggestTeacherComment()" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="autoSuggestTeacherComment()"
+                style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">
                 ✨ Auto-Suggest
               </button>
             </div>
-            <textarea id="tab3TeacherComment" class="form-control" rows="3" placeholder="Enter teacher's assessment and remarks for this student..."></textarea>
+            <textarea id="tab3TeacherComment" class="form-control" rows="3"
+              placeholder="Enter teacher's assessment and remarks for this student..."></textarea>
           </div>
 
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
               <label class="form-label" for="tab3PrincipalComment">Principal's Remarks & Stamp Notes</label>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="autoSuggestPrincipalComment()" style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="autoSuggestPrincipalComment()"
+                style="padding: 0.2rem 0.6rem; font-size: 0.75rem;">
                 ✨ Auto-Suggest
               </button>
             </div>
-            <textarea id="tab3PrincipalComment" class="form-control" rows="2" placeholder="Enter principal's observation (e.g. Promoted to next class with honours)..."></textarea>
+            <textarea id="tab3PrincipalComment" class="form-control" rows="2"
+              placeholder="Enter principal's observation (e.g. Promoted to next class with honours)..."></textarea>
           </div>
         </div>
 
@@ -2382,7 +2532,8 @@
           <div class="card-header">
             <div>
               <h3 class="card-title"><span>📝</span> Record Subject Grade</h3>
-              <p class="card-subtitle">Enter score (0-100) to auto-calculate Grade (A=70+, B=60-69, C=50-59, D=40-49, F=&lt;40).</p>
+              <p class="card-subtitle">Enter score (0-100) to auto-calculate Grade (A=70+, B=60-69, C=50-59, D=40-49,
+                F=&lt;40).</p>
             </div>
           </div>
 
@@ -2416,9 +2567,11 @@
           <div class="card-header">
             <div>
               <h3 class="card-title"><span>📚</span> Academic Grade History</h3>
-              <p class="card-subtitle">All recorded subject marks, auto-calculated letter grades, and cumulative average.</p>
+              <p class="card-subtitle">All recorded subject marks, auto-calculated letter grades, and cumulative
+                average.</p>
             </div>
-            <div style="font-size: 0.9rem; font-weight: 700; color: var(--gray-700); display: flex; align-items: center; gap: 0.5rem;">
+            <div
+              style="font-size: 0.9rem; font-weight: 700; color: var(--gray-700); display: flex; align-items: center; gap: 0.5rem;">
               <span>Average:</span>
               <span id="gradeAverageDisplay" class="score-badge score-med">N/A</span>
               <span id="gradeAverageLetterDisplay" class="grade-badge" style="display: none;">-</span>
@@ -2453,9 +2606,11 @@
       <!-- Prompt when no student is selected -->
       <div id="noStudentSelectedPrompt" class="card" style="text-align: center; padding: 3rem 1.5rem;">
         <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔍</div>
-        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.35rem;">Please Select a Student</h3>
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--gray-800); margin-bottom: 0.35rem;">Please Select a
+          Student</h3>
         <p style="color: var(--gray-600); font-size: 0.9rem; max-width: 420px; margin: 0 auto;">
-          Choose a student from the dropdown above to view their attendance metrics, record subject grades, or print their official report card.
+          Choose a student from the dropdown above to view their attendance metrics, record subject grades, or print
+          their official report card.
         </p>
       </div>
 
@@ -2466,10 +2621,12 @@
   <!-- ========================================== -->
   <!-- MODAL: EDIT STUDENT (REQUIREMENT 1)        -->
   <!-- ========================================== -->
-  <div class="modal-backdrop" id="editStudentModal" role="dialog" aria-modal="true" aria-labelledby="editStudentModalTitle">
+  <div class="modal-backdrop" id="editStudentModal" role="dialog" aria-modal="true"
+    aria-labelledby="editStudentModalTitle">
     <div class="modal-dialog" style="max-width: 540px;">
       <div class="modal-header">
-        <h3 id="editStudentModalTitle" style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem;">
+        <h3 id="editStudentModalTitle"
+          style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem;">
           <span>✏️</span> Edit Student Profile
         </h3>
         <button class="toast-close" onclick="closeEditModal()" aria-label="Close modal">&times;</button>
@@ -2513,7 +2670,8 @@
                 <option value="custom">Custom Class...</option>
               </optgroup>
             </select>
-            <input type="text" id="editCustomClassInput" class="form-control" placeholder="Type custom class name" style="display: none; margin-top: 0.4rem;">
+            <input type="text" id="editCustomClassInput" class="form-control" placeholder="Type custom class name"
+              style="display: none; margin-top: 0.4rem;">
           </div>
 
           <div class="form-group" style="margin-bottom: 1rem;">
@@ -2527,7 +2685,8 @@
 
           <div class="form-group">
             <label class="form-label" for="editParentContact">Parent Contact Number *</label>
-            <input type="tel" id="editParentContact" class="form-control" placeholder="e.g. +234 801 234 5678" required autocomplete="off">
+            <input type="tel" id="editParentContact" class="form-control" placeholder="e.g. +234 801 234 5678" required
+              autocomplete="off">
           </div>
         </div>
 
@@ -2547,7 +2706,8 @@
   <div class="modal-backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="modalReportTitle">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 id="modalReportTitle" style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem;">
+        <h3 id="modalReportTitle"
+          style="font-size: 1.1rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: 0.5rem;">
           <span>🖨️</span> Report Card Preview
         </h3>
         <button class="toast-close" onclick="closePrintModal()" aria-label="Close modal">&times;</button>
@@ -2595,11 +2755,14 @@
           </div>
 
           <!-- Attendance Performance -->
-          <div style="margin-bottom: 1.15rem; background: #E7FAF8; border: 1px solid #B2EDE7; border-radius: 6px; padding: 0.75rem 1rem;">
-            <div style="font-size: 0.8rem; font-weight: 700; color: #0A7D74; text-transform: uppercase; margin-bottom: 0.4rem;">
+          <div
+            style="margin-bottom: 1.15rem; background: #E7FAF8; border: 1px solid #B2EDE7; border-radius: 6px; padding: 0.75rem 1rem;">
+            <div
+              style="font-size: 0.8rem; font-weight: 700; color: #0A7D74; text-transform: uppercase; margin-bottom: 0.4rem;">
               📅 Attendance Summary
             </div>
-            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
+            <div
+              style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; font-size: 0.85rem;">
               <div>Total Days: <strong id="printTotalDays">0</strong></div>
               <div>Days Present: <strong id="printDaysPresent" style="color: #15803d;">0</strong></div>
               <div>Days Absent: <strong id="printDaysAbsent" style="color: #b91c1c;">0</strong></div>
@@ -2632,7 +2795,8 @@
           </table>
 
           <!-- Grading Key Legend -->
-          <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 1.15rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div
+            style="font-size: 0.75rem; color: #64748b; margin-bottom: 1.15rem; display: flex; gap: 1rem; flex-wrap: wrap;">
             <span><strong>Grading Scale:</strong></span>
             <span>A = 70%+ (Distinction)</span>
             <span>B = 60-69% (Credit)</span>
@@ -2650,7 +2814,8 @@
           <!-- Principal's Remarks -->
           <div class="report-comments-box">
             <label>Principal's Remarks & Stamp Notes:</label>
-            <div id="printPrincipalCommentDisplay" class="report-comments-display">Approved. Keep striving for excellence.</div>
+            <div id="printPrincipalCommentDisplay" class="report-comments-display">Approved. Keep striving for
+              excellence.</div>
           </div>
 
           <!-- Signature Block -->
@@ -2671,14 +2836,17 @@
         </div>
       </div>
 
-      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+      <div class="modal-footer"
+        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
         <button class="btn btn-secondary" onclick="closePrintModal()">Close</button>
         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
           <span id="modalWhatsappSlot"></span>
-          <button class="btn btn-secondary" onclick="downloadReportPDF()" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+          <button class="btn btn-secondary" onclick="downloadReportPDF()"
+            style="display: inline-flex; align-items: center; gap: 0.4rem;">
             <span>📥</span> Download PDF
           </button>
-          <button class="btn btn-primary" onclick="triggerPrintReport()" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+          <button class="btn btn-primary" onclick="triggerPrintReport()"
+            style="display: inline-flex; align-items: center; gap: 0.4rem;">
             <span>🖨️</span> Print
           </button>
         </div>
@@ -2753,7 +2921,7 @@
           .then((reg) => {
             if (reg && reg.update) reg.update();
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }
 
@@ -2802,6 +2970,11 @@
       const isAdmin = user.role === 'admin';
       document.getElementById('userDisplayName').textContent = user.name || 'User';
       document.getElementById('userDisplayClass').textContent = isAdmin ? 'Admin (All Classes)' : (user.assigned_class || 'Primary 1');
+
+      const adminHeaderLink = document.getElementById('adminDashboardHeaderLink');
+      if (adminHeaderLink) {
+        adminHeaderLink.style.display = isAdmin ? 'inline-flex' : 'none';
+      }
 
       // Adjust UI for Teacher vs Admin
       applyRoleConstraints(isAdmin);
@@ -2855,6 +3028,10 @@
         if (!res.ok) throw new Error('Session invalid');
         const data = await res.json();
         state.user = data.user;
+        if (data.user && data.user.role === 'admin' && !window.location.search.includes('view=teacher')) {
+          window.location.href = 'admin_dashboard.html';
+          return;
+        }
         showMainApp();
       } catch (err) {
         handleLogout();
@@ -2880,7 +3057,7 @@
       }
     }
 
-        // ==========================================
+    // ==========================================
     // RECREATED HERO LOGIN & ROLE HELPERS
     // ==========================================
     function togglePasswordVisibility(inputId, btn) {
@@ -2898,7 +3075,7 @@
       const adminCard = document.getElementById('roleSelectAdmin');
       const submitText = document.getElementById('loginSubmitText');
       const emailInput = document.getElementById('loginEmail');
-      
+
       if (role === 'admin') {
         if (adminCard) adminCard.classList.add('active');
         if (teacherCard) teacherCard.classList.remove('active');
@@ -2952,7 +3129,11 @@
         localStorage.setItem('edutrack_token', data.token);
 
         showToast('Welcome!', `Logged in as ${data.user.name} (${data.user.role === 'admin' ? 'Admin' : data.user.assigned_class}).`, 'success');
-        showMainApp();
+        if (data.user && data.user.role === 'admin') {
+          window.location.href = 'admin_dashboard.html';
+        } else {
+          showMainApp();
+        }
 
       } catch (err) {
         showToast('Login Failed', err.message || 'Invalid email or password.', 'error');
@@ -3514,7 +3695,7 @@
       document.getElementById('editOriginalRollNo').value = student.roll_no;
       document.getElementById('editStudentName').value = student.student_name || '';
       document.getElementById('editStudentRoll').value = student.roll_no;
-      
+
       const classSelect = document.getElementById('editStudentClass');
       const editCustomClassInput = document.getElementById('editCustomClassInput');
       if (editCustomClassInput) {
@@ -3550,7 +3731,7 @@
 
       const gender = student.gender && student.gender !== 'Unspecified' ? student.gender : 'Female';
       document.getElementById('editStudentGender').value = gender;
-      
+
       const contact = student.parent_contact && student.parent_contact !== 'N/A' ? student.parent_contact : '';
       document.getElementById('editParentContact').value = contact;
 
@@ -3803,7 +3984,7 @@
           state.selectedStudentObj.student_name = report.student_name;
         }
 
-        document.getElementById('reportStudentDetailsLine').textContent = 
+        document.getElementById('reportStudentDetailsLine').textContent =
           `Class: ${report.student_class || 'Primary 1'} | Gender: ${report.gender || 'Unspecified'} | Contact: ${report.parent_contact || 'N/A'}`;
 
         const present = report.present ?? 0;
@@ -4043,8 +4224,8 @@
     function updateWhatsAppShareUI() {
       const student = state.selectedStudentObj || state.students.find(s => String(s.roll_no) === String(state.selectedRollNo));
       const report = state.selectedStudentReport || {};
-      const contact = (report.parent_contact && report.parent_contact !== 'N/A') 
-        ? report.parent_contact 
+      const contact = (report.parent_contact && report.parent_contact !== 'N/A')
+        ? report.parent_contact
         : (student ? student.parent_contact : '');
 
       const headerSlot = document.getElementById('whatsappShareHeaderSlot');
@@ -4080,10 +4261,10 @@
       document.getElementById('printStudentName').textContent = report.student_name || student.student_name || 'N/A';
       document.getElementById('printRollNo').textContent = report.roll_no || student.roll_no || 'N/A';
       document.getElementById('printClass').textContent = report.student_class || student.student_class || 'Primary 1';
-      
+
       const gender = (report.gender && report.gender !== 'Unspecified') ? report.gender : (student.gender || 'Female');
       document.getElementById('printGender').textContent = gender;
-      
+
       const contact = (report.parent_contact && report.parent_contact !== 'N/A') ? report.parent_contact : (student.parent_contact || 'N/A');
       document.getElementById('printContact').textContent = contact;
 
@@ -4230,8 +4411,8 @@
       }
 
       const report = state.selectedStudentReport || {};
-      const contact = (report.parent_contact && report.parent_contact !== 'N/A') 
-        ? report.parent_contact 
+      const contact = (report.parent_contact && report.parent_contact !== 'N/A')
+        ? report.parent_contact
         : (student.parent_contact || '');
 
       if (!hasValidParentContact(contact)) {
@@ -4259,7 +4440,7 @@
       const overall = computeGradeLetter(avg);
 
       // Teacher comment
-      const teacherComment = document.getElementById('tab3TeacherComment')?.value?.trim() 
+      const teacherComment = document.getElementById('tab3TeacherComment')?.value?.trim()
         || 'Good academic conduct and steady progress.';
 
       const schoolName = 'EduTrack Academy';

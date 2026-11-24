@@ -283,8 +283,11 @@
         if (!res.ok) throw new Error(data.error || 'Login failed');
 
         localStorage.setItem('edutrack_token', data.token);
-        // Direct to index.html
-        window.location.href = 'index.html';
+        if (data.user && data.user.role === 'admin') {
+          window.location.href = 'admin_dashboard.html';
+        } else {
+          window.location.href = 'index.html';
+        }
       } catch (err) {
         alert('Login Failed: ' + (err.message || 'Invalid credentials'));
       } finally {
@@ -314,8 +317,12 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Registration failed');
 
-        localStorage.setItem('edutrack_token', data.token);
-        window.location.href = 'index.html';
+                localStorage.setItem('edutrack_token', data.token);
+        if (data.user && data.user.role === 'admin') {
+          window.location.href = 'admin_dashboard.html';
+        } else {
+          window.location.href = 'index.html';
+        }
       } catch (err) {
         alert('Registration Failed: ' + (err.message || 'Error creating account'));
       } finally {

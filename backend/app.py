@@ -427,6 +427,14 @@ def init_db():
                 except Exception:
                     conn.rollback()
 
+            # Sync primary key sequences so auto-increment never conflicts
+            for tbl in ['students', 'attendance', 'grades', 'teachers']:
+                try:
+                    cur.execute(f"SELECT setval(pg_get_serial_sequence('{tbl}', 'id'), COALESCE(MAX(id), 1)) FROM {tbl};")
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
+
         logger.info("Database schema initialized and verified successfully.")
     except Exception as e:
         logger.warning("Notice during database initialization: %s", e)
@@ -1805,6 +1813,355 @@ def delete_grade(current_user, grade_id):
         if conn:
             conn.rollback()
         return jsonify({"error": "Database error while deleting grade", "details": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+
+# ==========================================================
+# ADMIN & TEACHER MANAGEMENT API (REQUIREMENT STEP 2)
+# ==========================================================
+
+@app.route('/api/teachers', methods=['GET'])
+@require_auth
+def get_teachers(current_user):
+    """Admin-only: Retrieve all registered teachers with their assigned class."""
+    if current_user.get('role') != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            all_tables = get_all_tables(conn)
+            if 'teachers' not in all_tables:
+                return jsonify([]), 200
+
+            cols = get_table_columns(conn, 'teachers')
+            select_cols = ['id', 'name', 'email', 'role', 'assigned_class']
+            if 'created_at' in cols:
+                select_cols.append('created_at')
+            if 'school_id' in cols:
+                select_cols.append('school_id')
+
+            cur.execute(f"""
+                SELECT {', '.join(select_cols)}
+                FROM teachers
+                ORDER BY role DESC, assigned_class ASC, name ASC;
+            """)
+            teachers = cur.fetchall()
+
+            # Format datetime
+            res = []
+            for t in teachers:
+                res.append({
+                    "id": t['id'],
+                    "name": t['name'],
+                    "email": t['email'],
+                    "role": t.get('role', 'teacher'),
+                    "assigned_class": t.get('assigned_class', 'Primary 1'),
+                    "school_id": t.get('school_id', 1),
+                    "created_at": t['created_at'].isoformat() if t.get('created_at') and hasattr(t['created_at'], 'isoformat') else None
+                })
+
+            return jsonify(res), 200
+
+    except Exception as e:
+        logger.error("Error fetching teachers: %s", e)
+        if conn:
+            conn.rollback()
+        return jsonify([]), 200
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/api/teachers', methods=['POST'])
+@require_auth
+def add_teacher(current_user):
+    """Admin-only: Add a new teacher and assign them to a class."""
+    if current_user.get('role') != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be valid JSON"}), 400
+
+    name = str(data.get('name', '')).strip()
+    email = str(data.get('email', '')).strip().lower()
+    password = str(data.get('password', '')).strip()
+    assigned_class = str(data.get('assigned_class', 'Primary 1')).strip()
+    role = str(data.get('role', 'teacher')).strip().lower()
+    school_id = current_user.get('school_id', 1)
+
+    if not name or not email or not password or not assigned_class:
+        return jsonify({"error": "Name, email, password, and assigned_class are required"}), 400
+
+    if len(password) < 6:
+        return jsonify({"error": "Password must be at least 6 characters long"}), 400
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT id FROM teachers WHERE LOWER(email) = LOWER(%s) LIMIT 1;", (email,))
+            if cur.fetchone():
+                return jsonify({"error": "A teacher with this email address already exists"}), 409
+
+            password_hash = generate_password_hash(password)
+            cur.execute("""
+                INSERT INTO teachers (school_id, name, email, password_hash, role, assigned_class)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id, school_id, name, email, role, assigned_class, created_at;
+            """, (school_id, name, email, password_hash, role, assigned_class))
+            new_teacher = cur.fetchone()
+            conn.commit()
+
+            return jsonify({
+                "message": f"Teacher '{name}' added successfully and assigned to {assigned_class}.",
+                "teacher": {
+                    "id": new_teacher['id'],
+                    "name": new_teacher['name'],
+                    "email": new_teacher['email'],
+                    "role": new_teacher['role'],
+                    "assigned_class": new_teacher['assigned_class']
+                }
+            }), 201
+
+    except Exception as e:
+        logger.error("Error adding teacher: %s", e)
+        if conn:
+            conn.rollback()
+        return jsonify({"error": "Database error while creating teacher", "details": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/api/teachers/<int:teacher_id>', methods=['PUT'])
+@require_auth
+def update_teacher(current_user, teacher_id):
+    """Admin-only: Reassign teacher to a different class or update details."""
+    if current_user.get('role') != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Request body must be valid JSON"}), 400
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT id, name, email, role, assigned_class FROM teachers WHERE id = %s LIMIT 1;", (teacher_id,))
+            teacher = cur.fetchone()
+            if not teacher:
+                return jsonify({"error": "Teacher not found"}), 404
+
+            updates = []
+            vals = []
+
+            if 'name' in data and str(data['name']).strip():
+                updates.append("name = %s")
+                vals.append(str(data['name']).strip())
+
+            if 'assigned_class' in data and str(data['assigned_class']).strip():
+                updates.append("assigned_class = %s")
+                vals.append(str(data['assigned_class']).strip())
+
+            if 'role' in data and str(data['role']).strip() in ('teacher', 'admin'):
+                updates.append("role = %s")
+                vals.append(str(data['role']).strip())
+
+            if 'password' in data and len(str(data['password']).strip()) >= 6:
+                updates.append("password_hash = %s")
+                vals.append(generate_password_hash(str(data['password']).strip()))
+
+            if updates:
+                vals.append(teacher_id)
+                cur.execute(f"UPDATE teachers SET {', '.join(updates)} WHERE id = %s;", vals)
+                conn.commit()
+
+            cur.execute("SELECT id, name, email, role, assigned_class FROM teachers WHERE id = %s;", (teacher_id,))
+            updated = cur.fetchone()
+
+            return jsonify({
+                "message": f"Teacher '{updated['name']}' updated successfully.",
+                "teacher": updated
+            }), 200
+
+    except Exception as e:
+        logger.error("Error updating teacher: %s", e)
+        if conn:
+            conn.rollback()
+        return jsonify({"error": "Database error while updating teacher", "details": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/api/teachers/<int:teacher_id>', methods=['DELETE'])
+@require_auth
+def delete_teacher(current_user, teacher_id):
+    """Admin-only: Remove a teacher from the system."""
+    if current_user.get('role') != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+
+    if current_user.get('user_id') == teacher_id:
+        return jsonify({"error": "You cannot delete your own admin account"}), 400
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cur:
+            cur.execute("SELECT name FROM teachers WHERE id = %s;", (teacher_id,))
+            row = cur.fetchone()
+            if not row:
+                return jsonify({"error": "Teacher not found"}), 404
+
+            teacher_name = row[0]
+            cur.execute("DELETE FROM teachers WHERE id = %s;", (teacher_id,))
+            conn.commit()
+
+            return jsonify({
+                "message": f"Teacher '{teacher_name}' has been successfully removed."
+            }), 200
+
+    except Exception as e:
+        logger.error("Error deleting teacher: %s", e)
+        if conn:
+            conn.rollback()
+        return jsonify({"error": "Database error while removing teacher", "details": str(e)}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+@app.route('/api/admin/overview', methods=['GET'])
+@require_auth
+def get_admin_overview(current_user):
+    """Admin-only: Aggregated overview of all classes, assigned teachers, student counts, and attendance."""
+    if current_user.get('role') != 'admin':
+        return jsonify({"error": "Admin access required"}), 403
+
+    target_date = request.args.get('date', datetime.date.today().isoformat())
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            all_tables = get_all_tables(conn)
+
+            # 1. Teachers map by class
+            teachers_by_class = {}
+            total_teachers = 0
+            if 'teachers' in all_tables:
+                cur.execute("SELECT id, name, email, role, assigned_class FROM teachers WHERE role = 'teacher';")
+                for t in cur.fetchall():
+                    cls = (t.get('assigned_class') or '').strip()
+                    if cls:
+                        teachers_by_class[cls.lower()] = t
+                cur.execute("SELECT COUNT(*) AS total FROM teachers WHERE role = 'teacher';")
+                row = cur.fetchone()
+                total_teachers = row['total'] if row else 0
+
+            # 2. Students breakdown by class
+            total_students = 0
+            students_per_class = {}
+            if 'students' in all_tables:
+                f = get_student_query_fields(conn)
+                cur.execute(f"""
+                    SELECT {f['class_expr']} AS student_class, COUNT(*) AS count
+                    FROM students
+                    GROUP BY {f['class_expr']}
+                    ORDER BY student_class ASC;
+                """)
+                for r in cur.fetchall():
+                    c_name = (r['student_class'] or 'Primary 1').strip()
+                    c_count = r['count'] or 0
+                    students_per_class[c_name.lower()] = c_count
+                    total_students += c_count
+
+            # 3. Attendance today per class
+            att_per_class = {}
+            if 'attendance' in all_tables:
+                att_cols = get_table_columns(conn, 'attendance')
+                date_col = 'att_date' if 'att_date' in att_cols else ('date' if 'date' in att_cols else None)
+                if date_col:
+                    f = get_student_query_fields(conn)
+                    if 'student_id' in att_cols:
+                        st_cols = get_table_columns(conn, 'students')
+                        c_col = "s.student_class" if "student_class" in st_cols else ("s.class" if "class" in st_cols else "'Primary 1'")
+                        cur.execute(f"""
+                            SELECT {c_col} AS student_class,
+                                   COUNT(*) FILTER (WHERE a.status = 'Present') AS present,
+                                   COUNT(*) FILTER (WHERE a.status = 'Absent') AS absent
+                            FROM attendance a
+                            JOIN students s ON a.student_id = s.id
+                            WHERE a.{date_col} = %s
+                            GROUP BY {c_col};
+                        """, (target_date,))
+                        for row in cur.fetchall():
+                            cls_k = (row['student_class'] or '').strip().lower()
+                            att_per_class[cls_k] = {
+                                "present": row['present'] or 0,
+                                "absent": row['absent'] or 0
+                            }
+
+            # 4. Standard Classes Array
+            standard_classes = [
+                'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6',
+                'JSS 1', 'JSS 2', 'JSS 3', 'SSS 1', 'SSS 2', 'SSS 3'
+            ]
+
+            # Collect any custom classes found in DB
+            all_class_keys = set(standard_classes)
+            for c_low in students_per_class.keys():
+                found_match = False
+                for std in standard_classes:
+                    if std.lower() == c_low:
+                        found_match = True
+                        break
+                if not found_match and c_low:
+                    all_class_keys.add(c_low.title())
+
+            overview_list = []
+            for c_name in standard_classes:
+                c_low = c_name.lower()
+                assigned_t = teachers_by_class.get(c_low)
+                st_count = students_per_class.get(c_low, 0)
+                att_info = att_per_class.get(c_low, {"present": 0, "absent": 0})
+                marked = att_info['present'] + att_info['absent']
+                rate = round((att_info['present'] / marked) * 100, 1) if marked > 0 else 0.0
+
+                overview_list.append({
+                    "class_name": c_name,
+                    "teacher_name": assigned_t['name'] if assigned_t else "Unassigned",
+                    "teacher_email": assigned_t['email'] if assigned_t else None,
+                    "teacher_id": assigned_t['id'] if assigned_t else None,
+                    "student_count": st_count,
+                    "present_today": att_info['present'],
+                    "absent_today": att_info['absent'],
+                    "attendance_rate": rate
+                })
+
+            return jsonify({
+                "date": target_date,
+                "total_teachers": total_teachers,
+                "total_students": total_students,
+                "classes": overview_list
+            }), 200
+
+    except Exception as e:
+        logger.error("Error fetching admin overview: %s", e)
+        if conn:
+            conn.rollback()
+        return jsonify({
+            "date": target_date,
+            "total_teachers": 0,
+            "total_students": 0,
+            "classes": []
+        }), 200
     finally:
         if conn:
             conn.close()
