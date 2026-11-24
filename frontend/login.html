@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EduTrack - Login</title>
+  <meta name="theme-color" content="#0FB5A8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: linear-gradient(135deg, #f0fdfa 0%, #fff7ed 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; padding: 1rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+  <div class="auth-wrapper" style="width: 100%; max-width: 440px;">
+    <div class="auth-card" style="box-shadow: 0 20px 25px -5px rgba(15, 181, 168, 0.15), 0 8px 10px -6px rgba(255, 107, 53, 0.1);">
+      <div class="auth-header" style="text-align: center; margin-bottom: 1.5rem;">
+        <div class="brand-icon" style="width: 56px; height: 56px; font-size: 1.85rem; margin: 0 auto 0.75rem; background: linear-gradient(135deg, #0FB5A8, #FF6B35); display: flex; align-items: center; justify-content: center; border-radius: 14px; box-shadow: 0 4px 10px rgba(15, 181, 168, 0.35); color: #fff;">🎓</div>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0;">EduTrack Portal</h2>
+        <p style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem;">Sign in to access your class attendance & grades</p>
+      </div>
+
+      <div class="auth-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: #f1f5f9; padding: 0.25rem; border-radius: 10px;">
+        <button type="button" class="auth-tab-btn active" id="tabLoginBtn" style="flex: 1; padding: 0.65rem; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; background: #fff; color: #0FB5A8; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">Teacher / Admin Login</button>
+        <button type="button" class="auth-tab-btn" id="tabRegisterBtn" style="flex: 1; padding: 0.65rem; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; background: transparent; color: #64748b;">Register Teacher</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="event.preventDefault(); window.location.href='index.html';">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Email Address *</label>
+          <input type="email" class="form-control" required placeholder="e.g. teacher@edutrack.com">
+        </div>
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-size: 0.825rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">Password *</label>
+          <input type="password" class="form-control" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-weight: 700; background: #0FB5A8; color: #fff; border: none; border-radius: 8px; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 10px rgba(15, 181, 168, 0.35);">
+          🔑 Sign In
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+        <a href="index.html" style="color: #FF6B35; font-weight: 700; font-size: 0.85rem; text-decoration: none;">← Open Full Portal</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EduTrack - Teacher Dashboard</title>
+  <meta name="theme-color" content="#0FB5A8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;">
+  <header class="app-header" style="background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100;">
+    <div class="header-container" style="max-width: 1200px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="brand-icon" style="width: 40px; height: 40px; background: linear-gradient(135deg, #0FB5A8, #FF6B35); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.25rem;">🎓</div>
+        <div>
+          <h1 style="font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0;">EduTrack</h1>
+          <p style="font-size: 0.75rem; color: #64748b; margin: 0;">Teacher Dashboard</p>
+        </div>
+      </div>
+      <div>
+        <a href="index.html" class="btn btn-primary" style="background: #0FB5A8; color: #fff; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">Open Full System</a>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem;">
+    <!-- Metric Cards in Aurora Teal and Deep Orange -->
+    <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+      <div class="metric-card metric-total" style="background: #fff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+        <div style="position: absolute; top:0; left:0; bottom:0; width:4px; background: #0FB5A8;"></div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Students</div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin-top: 0.35rem;">--</div>
+      </div>
+      <div class="metric-card metric-present" style="background: #fff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+        <div style="position: absolute; top:0; left:0; bottom:0; width:4px; background: #10b981;"></div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Present Today</div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin-top: 0.35rem;">--</div>
+      </div>
+      <div class="metric-card metric-absent" style="background: #fff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+        <div style="position: absolute; top:0; left:0; bottom:0; width:4px; background: #ef4444;"></div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Absent Today</div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin-top: 0.35rem;">--</div>
+      </div>
+      <div class="metric-card metric-rate" style="background: #fff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
+        <div style="position: absolute; top:0; left:0; bottom:0; width:4px; background: #FF6B35;"></div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Attendance Rate</div>
+        <div style="font-size: 1.85rem; font-weight: 800; color: #FF6B35; margin-top: 0.35rem;">--%</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // EduTrack Service Worker for PWA Offline Caching - Version 7
-const CACHE_NAME = 'edutrack-cache-v7';
+const CACHE_NAME = 'edutrack-cache-v8';
 const ASSETS_TO_CACHE = [
   './manifest.json',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap'
